@@ -3,7 +3,7 @@ speakeasyVersion: latest
 sources:
     x-shield-api:
         inputs:
-            - location: ../../Downloads/xshield_oas3.yaml
+            - location: ../xshield_oas3.yaml
         registry:
             location: registry.speakeasyapi.dev/colortokens/colortokens/x-shield-api
 targets:

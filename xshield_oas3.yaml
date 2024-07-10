@@ -1,0 +1,6410 @@
+openapi: 3.0.1
+info:
+  title: ColorTokens Core API
+  description: "API for managing lifecycle of core micro-segmentation resources (tags,\
+    \ assets & groups)"
+  contact: {}
+  version: "202202"
+servers:
+- url: /
+x-speakeasy-retries:
+  strategy: backoff
+  backoff:
+    initialInterval: 500        # 500 milliseconds
+    maxInterval: 60000          # 60 seconds
+    maxElapsedTime: 3600000     # 5 minutes
+    exponent: 1.5
+  statusCodes:
+    - 5XX
+  retryConnectionErrors: true
+paths:
+  /api/aggregate:
+    post:
+      tags:
+      - assets
+      summary: Returns assets matching criteria.
+      description: Returns list of matching assets identified by criteria else all
+        assets.
+      operationId: Query
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PORT | LIST_PATH | LIST_ASSET | LIST_NAMED_NETWORK | LIST_ALERT
+      x-codegen-request-body-name: search
+  /api/assets:
+    delete:
+      tags:
+      - assets
+      summary: Deletes Assets
+      description: Deletes Assets using its each asset identifier and any corresponding
+        references are cleaned up too.
+      operationId: BulkDeleteAssets
+      requestBody:
+        description: AssetID List
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteAssetsInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssetDetails'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_ASSET
+        permissionScope:
+        - AGENT
+        - ADMIN
+      x-codegen-request-body-name: search
+  /api/assets/:assetId/firewallchanges/openports:
+    post:
+      tags:
+      - openports
+      summary: Retrieves ports that need to be pushed to firewall.
+      description: Returns list of ports with review status changed since last push
+        to firewall.
+      operationId: ListPortsWithChangedReview
+      requestBody:
+        description: search criteria for filtering open ports
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenPorts'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PORT
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/:assetId/firewalllogs:
+    post:
+      tags:
+      - paths
+      summary: Retrieves paths of asset tainted before firewalllast log reported observed
+        by monitoring.
+      description: Returns list of Paths representing connections to / from the specified
+        assets.
+      operationId: ListPathsWithFirewallLogsReported
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paths'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PATH
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/{assetId}/tags:
+    get:
+      tags:
+      - tags
+      summary: "Lists all tags of an asset, filtering results by specified filters\
+        \ if provided."
+      description: Returns list of matching tags of an asset identified from filters
+        else all tags.
+      operationId: ListAssetTags
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: name search using equality
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: value
+        in: query
+        description: value search using equality
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sortField
+        in: query
+        description: field name to use for sorting.
+        schema:
+          type: string
+          enum:
+          - name
+          - value
+      - name: sortOrder
+        in: query
+        description: Either ascending or descending ordering for the specified sortField
+        schema:
+          type: string
+          enum:
+          - ascending
+          - descending
+      - name: limit
+        in: query
+        description: Number of items to return per page if number of matches found
+          exceeds this then pagination will be required to access all results
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        description: Starting position in results
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tags'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_TAG
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/assets/{assetId}:
+    get:
+      tags:
+      - assets
+      summary: Fetches a Asset by its identifier.
+      description: Retrieves Asset by identifier if match found. If no match found
+        for identifier empty response returned.
+      operationId: GetAsset
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetDetails'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_ASSET
+        permissionScope:
+        - AGENT
+        - ADMIN
+        - USER
+    delete:
+      tags:
+      - assets
+      summary: Deletes a Asset by its identifier.
+      description: Deletes a Asset using its identifier and any corresponding references
+        are cleaned up too.
+      operationId: DeleteAsset
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetDetails'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_ASSET
+        permissionScope:
+        - AGENT
+        - ADMIN
+  /api/assets/{assetId}/annotations:
+    put:
+      tags:
+      - assets
+      summary: Annotate an existing Asset by its identifier
+      description: Annotates an existing Asset by its identifier if located otherwise
+        results in a no-op. Annotatable fields include coreTags and businessvalue.
+      operationId: AnnotateAsset
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: asset annotation details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetAnnotationDetails'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetAnnotationDetails'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: assetannotations
+  /api/assets/{assetid}/firewallchanges/paths:
+    post:
+      tags:
+      - paths
+      summary: Retrieves paths where candidate state is out of synch with committed
+        state.
+      description: Returns list of paths with review status changed since last push
+        to firewall.
+      operationId: ListPathsWithChangedReview
+      parameters:
+      - name: assetid
+        in: path
+        description: the asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paths'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PORT
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/{assetId}/firewallrules:
+    get:
+      tags:
+      - assets
+      summary: Firewall state file listing endpoint
+      description: Returns list of files containing state of firewall at given point
+        in time if any uploaded by the agentId specified. If assetId is invalid endpoint
+        will fail with 404 not found.
+      operationId: ListFirewallRulesSnapshots
+      parameters:
+      - name: assetId
+        in: path
+        description: assetId to list firewall state files for
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileList'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: READ_FIREWALL_LOG
+        permissionScope:
+        - ADMIN
+        - USER
+    post:
+      tags:
+      - assets
+      summary: Upload firewall-rules data
+      description: Upload firewall-rules data
+      operationId: UploadFirewallRules
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: firewalllogs data payload
+        content:
+          application/json:
+            schema:
+              type: object
+        required: false
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: CREATE_FIREWALL_RULES
+        permissionScope:
+        - AGENT
+      x-codegen-request-body-name: payload
+  /api/assets/{assetId}/firewallrules/{objectname}:
+    get:
+      tags:
+      - assets
+      summary: Download firewall state log file
+      description: Returns file content for specified file name.
+      operationId: GetFirewallRules
+      parameters:
+      - name: assetId
+        in: path
+        description: assetId to list log files for
+        required: true
+        schema:
+          type: string
+      - name: objectname
+        in: path
+        description: name of the log file to download
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content: 
+            application/octet-stream:
+              schema:
+                title: bytes
+                type: string
+                format: binary
+        "400":
+          description: Bad Request
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: READ_FIREWALL_LOG
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/assets/{assetId}/securitypatches:
+    post:
+      tags:
+      - assets
+      summary: Lists all security patch data for given assetid
+      description: Returns Security Patch Data for given assetid
+      operationId: ListSecurityPatches
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: security patches request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityPatchSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityPatchesResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_SECURITY_PATCHES
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: payload
+  /api/assets/{assetId}/synchronize:
+    put:
+      tags:
+      - assets
+      summary: Synchronizes an assets zero-trust candidate config to commited config
+        and triggers policy delivery to firewall if applicable.
+      description: Synchronizes an assets zero-trust candidate config to commited
+        config and triggers policy delivery to firewall if applicable.
+      operationId: SynchronizeAssetZeroTrust
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: input for synchronization
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetSynchronization'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET_ZEROTRUST
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+  /api/assets/{assetId}/tags/{tagId}:
+    get:
+      tags:
+      - tags
+      summary: Fetches a Tag by its identifier that belongs to an asset
+      description: Retrieves Tag by identifier belongs to an asset if match found.
+        If no match found for identifier empty response returned.
+      operationId: GetAssetTag
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      - name: tagId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_TAG
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/assets/{assetId}/vulnerabilities:
+    post:
+      tags:
+      - assets
+      summary: "Lists CVEs with CVE data (severity, exploitURL) for given product,\
+        \ vendor and version sorted by severity if specified"
+      description: Returns CVE Data for given package info
+      operationId: ListVulnerabilities
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: vulnerabilities request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VulnerabilitiesRequestData'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CVEDataResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_VULNERABILITIES
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: payload
+  /api/assets/{assetId}/vulnerablepackages:
+    post:
+      tags:
+      - assets
+      summary: "Lists vulnerable software packages with corresponding CVE counts such\
+        \ as highest severity, sorted by the counts if specified"
+      description: Returns vulnerable software package data with corresponding CVE
+        counts
+      operationId: ListVulnerablePackages
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: vulnerable packages request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaginationConfig'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VulnerablePackagesResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_VULNERABLE_PACKAGES
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: payload
+  /api/assets/{assetId}/zerotrust:
+    put:
+      tags:
+      - assets
+      summary: Marks an asset as zero-trust enabled and triggers policy delivery to
+        firewall.
+      description: If in disabled state otherwise any path approval's or disapproval's
+        will trigger automatic updates to firewall if asset is already marked as zero-trust
+        enabled. If already enabled then results in a no-op and 304 not modified is
+        returned.
+      operationId: ConfigureZeroTrust
+      parameters:
+      - name: assetId
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: To State
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetStateTransitionInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET_ZEROTRUST
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: toState
+  /api/assets/{assetid}/namednetworks/{namednetworkid}:
+    put:
+      tags:
+      - namednetworks
+      summary: Applies the namednetwork to the asset
+      description: Applies the namednetwork to the asset
+      operationId: ApplyNamedNetwork
+      parameters:
+      - name: namednetworkid
+        in: path
+        description: the namednetwork ID
+        required: true
+        schema:
+          type: string
+      - name: assetid
+        in: path
+        description: the asset ID to apply the namednetwork to
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: namednetwork input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NamedNetworkInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK & UPDATE_ASSET
+      x-codegen-request-body-name: input
+    delete:
+      tags:
+      - namednetworks
+      summary: Reverts a namednetwork from an asset
+      description: Reverts a namednetwork from an asset by un-applying the template
+      operationId: RevertNamedNetwork
+      parameters:
+      - name: namednetworkid
+        in: path
+        description: the namednetwork ID
+        required: true
+        schema:
+          type: string
+      - name: assetid
+        in: path
+        description: the asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: namednetwork input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NamedNetworkInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content: {}
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK & UPDATE_ASSET
+      x-codegen-request-body-name: input
+  /api/assets/{assetid}/templates/{templateid}:
+    put:
+      tags:
+      - templates
+      summary: Applies the template to the asset
+      description: Applies the template to the asset
+      operationId: ApplyTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      - name: assetid
+        in: path
+        description: the asset ID to apply the template to
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: template input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_ASSET & UPDATE_TEMPLATE
+      x-codegen-request-body-name: input
+    delete:
+      tags:
+      - templates
+      summary: Reverts a template from an asset
+      description: Reverts a template from an asset by un-applying the template
+      operationId: RevertTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      - name: assetid
+        in: path
+        description: the asset ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: template input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_ASSET & UPDATE_TEMPLATE
+      x-codegen-request-body-name: input
+  /api/assets/actions/search:
+    post:
+      tags:
+      - assets
+      summary: Returns assets matching criteria.
+      description: Returns list of matching assets identified by criteria else all
+        assets.
+      operationId: ListAssets
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetSearchResults'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/AssetSearchResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      # x-speakeasy-pagination:
+      #   type: offsetLimit
+      #   inputs:
+      #     - name: offset                  # This input refers to the value called `page`
+      #       in: requestBody              # In this case, page is an operation parameter (header, query, or path)
+      #       type: offset                  # The page parameter will be used as the page-value for pagination, and will be incremented when `next()` is called
+      #     - name: limit                 # This input refers to the value called `limit`
+      #       in: requestBody              # In this case, limit is an operation parameter (header, query, or path)
+      #       type: limit                 # The limit parameter will be used as the limit-value for pagination
+      #   outputs:
+      #     results: $.items             
+      x-permission:
+        permission: LIST_ASSET
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/annotations:
+    put:
+      tags:
+      - assets
+      summary: Annotates all matching assets
+      description: Annotates all matching assets. Overwrites any existing values in
+        the specified fields if present. Annotatable fields include coreTags and businessvalue.
+      operationId: BulkAnnotateAsset
+      requestBody:
+        description: asset annotation details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkAssetAnnotationDetails'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: assetannotations
+  /api/assets/bulk:
+    post:
+      tags:
+      - assets
+      summary: "Returns assets matching criteria( criteria can contain assetalias,\
+        \ assetname, hostname, type, cpuname, osname, application, location, owner,\
+        \ environment, role filter attributes)."
+      description: Returns list of matching assets identified by criteria else all
+        assets.
+      operationId: ListBasicAssets
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetSearchResults'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/AssetSearchResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_ASSET
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/identity:
+    get:
+      tags:
+      - assets
+      summary: Fetches immutable assetid by its deterministic id.
+      description: Fetches immutable assetid by its deterministic id if match found.
+      operationId: GetAssetIdentity
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetIdInfo'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_ASSET
+        permissionScope:
+        - AGENT
+        - ADMIN
+        - USER
+  /api/assets/namednetworks:
+    put:
+      tags:
+      - namednetworks
+      summary: Applies namednetwork to any matching assets.
+      description: For any paths that match namednetwork content paths will be coalesced.
+        If multiple namednetworks match most specific range takes precedence.
+      operationId: BulkNamedNetworkApply
+      requestBody:
+        description: search criteria for filtering assets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyNamedNetworkSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK & UPDATE_ASSET
+      x-codegen-request-body-name: search
+    delete:
+      tags:
+      - namednetworks
+      summary: Un-applies namednetwork from any matching assets.
+      description: For any paths referencing the namednetwork will be deleted.
+      operationId: BulkNamedNetworkUnApply
+      requestBody:
+        description: search criteria for filtering assets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyNamedNetworkSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK & UPDATE_ASSET
+      x-codegen-request-body-name: search
+  /api/assets/synchronize:
+    put:
+      tags:
+      - assets
+      summary: Synchronizes matching assets zero-trust candidate config to commited
+        config and triggers policy delivery to firewall if applicable.
+      description: Synchronizes matching assets zero-trust candidate config to commited
+        config and triggers policy delivery to firewall if applicable.
+      operationId: BulkSynchronizeAssetZeroTrust
+      requestBody:
+        description: search criteria for filtering assets and asset synchronization
+          scope
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetSynchronizationSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET_ZEROTRUST
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/assets/templates:
+    put:
+      tags:
+      - templates
+      summary: Applies template to any matching assets.
+      description: For any at-rest paths & ports that match template criteria review
+        status will be updated to match template. If multiple templates match least
+        restrictive allow takes precedence. If asset zerotrust enabled then policy
+        update will be triggered immediately.
+      operationId: BulkTemplateApply
+      requestBody:
+        description: search criteria for filtering assets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyTemplateSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET & UPDATE_TEMPLATE
+      x-codegen-request-body-name: search
+    delete:
+      tags:
+      - templates
+      summary: Unapplies template from any matching assets.
+      description: For any at-rest paths & ports that match template criteria review
+        status will be updated to match any remaing assigned templates or unreviewed.
+        If multiple templates match least restrictive allow takes precedence
+      operationId: BulkTemplateUnApply
+      requestBody:
+        description: search criteria for filtering assets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyTemplateSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET & UPDATE_TEMPLATE
+      x-codegen-request-body-name: search
+  /api/assets/zerotrust:
+    put:
+      tags:
+      - assets
+      summary: Marks an asset as zero-trust enabled and triggers policy delivery to
+        firewall.
+      description: If in disabled state otherwise any path approval's or disapproval's
+        will trigger automatic updates to firewall if asset is already marked as zero-trust
+        enabled. If already enabled then results in a no-op and 304 not modified is
+        returned.
+      operationId: BulkConfigureZeroTrust
+      requestBody:
+        description: search criteria for filtering assets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetStateTransitionSearchInput'
+        required: true
+      responses:
+        "202":
+          description: Accepted. Async processing in-progress and can be tracked using
+            value in header 'x-ct-workrequest-id'
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET_ZEROTRUST
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/events:
+    post:
+      tags:
+      - events
+      summary: Returns events/audit logs matching criteria.
+      description: Returns list of matching events/auditlogs identified by criteria
+        else all events.
+      operationId: ListEvents
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSearchResults'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/EventSearchResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_EVENT
+        permissionScope:
+        - ADMIN
+      x-codegen-request-body-name: search
+  /api/fields:
+    get:
+      tags:
+      - metadata
+      summary: Lists fields available for constructing queries.
+      description: Returns list of valid fields to construct query.
+      operationId: ListFields
+      parameters:
+      - name: scope
+        in: query
+        description: scope
+        schema:
+          type: string
+          enum:
+          - asset
+          - path
+          - port
+          - agent
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TypeaheadSuggestions'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_FIELD
+        permissionScope:
+        - ADMIN
+        - USER
+    post:
+      tags:
+      - metadata
+      summary: Allocates a field to one of the field slots provisioned for a tenancy.
+      description: Allocates a field to one of the field slots provisioned for a tenancy.
+        If the name conflicts with existing pre-defined or custom field will result
+        in error. Fields must begin with atleast one alpha character.
+      operationId: CreateField
+      requestBody:
+        description: field details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata.ColumnDescriptor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: CREATE_FIELD
+        permissionScope:
+        - ADMIN
+      x-codegen-request-body-name: field
+    delete:
+      tags:
+      - metadata
+      summary: "Deletes a field, clearing all values currently associated with that\
+        \ field if present."
+      description: "Deletes a field by name, clearing all values currently associated\
+        \ with that field if present."
+      operationId: DeleteField
+      requestBody:
+        description: field details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata.ColumnDescriptor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_FIELD
+        permissionScope:
+        - ADMIN
+      x-codegen-request-body-name: field
+  /api/fields/{fieldId}:
+    get:
+      tags:
+      - metadata
+      summary: Retrieves field details by field name.
+      description: Returns field configuration for the field name if match found otherwise
+        not found error.
+      operationId: GetField
+      parameters:
+      - name: fieldId
+        in: path
+        description: fieldId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata.ColumnDescriptor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_FIELD
+        permissionScope:
+        - ADMIN
+        - USER
+    put:
+      tags:
+      - metadata
+      summary: Updates a field.
+      description: "Updates a field by name, preserving all values currently associated\
+        \ with that field if present."
+      operationId: UpdateField
+      parameters:
+      - name: fieldId
+        in: path
+        description: fieldId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: field details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Field'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata.ColumnDescriptor'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_FIELD
+        permissionScope:
+        - ADMIN
+      x-codegen-request-body-name: field
+  /api/namednetwork/{namedNetworkId}:
+    put:
+      tags:
+      - namednetworks
+      summary: Edits the NamedNetwork metadata
+      description: Edits the NamedNetwork name and description
+      operationId: UpdateNamedNetworkMetadata
+      x-speakeasy-entity-operation: NamedNetwork#update
+      parameters:
+      - name: namedNetworkId
+        x-speakeasy-match: id
+        in: path
+        description: Named Network ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: named network definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/namednetwork.NamedNetwork'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+  /api/namednetworks:
+    post:
+      tags:
+      - namednetworks
+      summary: Creates a NamedNetwork and adds the payload (if present)
+      description: Creates a NamedNetwork with the given name and the given payload.
+        NamedNetwork name must be unique.
+      operationId: CreateNamedNetwork
+      x-speakeasy-entity-operation: NamedNetwork#create
+      requestBody:
+        description: named network definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/namednetwork.NamedNetwork'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: CREATE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+  /api/namednetworks/{namedNetworkId}:
+    get:
+      tags:
+      - namednetworks
+      summary: retrieves the named network by id
+      description: retrieves the specific named network by id which is provided as
+        a path param
+      operationId: GetNamedNetwork
+      x-speakeasy-entity-operation: NamedNetwork#read
+      parameters:
+      - name: namedNetworkId
+        x-speakeasy-match: id
+        in: path
+        description: Named Network ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/namednetwork.NamedNetwork'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: READ_NAMED_NETWORK
+        permissionScope:
+        - AGENT
+        - ADMIN
+        - USER
+    delete:
+      tags:
+      - namednetworks
+      summary: Deletes a NamedNetwork along with its relevant payload
+      description: Removes the NamedNetwork along with its relevant payload.
+      operationId: DeleteNamedNetwork
+      x-speakeasy-entity-operation: NamedNetwork#delete
+      parameters:
+      - name: namedNetworkId
+        x-speakeasy-match: id
+        in: path
+        description: Named Network ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: DELETE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/namednetworks/{namedNetworkId}/networkranges:
+    put:
+      tags:
+      - namednetworks
+      summary: Adds ipranges to Named Network
+      description: Adds the payload (must be non-empty) to the Named Network
+      operationId: AddToNamedNetwork
+      # x-speakeasy-entity-operation: NamedNetwork#create#2
+      parameters:
+      - name: namedNetworkId
+        # x-speakeasy-match: id
+        in: path
+        description: the Named Network ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: named network ranges
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/namednetwork.Range'
+        required: true    
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+    delete:
+      tags:
+      - namednetworks
+      summary: Removes ipranges from the NamedNetwork
+      description: "Removes ipranges, with the corresponding rangeid(s) from the NamedNetwork"
+      operationId: DeleteFromNamedNetwork
+      # x-speakeasy-entity-operation: NamedNetworkRange#delete
+      parameters:
+      - name: namedNetworkId
+        # x-speakeasy-match: id
+        in: path
+        description: the NamedNetwork ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: named network ranges
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/namednetwork.Range'
+        required: true       
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request generated by this
+                api if it triggers a state change
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/namednetworks/actions/search:
+    post:
+      tags:
+      - namednetworks
+      summary: retrieves named networks matching criteria
+      description: retrieves named networks matching criteria
+      operationId: ListNamedNetworks
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedNetworks'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/NamedNetworks'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: LIST_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/namednetworks/clone:
+    post:
+      tags:
+      - namednetworks
+      summary: Clones a NamedNetwork and adds the payload (if present)
+      description: Clones a NamedNetwork with the given name and the given payload.
+        NamedNetwork name must be unique.
+      operationId: CloneNamedNetwork
+      requestBody:
+        description: named network definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/namednetwork.CloneNamedNetwork'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: CREATE_NAMED_NETWORK
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+  /api/namednetworks/hits:
+    post:
+      tags:
+      - namednetworks
+      summary: Retrieves namednetwork hits observed by monitoring.
+      description: Returns list of namednetwork hits representing connections to /
+        from the specified assets.
+      operationId: ListNNHits
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedNetworkHits'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_NAMED_NETWORK_HITS
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/network-map:
+    post:
+      tags:
+      - assets
+      summary: Returns network map matching criteria.
+      description: Returns network map matching criteria.
+      operationId: NetworkQuery
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkMapSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PORT | LIST_PATH | LIST_ASSET | LIST_NAMED_NETWORK
+      x-codegen-request-body-name: search
+  /api/openports:
+    post:
+      tags:
+      - openports
+      summary: Retrieves ports observed by monitoring.
+      description: Returns list of ports representing listening ports open on the
+        specified assets.
+      operationId: ListPorts
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search criteria for filtering open ports
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenPorts'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/OpenPorts'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PORT
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/openports/{portId}/approvals:
+    put:
+      tags:
+      - openports
+      summary: Marks a single port with toState.
+      description: "Marks a single port with toState, configuring how traffic recieved\
+        \ by this port in zero-trust mode is handled."
+      operationId: ReviewPort
+      parameters:
+      - name: portId
+        in: path
+        description: Port ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: To State
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateTransitionInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_PORT
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: toState
+  /api/openports/approvals:
+    put:
+      tags:
+      - openports
+      summary: Marks all matching ports with toState.
+      description: "Marks all matching ports with toState, configuring how traffic\
+        \ recieved by this port in zero-trust mode is handled."
+      operationId: BulkReviewPorts
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortStateTransitionSearchInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_PORT
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/paths:
+    post:
+      tags:
+      - paths
+      summary: Retrieves paths observed by monitoring.
+      description: Returns list of Paths representing connections to / from the specified
+        assets.
+      operationId: ListPaths
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paths'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/Paths'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PATH
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/paths/{pathId}/approvals:
+    put:
+      tags:
+      - paths
+      summary: Marks a single path with toState.
+      description: "Marks a single path with toState, configuring how traffic flows\
+        \ between the source and destination in zero-trust mode."
+      operationId: ReviewPath
+      parameters:
+      - name: pathId
+        in: path
+        description: Path ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: To State
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateTransitionInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "304":
+          description: Not Modified
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_PATH
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: toState
+  /api/paths/approvals:
+    put:
+      tags:
+      - paths
+      summary: Marks all matching paths with toState.
+      description: "Marks all matching paths with toState,  configuring how traffic\
+        \ flows between the source and destination in zero-trust mode."
+      operationId: BulkReviewPaths
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathStateTransitionSearchInput'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_PATH
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/paths/recommendations/namednetwork:
+    post:
+      tags:
+      - paths
+      summary: Retrieves paths named network recommendations observed by monitoring.
+      description: Returns list of Paths Named Network Recommendations representing
+        connections to / from the specified assets.
+      operationId: ListPathNamedNetworkRecommendations
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathSearchOnlyInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PathsNamedNetworkRecommendations'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_PATH & READ_NAMED_NETWORK
+      x-codegen-request-body-name: search
+  /api/recommendations:
+    post:
+      tags:
+      - recommendations
+      summary: Fetches available recommendations.
+      description: Retrieves Asset by identifier if match found. If no match found
+        for identifier empty response returned.
+      operationId: ListRecommendations
+      requestBody:
+        description: recommendation filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recommendations'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_RECOMMENDATION
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+  /api/tagbasedpolicies:
+    post:
+      tags:
+      - tagbasedpolicies
+      summary: Create a new TagBasedPolicy for programming sets of assets
+      description: Defines a new TagBasedPolicy for asset set policy authoring. Any
+        conflicts will result in 409 conflict error being returned.
+      operationId: CreateTagBasedPolicy
+      requestBody:
+        description: tag based policy details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagBasedPolicy'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicy'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: CREATE_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: tagbasedpolicy
+  /api/tagbasedpolicies/{tagbasedpolicyId}:
+    get:
+      tags:
+      - tagbasedpolicies
+      summary: Fetches a TagBasedPolicy by its identifier.
+      description: Retrieves TagBasedPolicy by identifier if match found. If no match
+        found for identifier empty response returned.
+      operationId: GetTagBasedPolicy
+      parameters:
+      - name: tagbasedpolicyId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicy'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+    put:
+      tags:
+      - tagbasedpolicies
+      summary: Edits the TagBasedPolicy metadata
+      description: Edits the TagBasedPolicy name and description
+      operationId: UpdateTagBasedPolicyMetadata
+      parameters:
+      - name: tagbasedpolicyId
+        in: path
+        description: TagBasedPolicy ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: tagbasedpolicy metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagBasedPolicyMetadata'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: input
+    delete:
+      tags:
+      - tagbasedpolicies
+      summary: Deletes a TagBasedPolicy by its identifier.
+      description: Deletes a TagBasedPolicy using its identifier and any corresponding
+        references are cleaned up too.
+      operationId: DeleteTagBasedPolicy
+      parameters:
+      - name: tagbasedpolicyId
+        in: path
+        description: Tag Based Policy ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicy'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tagbasedpolicies/{tagbasedpolicyId}/automation:
+    put:
+      tags:
+      - tagbasedpolicies
+      summary: Send Automation Request on all assets matching tag based policy.
+      description: Send Automation Request on all assets matching tag based policy.
+      operationId: AutomationConfiguration
+      parameters:
+      - name: tagbasedpolicyId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request applying any changes
+                triggered by automation configuration change
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_POLICY_AUTOMATION
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tagbasedpolicies/{tagbasedpolicyId}/refresh-progressive:
+    put:
+      tags:
+      - tagbasedpolicies
+      summary: Refresh current progressive state of tagset.
+      description: Refresh current progressive state of tagset.
+      operationId: refreshProgressiveConfiguration
+      parameters:
+      - name: tagbasedpolicyId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request applying any changes
+                triggered by force synchronization of progressive configuration
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_POLICY_PROGRESSIVE_CONFIGURATION
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tagbasedpolicies/actions/search:
+    post:
+      tags:
+      - tagbasedpolicies
+      summary: Lists all tagbasedpolicies filtering results by specified filters if
+        provided.
+      description: Returns list of matching tagbasedpolicies identified from filters
+        else all tagbasedpolicies.
+      operationId: ListTagBasedPolicies
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicies'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicies'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/tagbasedpolicies/clone:
+    post:
+      tags:
+      - tagbasedpolicies
+      summary: Clone TagBasedPolicy for programming sets of assets
+      description: Clones TagBasedPolicy for asset set policy authoring. Any conflicts
+        will result in 409 conflict error being returned.
+      operationId: CloneTagBasedPolicy
+      requestBody:
+        description: tag based policy details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneTagBasedPolicyInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagBasedPolicy'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: CREATE_TAGBASEDPOLICY
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: tagbasedpolicy
+  /api/tagrules:
+    post:
+      tags:
+      - tagrules
+
+      summary: Create a new TagRule for micro-segmentation
+      description: Defines a new TagRule for micro-segmenting and policy authoring.
+      operationId: CreateTagRule
+      requestBody:
+        description: tagrule details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagRuleInput'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRule'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: CREATE_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: tagrule
+  /api/tagrules/{ruleId}:
+    get:
+      tags:
+      - tagrules
+
+      summary: Fetches a TagRule by its identifier.
+      description: Retrieves TagRule by identifier if match found. If no match found
+        for identifier empty response returned.
+      operationId: GetTagRule
+      parameters:
+      - name: ruleId
+        in: path
+        description: TagRule ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRule'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+    put:
+      tags:
+      - tagrules
+
+      summary: Update an existing TagRule by its identifier
+      description: Updates an existing TagRule by its identifier if located otherwise
+        results in a no-op. Any conflicts will result in 409 conflict error being
+        returned.
+      operationId: UpdateTagRule
+      parameters:
+      - name: ruleId
+        in: path
+        description: TagRule ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: tagrule details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagRule'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRule'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: tagrule
+    delete:
+      tags:
+      - tagrules
+
+      summary: Deletes a TagRule by its identifier.
+      description: Deletes a TagRule using its identifier and any corresponding references
+        are cleaned up too.
+      operationId: DeleteTagRule
+      parameters:
+      - name: ruleId
+        in: path
+        description: TagRule ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRule'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tagrules/{ruleId}/assets:
+    get:
+      tags:
+      - tagrules
+
+      summary: Retrieves all assets the specified tagrule has in its membership list.
+      description: Returns list of Asset Identifiers representing the assets that
+        this tagrule currently has as members.
+      operationId: GetTagRuleAssets
+      parameters:
+      - name: ruleId
+        in: path
+        description: TagRule ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipList'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tagrules/actions/search:
+    post:
+      tags:
+      - tagrules
+
+      summary: Lists all tagrules filtering results by specified filters if provided.
+      description: Returns list of matching tagrules identified from filters else
+        all tagrules.
+      operationId: ListTagRules
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRules'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/TagRules'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_TAGRULE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/tags:
+    get:
+      tags:
+      - tags
+
+      summary: Lists all tags filtering results by specified filters if provided.
+      description: Returns list of matching tags identified from filters else all
+        tags.
+      operationId: ListTags
+      parameters:
+      - name: name
+        in: query
+        description: name search using equality
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: value
+        in: query
+        description: value search using equality
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sortField
+        in: query
+        description: field name to use for sorting.
+        schema:
+          type: string
+          enum:
+          - name
+          - value
+      - name: sortOrder
+        in: query
+        description: Either ascending or descending ordering for the specified sortField
+        schema:
+          type: string
+          enum:
+          - ascending
+          - descending
+      - name: limit
+        in: query
+        description: Number of items to return per page if number of matches found
+          exceeds this then pagination will be required to access all results
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        description: Starting position in results
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tags'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_TAG
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/tags/{tagId}:
+    get:
+      tags:
+      - tags
+
+      summary: Fetches a Tag by its identifier.
+      description: Retrieves Tag by identifier if match found. If no match found for
+        identifier empty response returned.
+      operationId: GetTag
+      parameters:
+      - name: tagId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: READ_TAG
+        permissionScope:
+        - ADMIN
+        - USER
+    delete:
+      tags:
+      - tags
+
+      summary: Deletes a Tag by its identifier.
+      description: Deletes a Tag using its identifier and any corresponding references
+        are cleaned up too.
+      operationId: DeleteTag
+      parameters:
+      - name: tagId
+        in: path
+        description: Tag ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_TAG
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/templates:
+    post:
+      tags:
+      - templates
+
+      summary: Creates a template and adds the payload (if present)
+      description: Creates a template with the given name and payload (if present).
+        Template name must be unique.
+      operationId: CreateTemplate
+      requestBody:
+        description: template details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTemplateDetails'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: CREATE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: template
+  /api/templates/{templateid}:
+    get:
+      tags:
+      - templates
+
+      summary: retrieves a template for the tenant by id
+      description: retrieves a template for the tenant by id
+      operationId: GetTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: READ_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+    put:
+      tags:
+      - templates
+
+      summary: Edits the template metadata
+      description: Edits the template name and description
+      operationId: EditTemplateMetadata
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: template metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateSummary'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: templatemetadata
+    delete:
+      tags:
+      - templates
+
+      summary: Delets a template along with its relevant payload
+      description: Removes and un-applies the template from all the assets it is applied
+        to.
+      operationId: DeleteTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: DELETE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+  /api/templates/{templateid}/append:
+    put:
+      tags:
+      - templates
+
+      summary: Adds ports & paths to template
+      description: Adds the payload (must be non-empty) to the template; the new payload
+        is retro-actively applied to the assets the template was previously applied
+        to
+      operationId: AppendToTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: template rules
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateBodyWithComment'
+        required: true
+      responses:
+        "202":
+          description: Accepted
+          headers:
+            x-ct-workrequest-id:
+              description: Tracking identifier for the work request applying template
+                edits to matching ports & paths
+              schema:
+                type: string
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: templatecontent
+  /api/templates/{templateid}/deduct:
+    delete:
+      tags:
+      - templates
+
+      summary: Removes ports and/or paths from template
+      description: Removes entries with the corresponding channelHash and/or portHash.
+        The assets to which the template is applied are retro-actively updated with
+        the new changes.
+      operationId: DeleteFromTemplate
+      parameters:
+      - name: templateid
+        in: path
+        description: the template ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: template rule ids
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api.TemplatePayloadHashes'
+        required: true
+      responses:
+        "204":
+          description: No Content
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: UPDATE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: ruleIds
+  /api/templates/actions/search:
+    post:
+      tags:
+      - templates
+
+      summary: retrieves templates matching criteria
+      description: retrieves templates matching criteria
+      operationId: ListTemplates
+      parameters:
+      - name: download
+        in: query
+        description: file download
+        schema:
+          type: string
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Templates'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/Templates'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: LIST_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/templates/clone:
+    post:
+      tags:
+      - templates
+
+      summary: Clone a template and adds the payload (if present)
+      description: Clone a template with the given name and payload (if present).
+        Template name must be unique.
+      operationId: CloneTemplate
+      requestBody:
+        description: template details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneTemplateDetails'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - JWT: []
+      x-permission:
+        permission: CREATE_TEMPLATE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: template
+  /api/unmanageddevices:
+    delete:
+      tags:
+      - unmanageddevice
+
+      summary: Deletes Unmanaged Devices
+      description: Deletes Unmanaged Devices using its each device identifier.
+      operationId: BulkDeleteUnmanagedDevices
+      requestBody:
+        description: DeviceID List
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteDevicesInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "413":
+          description: Request Entity Too Large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: DELETE_UNMANAGED_DEVICE
+        permissionScope:
+        - AGENT
+        - ADMIN
+      x-codegen-request-body-name: search
+  /api/unmanageddevices/actions/search:
+    post:
+      tags:
+      - unmanageddevice
+
+      summary: Returns unmanaged devices matching criteria.
+      description: Returns list of matching unmanaged devices identified by criteria
+        else all unmanaged devices.
+      operationId: SearchUnmanagedDevices
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnmanagedDevicesSearchResults'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/UnmanagedDevicesSearchResults'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            ' text/csv':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_UNMANAGED_DEVICE
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/usergroup/hits:
+    post:
+      tags:
+      - usergroups
+
+      summary: Retrieves usergroup hits observed by monitoring.
+      description: Returns list of usergroup hits representing connections to / from
+        the specified usergroups.
+      operationId: ListUsrGrpHits
+      requestBody:
+        description: search criteria for filtering paths
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroupHits'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_USER_GROUP_HITS
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+  /api/workRequests/actions/search:
+    post:
+      tags:
+      - workrequests
+
+      summary: Lists all work requests filtering results by specified filters if provided.
+      description: Returns list of matching work requests identified from filters
+        else all work items.
+      operationId: ListWorkRequests
+      requestBody:
+        description: search details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchInput'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkRequests'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: LIST_WORKREQUEST
+        permissionScope:
+        - ADMIN
+        - USER
+      x-codegen-request-body-name: search
+components:
+  schemas:
+    api.TemplatePayloadHashes:
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        paths:
+          type: array
+          items:
+            type: string
+        ports:
+          type: array
+          items:
+            type: string
+    datatypes.Type:
+      type: string
+      enum:
+      - String
+      - Timestamp
+      - Numeric
+      - Inet
+      - Boolean
+      - SemVer
+    dev_azure_com_colortokens_asset_pkg_SecurityPatch:
+      type: object
+      properties:
+        newRelease:
+          type: string
+        newVersion:
+          type: string
+        packageName:
+          type: string
+        release:
+          type: string
+        version:
+          type: string
+    metadata.ColumnDescriptor:
+      type: object
+      properties:
+        coreTag:
+          type: boolean
+        dataType:
+          $ref: '#/components/schemas/datatypes.Type'
+        displayName:
+          type: string
+        facetable:
+          type: boolean
+        internalName:
+          type: string
+        listOfValues:
+          type: boolean
+        multivalued:
+          type: boolean
+        qualifier:
+          type: string
+        searchable:
+          type: boolean
+        sortable:
+          type: boolean
+        unit:
+          type: string
+        userDefined:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.FieldValue'
+    metadata.FieldValue:
+      type: object
+      properties:
+        display:
+          type: string
+        internal:
+          type: integer
+        synonyms:
+          type: array
+          items:
+            type: string
+    metadata.NamedNetworkReference:
+      type: object
+      properties:
+        namedNetworkId:
+          type: string
+        namedNetworkName:
+          type: string
+    metadata.Path:
+      type: object
+      properties:
+        channelHash:
+          type: string
+        destinationAssetID:
+          type: string
+        destinationNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        destinationTagBasedPolicy:
+          $ref: '#/components/schemas/metadata.TagBasedPolicyReference'
+        direction:
+          type: integer
+        domain:
+          type: string
+        dstIp:
+          type: string
+        dstProcess:
+          type: string
+        method:
+          type: string
+        port:
+          type: integer
+        portName:
+          type: string
+        protocol:
+          type: integer
+        sourceAssetID:
+          type: string
+        sourceNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        sourceTagBasedPolicy:
+          $ref: '#/components/schemas/metadata.TagBasedPolicyReference'
+        srcIp:
+          type: string
+        srcProcess:
+          type: string
+        uri:
+          type: string
+    metadata.Port:
+      type: object
+      properties:
+        listenPort:
+          type: integer
+        listenPortName:
+          type: string
+        listenPortProtocol:
+          type: integer
+        listenPortReviewed:
+          $ref: '#/components/schemas/metadata.PortState'
+        listenProcessNames:
+          type: array
+          items:
+            type: string
+        lpId:
+          type: string
+    metadata.PortState:
+      type: string
+      enum:
+      - PortUnreviewed
+      - PortDenied
+      - PortAllowIntranet
+      - PortAllowAny
+      - PortPathRestricted
+      - PortDeniedByTemplate
+      - PortAllowIntranetByTemplate
+      - PortAllowAnyByTemplate
+      - PortAllowAnyByProgressive
+    metadata.TagBasedPolicyReference:
+      type: object
+      properties:
+        criteria:
+          type: string
+        criteriaAsParams:
+          type: string
+        tagBasedPolicyId:
+          type: string
+        tagBasedPolicyName:
+          type: string
+    ApplyNamedNetworkSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+        namedNetworkId:
+          type: string
+        namednetworks:
+          type: array
+          items:
+            type: string
+    ApplyTemplateSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+        templateId:
+          type: string
+        templates:
+          type: array
+          items:
+            type: string
+    AssetAnnotationDetails:
+      type: object
+      properties:
+        assetName:
+          type: string
+        businessValue:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        osName:
+          type: string
+        vendorInfo:
+          type: string
+      description: AssetAnnotationDetails definition Allows update/setting of user
+        modifiable attributes for an asset.
+    AssetDetails:
+      required:
+      - assetName
+      - type
+      type: object
+      properties:
+        agentId:
+          type: string
+        agentName:
+          type: string
+        agentStatus:
+          type: string
+        agentVersion:
+          type: string
+        assetAvailability:
+          type: string
+        assetId:
+          type: string
+        assetInternetFacing:
+          type: boolean
+        assetName:
+          type: string
+          example: myhostname.company.com
+        assetProgressiveLastRefreshed:
+          type: string
+          format: date-time
+        assetRisk:
+          type: string
+        attackSurface:
+          type: string
+        attackSurfacePendingChanges:
+          $ref: '#/components/schemas/PendingChanges'
+        autoSynchronizeEnabled:
+          type: boolean
+        blastRadius:
+          type: string
+        blastRadiusPendingChanges:
+          $ref: '#/components/schemas/PendingChanges'
+        businessValue:
+          type: string
+        cloudTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        clusterIdentifier:
+          type: string
+        containerNamespace:
+          type: string
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        cpuCoreCount:
+          type: integer
+        cpuName:
+          type: string
+        currentTrafficConfiguration:
+          type: string
+          enum:
+          - disabled
+          - enable-all
+          - enable-inbound-only
+          - enable-outbound-only
+        deterministicId:
+          type: string
+        diskCapacityInGB:
+          type: integer
+        hostName:
+          type: string
+        inboundAssetStatus:
+          type: string
+        inboundInternetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        inboundInternetPorts:
+          $ref: '#/components/schemas/ReviewCoverage'
+        inboundIntranetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        inboundIntranetPorts:
+          $ref: '#/components/schemas/ReviewCoverage'
+        interfaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkInterface'
+        kernelArchitecture:
+          type: string
+        kernelVersion:
+          type: string
+        lastPolicyDeploymentTriggeredAt:
+          type: string
+          format: date-time
+        lowestInboundAssetStatus:
+          type: string
+        lowestOutboundAssetStatus:
+          type: string
+        lowestProgressiveInboundAssetStatus:
+          type: string
+        mostRecentNewPath:
+          type: string
+          format: date-time
+        namedNetworkChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        namednetworksAssigned:
+          type: integer
+        osName:
+          type: string
+        outboundAssetStatus:
+          type: string
+        outboundInternetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        outboundIntranetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        pendingAttackSurfaceChanges:
+          type: boolean
+        pendingBlastRadiusChanges:
+          type: boolean
+        platform:
+          type: string
+        policiesAssigned:
+          type: integer
+        policyStatus:
+          type: string
+        ramCapacityInMB:
+          type: integer
+        securityPatches:
+          type: integer
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        templateChanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateReference'
+        templatesAssigned:
+          type: integer
+        totalComments:
+          type: integer
+        totalInboundComments:
+          type: integer
+        totalOutboundComments:
+          type: integer
+        totalPaths:
+          type: integer
+        totalPorts:
+          type: integer
+        totalPortsPathRestricted:
+          type: integer
+        type:
+          type: string
+        unreviewedPaths:
+          type: integer
+        unreviewedPorts:
+          type: integer
+        usergroupMostRecentNewPath:
+          type: string
+          format: date-time
+        usergroupOutboundInternetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        usergroupOutboundIntranetPaths:
+          $ref: '#/components/schemas/ReviewCoverage'
+        usergroupTotalPaths:
+          type: integer
+        usergroupUnreviewedPaths:
+          type: integer
+        usergroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetGroup'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetUser'
+        vendorInfo:
+          type: string
+        virtualizationSystem:
+          type: string
+        vulnerabilities:
+          type: integer
+    AssetGroup:
+      type: object
+      properties:
+        groupid:
+          type: string
+      description: AssetGroup definition
+    AssetIdInfo:
+      required:
+      - deterministicId
+      type: object
+      properties:
+        agentId:
+          type: string
+        assetId:
+          type: string
+        deterministicId:
+          type: string
+      description: Asset ids
+    AssetSearchResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtendedAssetSummary'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+      description: AssetSearchResults definition Returned by SearchAssets api.
+    AssetStateTransitionInput:
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        inboundToState:
+          type: string
+          enum:
+          - unsecured
+          - secure-internet-ports
+          - secure-all-ports
+          - secure-inbound-paths
+        outboundToState:
+          type: string
+          enum:
+          - unsecured
+          - secure-internet-paths
+          - secure-intranet-paths
+    AssetStateTransitionSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+        inboundToState:
+          type: string
+          enum:
+          - unsecured
+          - secure-internet-ports
+          - secure-all-ports
+          - secure-inbound-paths
+        outboundToState:
+          type: string
+          enum:
+          - unsecured
+          - secure-internet-paths
+          - secure-intranet-paths
+    AssetSummary:
+      required:
+      - assetName
+      - type
+      type: object
+      properties:
+        assetId:
+          type: string
+        assetName:
+          type: string
+          example: myhostname.company.com
+        autoSynchronizeEnabled:
+          type: boolean
+        clusterIdentifier:
+          type: string
+        containerNamespace:
+          type: string
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        inboundAssetStatus:
+          type: string
+        lowestInboundAssetStatus:
+          type: string
+        lowestOutboundAssetStatus:
+          type: string
+        lowestProgressiveInboundAssetStatus:
+          type: string
+        outboundAssetStatus:
+          type: string
+        type:
+          type: string
+        vendorInfo:
+          type: string
+      description: AssetSummary definition Summary of host or application running
+        on a host that can be observed to apply segmentation policies against
+    AssetSynchronization:
+      type: object
+      properties:
+        attackSurface:
+          type: boolean
+        blastRadius:
+          type: boolean
+        comment:
+          maxLength: 500
+          type: string
+    AssetSynchronizationSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        attackSurface:
+          type: boolean
+        blastRadius:
+          type: boolean
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+    AssetUser:
+      required:
+      - assetid
+      - domainname
+      - name
+      type: object
+      properties:
+        assetid:
+          type: string
+        domainname:
+          type: string
+          description: Domain Name the user belongs to
+        email:
+          type: string
+        logincount:
+          type: integer
+        name:
+          type: string
+          description: Unique identifier for this user instance. Should be provided
+            to any other endpoints accepting user to reference this particular user
+            details.
+        scimuserid:
+          type: string
+        signedin:
+          type: boolean
+      description: AssetUser definition.
+    BulkAssetAnnotationDetails:
+      required:
+      - criteria
+      type: object
+      properties:
+        businessValue:
+          type: string
+          enum:
+          - high
+          - medium
+          - low
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        criteria:
+          type: string
+        osName:
+          type: string
+        vendorInfo:
+          type: string
+      description: BulkAssetAnnotationDetails definition Allows update/setting of
+        user modifiable attributes for an asset.
+    BulkDeleteAssetsInput:
+      type: object
+      properties:
+        assetIDList:
+          type: array
+          items:
+            type: string
+    BulkDeleteDevicesInput:
+      type: object
+      properties:
+        deviceIDList:
+          type: array
+          items:
+            type: string
+    CVEData:
+      type: object
+      properties:
+        cveID:
+          type: string
+        cvssscore:
+          type: number
+        description:
+          type: string
+        exploitURL:
+          type: string
+        product:
+          type: string
+        severity:
+          type: integer
+        vendor:
+          type: string
+        version:
+          type: string
+    CVEDataResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CVEData'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    CloneOptions:
+      type: object
+      properties:
+        accessPolicies:
+          type: boolean
+        automation:
+          type: boolean
+        namednetworks:
+          type: boolean
+        progressive:
+          type: boolean
+        templates:
+          type: boolean
+    CloneTagBasedPolicyInput:
+      required:
+      - revisedCriteria
+      type: object
+      properties:
+        cloneOptions:
+          $ref: '#/components/schemas/CloneOptions'
+        description:
+          type: string
+        revisedCriteria:
+          type: string
+        revisedCriteriaAsParams:
+          type: string
+        srcTagBasedPolicyID:
+          type: string
+        tagBasedPolicyName:
+          type: string
+    CloneTemplateDetails:
+      type: object
+      properties:
+        srcTemplateID:
+          type: string
+        templateDescription:
+          type: string
+        templateName:
+          type: string
+    CreateTemplateDetails:
+      type: object
+      properties:
+        templateCategory:
+          type: string
+        templateDescription:
+          type: string
+        templateName:
+          type: string
+        templatePaths:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.Path'
+        templatePorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.Port'
+        templateType:
+          type: string
+          enum:
+          - application-template
+          - block-template
+    ErrorResponse:
+      type: object
+      properties:
+        details:
+          type: object
+          additionalProperties: true
+          description: Details specific to the error occurrence.
+        message:
+          type: string
+          description: Message summarizing error information and possible remediation
+            if applicable.
+          example: Invalid Input
+        status:
+          type: integer
+          description: HTTP status code providing indication of the type of error
+            encountered.
+          example: 400
+      description: Error information if api invocation resulted in an error.
+    Event:
+      type: object
+      properties:
+        action:
+          type: string
+        actionBy:
+          type: string
+        asset:
+          $ref: '#/components/schemas/AssetSummary'
+        creationTime:
+          type: string
+          format: date-time
+        eventCategory:
+          type: string
+        eventType:
+          type: string
+        message:
+          type: string
+        metadata:
+          type: string
+        resourceId:
+          type: string
+        severity:
+          type: string
+        sourceIp:
+          type: string
+      description: Events definition Core resource providing logical representation
+        of an Events
+    EventSearchResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+      description: EventSearchResults definition Returned by SearchEvents api.
+    ExtendedAssetSummary:
+      required:
+      - assetName
+      - type
+      type: object
+      properties:
+        agentStatus:
+          type: string
+        assetAvailability:
+          type: string
+        assetId:
+          type: string
+        assetInternetFacing:
+          type: boolean
+        assetName:
+          type: string
+          example: myhostname.company.com
+        assetRisk:
+          type: string
+        attackSurface:
+          type: string
+        autoSynchronizeEnabled:
+          type: boolean
+        blastRadius:
+          type: string
+        businessValue:
+          type: string
+        clusterIdentifier:
+          type: string
+        containerNamespace:
+          type: string
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        inboundAssetStatus:
+          type: string
+        interfaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkInterface'
+        loggedinUser:
+          type: string
+        lowestInboundAssetStatus:
+          type: string
+        lowestOutboundAssetStatus:
+          type: string
+        lowestProgressiveInboundAssetStatus:
+          type: string
+        mostRecentNewPath:
+          type: string
+          format: date-time
+        osName:
+          type: string
+        outboundAssetStatus:
+          type: string
+        pendingAttackSurfaceChanges:
+          type: boolean
+        pendingBlastRadiusChanges:
+          type: boolean
+        securityPatches:
+          type: integer
+        totalComments:
+          type: integer
+        totalPaths:
+          type: integer
+        totalPorts:
+          type: integer
+        type:
+          type: string
+        unreviewedPaths:
+          type: integer
+        unreviewedPorts:
+          type: integer
+        vendorInfo:
+          type: string
+        vulnerabilities:
+          type: integer
+    Facet:
+      type: object
+      properties:
+        field:
+          type: string
+        hasMore:
+          type: boolean
+        values:
+          type: object
+          additionalProperties:
+            type: integer
+    Field:
+      type: object
+      properties:
+        displayName:
+          type: string
+    FieldSuggestion:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        dataType:
+          $ref: '#/components/schemas/datatypes.Type'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        publicName:
+          type: string
+        qualifier:
+          type: string
+        valueSuggestEnabled:
+          type: boolean
+    FileList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/objectstorage.Blob'
+    MembershipList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: string
+    MetricResults:
+      type: object
+      properties:
+        items:
+          type: object
+          additionalProperties: true
+    MetricSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        groupBy:
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+        sourceCriteria:
+          type: string
+        statistics:
+          type: array
+          items:
+            type: string
+        timeEnd:
+          type: string
+        timeStart:
+          type: string
+    NamedNetworkHit:
+      type: object
+      properties:
+        assetId:
+          type: string
+        direction:
+          type: string
+        domain:
+          type: string
+        lastHitObserved:
+          type: string
+        namedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        namedNetworkIpAddress:
+          type: string
+        port:
+          type: string
+        protocol:
+          type: string
+    NamedNetworkHits:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedNetworkHit'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    NamedNetworkInput:
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+    NamedNetworks:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/namednetwork.NamedNetwork'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    NetworkInterface:
+      required:
+      - ipaddresses
+      - name
+      type: object
+      properties:
+        flags:
+          type: array
+          items:
+            type: string
+        ipaddresses:
+          type: array
+          items:
+            type: string
+        macaddress:
+          type: string
+        name:
+          type: string
+      description: NetworkInterface definition Details network interface information
+        for a specific asset
+    NetworkMapSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        groupBy:
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+        sourceCriteria:
+          type: string
+        statistics:
+          type: array
+          items:
+            type: string
+        timeEnd:
+          type: string
+        timeStart:
+          type: string
+    OpenPort:
+      type: object
+      properties:
+        bandwidthInBytes:
+          type: integer
+        bandwidthInBytesSeries:
+          type: array
+          items:
+            type: integer
+        connectionCount:
+          type: integer
+        connectionCountSeries:
+          type: array
+          items:
+            type: integer
+        internetBandwidthInBytes:
+          type: integer
+        internetPathCount:
+          type: integer
+        intranetBandwidthInBytes:
+          type: integer
+        listenAsset:
+          $ref: '#/components/schemas/AssetSummary'
+        listenPort:
+          type: string
+        listenPortEnforced:
+          type: string
+        listenPortLastObserved:
+          type: string
+          format: date-time
+        listenPortName:
+          type: string
+        listenPortProtocol:
+          type: string
+        listenPortReviewed:
+          type: string
+        listenProcessNames:
+          type: array
+          items:
+            type: string
+        listenProcessPaths:
+          type: array
+          items:
+            type: string
+        listeningonpublicinterface:
+          type: boolean
+        lpId:
+          type: string
+        matchedByTemplates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateReference'
+        pathCount:
+          type: integer
+        totalComments:
+          type: integer
+    OpenPorts:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenPort'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    OrderBy:
+      type: object
+      properties:
+        field:
+          type: string
+        order:
+          $ref: '#/components/schemas/SortOrder'
+    PaginationConfig:
+      type: object
+      properties:
+        limit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+        offset:
+          type: integer
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderBy'
+    PaginationInfo:
+      type: object
+      properties:
+        hasMore:
+          type: boolean
+        limit:
+          type: integer
+        offset:
+          type: integer
+    PaginationSummary:
+      type: object
+      properties:
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Facet'
+        seriesTimestamps:
+          type: array
+          items:
+            type: string
+        total:
+          type: integer
+        totalThreshold:
+          type: integer
+    Path:
+      type: object
+      properties:
+        bandwidthInBytes:
+          type: integer
+        channelHash:
+          type: string
+        compassDirection:
+          type: string
+        connectionCount:
+          type: integer
+        destinationAsset:
+          $ref: '#/components/schemas/AssetSummary'
+        destinationNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        destinationProcess:
+          type: string
+        direction:
+          type: string
+        domain:
+          type: string
+        dstIp:
+          type: array
+          items:
+            type: string
+        enforced:
+          type: string
+        firewallAllowCount:
+          type: integer
+        firewallDenyCount:
+          type: integer
+        firewallLastReported:
+          type: string
+          format: date-time
+        internetBandwidthInBytes:
+          type: integer
+        internetFacing:
+          type: boolean
+        intranetBandwidthInBytes:
+          type: integer
+        listenPortEnforced:
+          type: string
+        listenPortReviewed:
+          type: string
+        matchedByTemplates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateReference'
+        method:
+          type: string
+        pathLastObserved:
+          type: string
+          format: date-time
+        port:
+          type: string
+        portName:
+          type: string
+        protocol:
+          type: string
+        reviewed:
+          type: string
+        sourceAsset:
+          $ref: '#/components/schemas/AssetSummary'
+        sourceNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        sourceProcess:
+          type: string
+        srcIp:
+          type: string
+        totalComments:
+          type: integer
+        uri:
+          type: string
+    PathSearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        facetFields:
+          type: array
+          items:
+            type: string
+        pagination:
+          $ref: '#/components/schemas/PaginationConfig'
+        sourceCriteria:
+          type: string
+    PathSearchOnlyInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        sourceCriteria:
+          type: string
+    PathStateTransitionSearchInput:
+      required:
+      - criteria
+      - toState
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        sourceCriteria:
+          type: string
+        toState:
+          type: string
+    Paths:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Path'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    PathsNamedNetworkRecommendation:
+      type: object
+      properties:
+        namedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        peerCount:
+          type: integer
+        totalAddressCount:
+          type: integer
+    PathsNamedNetworkRecommendations:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathsNamedNetworkRecommendation'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    PendingChanges:
+      type: object
+      properties:
+        allowTemplates:
+          type: array
+          items:
+            type: string
+        blockTemplates:
+          type: array
+          items:
+            type: string
+        internetPaths:
+          type: integer
+        internetPorts:
+          type: integer
+        intranetChange:
+          type: array
+          items:
+            type: string
+        intranetPaths:
+          type: integer
+        intranetPorts:
+          type: integer
+        namednetworkChange:
+          type: array
+          items:
+            type: string
+        progressiveSyncPending:
+          type: boolean
+        unassignedAllowTemplates:
+          type: array
+          items:
+            type: string
+        unassignedBlockTemplates:
+          type: array
+          items:
+            type: string
+    PortStateTransitionSearchInput:
+      required:
+      - criteria
+      - toState
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        criteria:
+          type: string
+        destinationCriteria:
+          type: string
+        pathToState:
+          type: string
+        sourceCriteria:
+          type: string
+        toState:
+          type: string
+    Recommendation:
+      type: object
+      properties:
+        attributes:
+          type: object
+          additionalProperties: true
+        category:
+          $ref: '#/components/schemas/RecommendationCategory'
+        name:
+          type: string
+        priority:
+          type: string
+    RecommendationCategory:
+      type: string
+      enum:
+      - AttackSurface
+      - BlastRadius
+    RecommendationInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+    Recommendations:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+    ReviewCoverage:
+      type: object
+      properties:
+        allowed:
+          type: integer
+        allowedPorts:
+          type: integer
+        reviewed:
+          type: integer
+        total:
+          type: integer
+        unreviewed:
+          type: integer
+    SearchInput:
+      required:
+      - criteria
+      type: object
+      properties:
+        criteria:
+          type: string
+        facetFields:
+          type: array
+          items:
+            type: string
+        limit:
+          maximum: 1000
+          minimum: 1
+          type: integer
+        offset:
+          type: integer
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderBy'    
+        # pagination:
+        #   $ref: '#/components/schemas/PaginationConfig'
+    SecurityPatchSearchInput:
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/PaginationConfig'
+    SecurityPatchesResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/dev_azure_com_colortokens_asset_pkg_SecurityPatch'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    SortOrder:
+      type: string
+      enum:
+      - Asc
+      - Desc
+    StateTransitionInput:
+      required:
+      - toState
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        toState:
+          type: string
+    Tag:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this tag instance. Should be provided
+            to any other endpoints accepting tagId to reference this particular tag
+            definition.
+        isCloudTag:
+          type: boolean
+          description: Set to true if tag is mirror of cloud provider resource tag
+            (AWS / AZURE / GCP / OCI)
+        key:
+          type: string
+          description: "Tag Name, human readable name for this tag e.g Environment"
+          example: Environment
+        value:
+          type: string
+          description: "Tag Value, human readable value for this tag e.g Development"
+          example: Development
+      description: Tag definition. All combinations of TagName and TagValue must be
+        case-insensitively unique.
+    TagBasedPolicies:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagBasedPolicySummary'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    TagBasedPolicy:
+      type: object
+      properties:
+        autoSynchronizeEnabled:
+          type: boolean
+        criteria:
+          type: string
+        criteriaAsParams:
+          type: string
+        description:
+          type: string
+        lowestInboundPolicyStatus:
+          type: string
+        lowestOutboundPolicyStatus:
+          type: string
+        lowestProgressiveInboundPolicyStatus:
+          type: string
+        matchingAssets:
+          type: integer
+        namednetworks:
+          type: array
+          items:
+            $ref: '#/components/schemas/namednetwork.NamedNetwork'
+        policyAutomationConfigurable:
+          type: boolean
+        policyProgressiveLastRefreshed:
+          type: string
+          format: date-time
+        tagBasedPolicyId:
+          type: string
+        tagBasedPolicyName:
+          type: string
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateSummary'
+    TagBasedPolicyMetadata:
+      type: object
+      properties:
+        description:
+          type: string
+        tagBasedPolicyName:
+          type: string
+    TagBasedPolicySummary:
+      type: object
+      properties:
+        autoSynchronizeEnabled:
+          type: boolean
+        criteria:
+          type: string
+        criteriaAsParams:
+          type: string
+        description:
+          type: string
+        lowestInboundPolicyStatus:
+          type: string
+        lowestOutboundPolicyStatus:
+          type: string
+        lowestProgressiveInboundPolicyStatus:
+          type: string
+        matchingAssets:
+          type: integer
+        namednetworksAssigned:
+          type: integer
+        policyAutomationConfigurable:
+          type: boolean
+        policyProgressiveLastRefreshed:
+          type: string
+          format: date-time
+        tagBasedPolicyId:
+          type: string
+        tagBasedPolicyName:
+          type: string
+        templatesAssigned:
+          type: integer
+    TagRule:
+      required:
+      - ruleCriteria
+      type: object
+      properties:
+        matchingAssets:
+          type: integer
+        onMatch:
+          type: object
+          additionalProperties:
+            type: string
+        ruleCriteria:
+          type: string
+        ruleCriteriaAsParams:
+          type: string
+        ruleDescription:
+          type: string
+        ruleEnabled:
+          type: boolean
+        ruleId:
+          type: string
+        ruleName:
+          type: string
+    TagRuleInput:
+      required:
+      - ruleCriteria
+      type: object
+      properties:
+        onMatch:
+          type: object
+          additionalProperties:
+            type: string
+        ruleCriteria:
+          type: string
+        ruleCriteriaAsParams:
+          type: string
+        ruleDescription:
+          type: string
+        ruleEnabled:
+          type: boolean
+        ruleName:
+          type: string
+    TagRules:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagRule'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    Tags:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of Tag's that matched any filters specified
+          items:
+            $ref: '#/components/schemas/Tag'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+      description: Tags Definition Returned by tag listing
+    Template:
+      type: object
+      properties:
+        accessPolicyTemplate:
+          type: boolean
+        oobTemplate:
+          type: boolean
+        templateCategory:
+          type: string
+        templateDescription:
+          type: string
+        templateId:
+          type: string
+        templateName:
+          type: string
+        templatePaths:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplatePath'
+        templatePorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.Port'
+        templateType:
+          type: string
+    TemplateBodyWithComment:
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+        templatePaths:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.Path'
+        templatePorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.Port'
+    TemplateInput:
+      type: object
+      properties:
+        comment:
+          maxLength: 500
+          type: string
+    TemplatePath:
+      type: object
+      properties:
+        channelHash:
+          type: string
+        destinationAsset:
+          $ref: '#/components/schemas/AssetSummary'
+        destinationNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        destinationProcess:
+          type: string
+        destinationTagBasedPolicy:
+          $ref: '#/components/schemas/metadata.TagBasedPolicyReference'
+        direction:
+          type: string
+        domain:
+          type: string
+        dstIp:
+          type: array
+          items:
+            type: string
+        method:
+          type: string
+        port:
+          type: string
+        portName:
+          type: string
+        protocol:
+          type: string
+        sourceAsset:
+          $ref: '#/components/schemas/AssetSummary'
+        sourceNamedNetwork:
+          $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        sourceProcess:
+          type: string
+        sourceTagBasedPolicy:
+          $ref: '#/components/schemas/metadata.TagBasedPolicyReference'
+        srcIp:
+          type: string
+        uri:
+          type: string
+    TemplateReference:
+      type: object
+      properties:
+        templateId:
+          type: string
+        templateName:
+          type: string
+    TemplateSummary:
+      required:
+      - templateType
+      type: object
+      properties:
+        accessPolicyTemplate:
+          type: boolean
+        assignedByTagBasedPolicy:
+          type: boolean
+        oobTemplate:
+          type: boolean
+        templateAssignments:
+          type: integer
+        templateCategory:
+          type: string
+        templateDescription:
+          type: string
+        templateId:
+          type: string
+        templateName:
+          type: string
+        templatePaths:
+          type: integer
+        templatePorts:
+          type: integer
+        templateTagBasedPolicyAssignments:
+          type: integer
+        templateType:
+          type: string
+        templateUnassignmentsPendingFirewallSynchronize:
+          type: integer
+        totalComments:
+          type: integer
+        usergroupTemplateAssignments:
+          type: integer
+    Templates:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateSummary'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    TypeaheadSuggestions:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldSuggestion'
+    UnmanagedDeviceSummary:
+      type: object
+      properties:
+        agentId:
+          type: string
+        deviceAvailability:
+          type: string
+        deviceId:
+          type: string
+        deviceIp:
+          type: string
+        deviceMac:
+          type: string
+        deviceName:
+          type: string
+        deviceVendor:
+          type: string
+    UnmanagedDevicesSearchResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnmanagedDeviceSummary'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+      description: UnmanagedDevicesSearchResults definition Returned by SearchUnmanagedDevices
+        api.
+    UserGroupHit:
+      type: object
+      properties:
+        direction:
+          type: string
+        lastHitObserved:
+          type: string
+        peerAssetId:
+          type: string
+        peerDomain:
+          type: string
+        peerIps:
+          type: array
+          items:
+            type: string
+        peerNamedNetworkId:
+          type: string
+        port:
+          type: string
+        protocol:
+          type: string
+        userGroup:
+          $ref: '#/components/schemas/AssetSummary'
+        userName:
+          type: string
+    UserGroupHits:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroupHit'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    VulnerabilitiesRequestData:
+      type: object
+      properties:
+        packageString:
+          type: string
+        pagination:
+          $ref: '#/components/schemas/PaginationConfig'
+    VulnerablePackageData:
+      type: object
+      properties:
+        criticalCveCount:
+          type: integer
+        cvssScore:
+          type: number
+        highCveCount:
+          type: integer
+        product:
+          type: string
+        severity:
+          type: integer
+        totalCveCount:
+          type: integer
+        vendor:
+          type: string
+        version:
+          type: string
+        vulnSource:
+          type: string
+    VulnerablePackagesResults:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/VulnerablePackageData'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+    WorkRequests:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of workRequests that matched any filters specified
+          items:
+            $ref: '#/components/schemas/workrequest.WorkRequest'
+        metadata:
+          $ref: '#/components/schemas/PaginationSummary'
+      description: WorkRequests definition Returned by work request listing
+    namednetwork.CloneNamedNetwork:
+      type: object
+      properties:
+        namedNetworkDescription:
+          type: string
+        namedNetworkName:
+          type: string
+        srcNamedNetworkID:
+          type: string
+    namednetwork.NamedNetwork:
+      type: object
+      x-speakeasy-entity: NamedNetwork
+      properties:
+        id:
+          type: string
+        assignedByTagBasedPolicy:
+          x-speakeasy-param-readonly: true
+          type: boolean
+        # domain:
+        #   type: string
+        ipRanges:
+          # x-speakeasy-terraform-ignore: true
+          type: array
+          items:
+            $ref: '#/components/schemas/namednetwork.Range'
+        isOOBNetwork:
+          x-speakeasy-param-readonly: true
+          type: boolean
+        namedNetworkAssignments:
+          x-speakeasy-param-readonly: true
+          type: integer
+        namedNetworkDescription:
+          type: string
+        namedNetworkName:
+          type: string
+        namednetworkTagBasedPolicyAssignments:
+          x-speakeasy-param-readonly: true
+          type: integer
+        programAsInternet:
+          x-speakeasy-param-readonly: true        
+          type: boolean
+        programAsIntranet:
+          type: boolean
+        provider:
+          type: string
+        region:
+          type: string
+        service:
+          type: string
+        totalComments:
+          x-speakeasy-param-readonly: true
+          type: integer
+        totalCount:
+          x-speakeasy-param-readonly: true
+          type: integer
+        usergroupNamedNetworkAssignments:
+          x-speakeasy-param-readonly: true
+          type: integer
+    namednetwork.Range:
+      type: object
+      x-speakeasy-entity: NamedNetworkRange
+      properties:
+        id:
+          type: string
+        # inputIPRange:
+        #   type: string
+        ipCount:
+          x-speakeasy-param-readonly: true
+          type: integer
+        ipRange:
+          type: string
+    objectstorage.Blob:
+      type: object
+      properties:
+        lastModified:
+          type: string
+        name:
+          type: string
+        sizeInBytes:
+          type: integer
+    workrequest.ChangeStatus:
+      type: string
+      enum:
+      - Pending
+      - InProgress
+      - Cancelled
+      - Completed
+      - Superseded
+      - Retry
+    workrequest.WorkItemAction:
+      type: string
+      enum:
+      - AssetAdded
+      - AssetUpdated
+      - TagRuleAdded
+      - TagRuleModified
+      - TagBasedPolicyAdded
+      - TagBasedPolicyAssignmentsModified
+      - TagBasedPolicyDeleted
+      - TagUpdated
+      - TagDeleted
+      - NamedNetworkAssigned
+      - NamedNetworkUnassigned
+      - NamedNetworkDeleted
+      - NamedNetworkRangeAdd
+      - NamedNetworkRangeRemove
+      - NamedNetworkProgramAsIntranet
+      - ScimPullData
+      - TagBasedPolicyMemberChange
+      - EvaluateTemplates
+      - TemplateEdit
+      - UpdateNetworkMap
+      - EnableUserGroups
+      - DisableUserGroups
+      - AgentDeleted
+      - TagBasedPolicyProgressiveInboundRefresh
+      - EnableCrowdstrikeHostGroup
+      - DisableCrowdstrikeHostGroup
+    workrequest.WorkRequest:
+      required:
+      - action
+      - id
+      - resourceId
+      - subject
+      type: object
+      properties:
+        action:
+          description: action that triggered work item creation
+          allOf:
+          - $ref: '#/components/schemas/workrequest.WorkItemAction'
+        completedAt:
+          type: string
+          description: timestamp when this work item's evaluation reached its final
+            terminal status
+          format: date-time
+        completedSubTasks:
+          type: integer
+          description: completed sub work items count
+        createdAt:
+          type: string
+          description: timestamp when this work item was created
+          format: date-time
+        id:
+          type: string
+          description: Unique identifier for this work item. Should be provided to
+            any other endpoints accepting workId to reference this particular workItem.
+        parentWorkId:
+          type: string
+          description: work id for the parent work request
+        payload:
+          type: string
+          description: holds any additional metadata required for work item evaluation
+        pendingSubTasks:
+          type: integer
+          description: Pending sub work items count
+        resourceId:
+          type: string
+          description: asset or group identifier that action was applied to and work
+            item will operate on during evaluation
+        resourceName:
+          type: string
+          description: asset or group name that action was applied to and work item
+            will operate on during evaluation
+        retryAfter:
+          type: string
+          format: date-time
+          description: timestamp when this work item should retried
+        retryCounter:
+          type: integer
+          description: Count of no of times retried
+        status:
+          description: status of this work item. Will be automatically updated as
+            work item evaluation progress until reaching a terminal status
+          allOf:
+          - $ref: '#/components/schemas/workrequest.ChangeStatus'
+        subject:
+          type: string
+          description: principal that initiated this work item
+        subjectEmail:
+          type: string
+          description: Propogate actor user name for auditing async actions performed
+            by actor submitted task
+      description: WorkRequest definition Represents a unit of work that will be evaluated
+        asynchronously and tracks its progress and can be used to monitor asynchronous
+        processing
+  securitySchemes:
+    JWT:
+      type: apiKey
+      name: Authorization
+      in: header
+x-original-swagger-version: "2.0"
