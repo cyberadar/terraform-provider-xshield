@@ -6,7 +6,12 @@ info:
   contact: {}
   version: "202202"
 servers:
-- url: /
+- url: https://ng.colortokens.com
+  description: US Region
+- url: https://bom.colortokens.com
+  description: India Region
+- url: https://fra.colortokens.com
+  description: European Region
 x-speakeasy-retries:
   strategy: backoff
   backoff:
@@ -520,7 +525,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - JWT: []
+      - mutualTLS: []
       x-permission:
         permission: READ_FIREWALL_LOG
         permissionScope:
@@ -569,7 +574,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - JWT: []
+      - mutualTLS: []
       x-permission:
         permission: CREATE_FIREWALL_RULES
         permissionScope:
@@ -623,7 +628,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
-      - JWT: []
+      - mutualTLS: []
       x-permission:
         permission: READ_FIREWALL_LOG
         permissionScope:
@@ -6403,8 +6408,8 @@ components:
         asynchronously and tracks its progress and can be used to monitor asynchronous
         processing
   securitySchemes:
-    JWT:
-      type: apiKey
+    mutualTLS:
+      # type: apiKey
       name: Authorization
       in: header
 x-original-swagger-version: "2.0"
