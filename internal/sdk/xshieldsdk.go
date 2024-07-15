@@ -127,19 +127,25 @@ func WithClient(client HTTPClient) SDKOption {
 	}
 }
 
-// WithSecurity configures the SDK to use the provided security details
-func WithSecurity(security shared.Security) SDKOption {
-	return func(sdk *XshieldSDK) {
-		sdk.sdkConfiguration.Security = utils.AsSecuritySource(security)
-	}
-}
+// // WithSecurity configures the SDK to use the provided security details
+// func WithSecurity(security shared.Security) SDKOption {
+// 	return func(sdk *XshieldSDK) {
+// 		sdk.sdkConfiguration.Security = utils.AsSecuritySource(security)
+// 	}
+// }
 
-// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
-func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
+// // WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+// func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
+// 	return func(sdk *XshieldSDK) {
+// 		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+// 			return security(ctx)
+// 		}
+// 	}
+// }
+
+func WithConfigProvider(config shared.ConfigurationProvider) SDKOption {
 	return func(sdk *XshieldSDK) {
-		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
-			return security(ctx)
-		}
+		sdk.sdkConfiguration.Security = utils.AsSecuritySource(config)
 	}
 }
 

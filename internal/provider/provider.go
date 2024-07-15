@@ -4,6 +4,9 @@ package provider
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -11,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
-	"net/http"
 )
 
 var _ provider.Provider = &XshieldSDKProvider{}
@@ -26,7 +28,10 @@ type XshieldSDKProvider struct {
 // XshieldSDKProviderModel describes the provider data model.
 type XshieldSDKProviderModel struct {
 	ServerURL types.String `tfsdk:"server_url"`
-	Jwt       types.String `tfsdk:"jwt"`
+	TenancyId       types.String `tfsdk:"tenancy_id"`
+	PrincipalId types.String `tfsdk:"user_id"`
+	FingerPrint types.String `tfsdk:"fingerprint"`
+	PrivateKeyLocation types.String `tfsdk:"private_key_path"`
 }
 
 func (p *XshieldSDKProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -43,9 +48,19 @@ func (p *XshieldSDKProvider) Schema(ctx context.Context, req provider.SchemaRequ
 				Optional:            true,
 				Required:            false,
 			},
-			"jwt": schema.StringAttribute{
-				Optional:  true,
-				Sensitive: true,
+			"tenancy_id" : schema.StringAttribute{
+				Required: true,
+				Sensitive: false,
+			},
+			"user_id" : schema.StringAttribute{
+				Required: true,
+				Sensitive: false,
+			},"fingerprint" : schema.StringAttribute{
+				Required: true,
+				Sensitive: false,
+			},"private_key_path" : schema.StringAttribute{
+				Required: true,
+				Sensitive: false,
 			},
 		},
 	}
@@ -66,25 +81,41 @@ func (p *XshieldSDKProvider) Configure(ctx context.Context, req provider.Configu
 		ServerURL = "https://ng.colortokens.com"
 	}
 
-	jwt := new(string)
-	if !data.Jwt.IsUnknown() && !data.Jwt.IsNull() {
-		*jwt = data.Jwt.ValueString()
-	} else {
-		jwt = nil
-	}
-	security := shared.Security{
-		Jwt: jwt,
-	}
+	config := buildConfigProvider(data, resp)
 
 	opts := []sdk.SDKOption{
 		sdk.WithServerURL(ServerURL),
-		sdk.WithSecurity(security),
+		sdk.WithConfigProvider(config),
 		sdk.WithClient(http.DefaultClient),
 	}
 	client := sdk.New(opts...)
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
+}
+
+func buildConfigProvider(data XshieldSDKProviderModel, resp *provider.ConfigureResponse) shared.ConfigurationProvider {
+	if data.TenancyId.ValueString() == "" {
+		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("tenancy_id"), "required attribute is missing or empty","")
+	}
+
+    if data.PrincipalId.ValueString() == "" {
+		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("user_id"), "required attribute is missing or empty","")
+	}
+
+	if data.FingerPrint.ValueString() == "" {
+		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("fingerprint"), "required attribute is missing or empty","")
+	}
+
+	if data.PrivateKeyLocation.ValueString() == "" {
+		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("private_key_location"), "required attribute is missing or empty","")
+	}
+
+	if resp.Diagnostics.HasError() {
+		return nil
+	}
+
+	return shared.NewRawConfigProvider(data.TenancyId.String(), data.PrincipalId.String(), data.FingerPrint.String(), data.PrivateKeyLocation.String())
 }
 
 func (p *XshieldSDKProvider) Resources(ctx context.Context) []func() resource.Resource {
