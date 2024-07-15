@@ -44,20 +44,20 @@ func (pkff privateKeyFromFile) LoadKey() (*rsa.PrivateKey, error) {
 	return privateKeyFromBytesWithPassword(priv, []byte(pkff.passphrase))
 }
 
-func privateKeyFromBytesWithPassword(pemData, password []byte) (key *rsa.PrivateKey, e error) {
+func privateKeyFromBytesWithPassword(pemData, _ []byte) (key *rsa.PrivateKey, e error) {
 	if pemBlock, _ := pem.Decode(pemData); pemBlock != nil {
-		decrypted := pemBlock.Bytes
-		if x509.IsEncryptedPEMBlock(pemBlock) {
-			if password == nil {
-				e = fmt.Errorf("private key password is required for encrypted private keys")
-				return
-			}
-			if decrypted, e = x509.DecryptPEMBlock(pemBlock, password); e != nil {
-				return
-			}
-		}
+		// decrypted := pemBlock.Bytes
+		// if x509.IsEncryptedPEMBlock(pemBlock) {
+		// 	if password == nil {
+		// 		e = fmt.Errorf("private key password is required for encrypted private keys")
+		// 		return
+		// 	}
+		// 	if decrypted, e = x509.DecryptPEMBlock(pemBlock, password); e != nil {
+		// 		return
+		// 	}
+		// }
 
-		key, e = parsePKCSPrivateKey(decrypted)
+		key, e = parsePKCSPrivateKey(pemBlock.Bytes)
 
 	} else {
 		e = fmt.Errorf("PEM data was not found in buffer")
