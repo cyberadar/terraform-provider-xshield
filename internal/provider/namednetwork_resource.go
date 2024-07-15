@@ -40,7 +40,6 @@ type NamedNetworkResourceModel struct {
 	NamednetworkTagBasedPolicyAssignments types.Int64                 `tfsdk:"namednetwork_tag_based_policy_assignments"`
 	ProgramAsInternet                     types.Bool                  `tfsdk:"program_as_internet"`
 	ProgramAsIntranet                     types.Bool                  `tfsdk:"program_as_intranet"`
-	Provider                              types.String                `tfsdk:"provider"`
 	Region                                types.String                `tfsdk:"region"`
 	Service                               types.String                `tfsdk:"service"`
 	TotalComments                         types.Int64                 `tfsdk:"total_comments"`
@@ -103,10 +102,6 @@ func (r *NamedNetworkResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed: true,
 			},
 			"program_as_intranet": schema.BoolAttribute{
-				Computed: true,
-				Optional: true,
-			},
-			"provider": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
 			},
@@ -328,5 +323,5 @@ func (r *NamedNetworkResource) Delete(ctx context.Context, req resource.DeleteRe
 }
 
 func (r *NamedNetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id").AtName("id"), req.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 }

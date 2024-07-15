@@ -39,7 +39,6 @@ type NamedNetworkDataSourceModel struct {
 	NamednetworkTagBasedPolicyAssignments types.Int64                 `tfsdk:"namednetwork_tag_based_policy_assignments"`
 	ProgramAsInternet                     types.Bool                  `tfsdk:"program_as_internet"`
 	ProgramAsIntranet                     types.Bool                  `tfsdk:"program_as_intranet"`
-	Provider                              types.String                `tfsdk:"provider"`
 	Region                                types.String                `tfsdk:"region"`
 	Service                               types.String                `tfsdk:"service"`
 	TotalComments                         types.Int64                 `tfsdk:"total_comments"`
@@ -99,9 +98,6 @@ func (r *NamedNetworkDataSource) Schema(ctx context.Context, req datasource.Sche
 				Computed: true,
 			},
 			"program_as_intranet": schema.BoolAttribute{
-				Computed: true,
-			},
-			"provider": schema.StringAttribute{
 				Computed: true,
 			},
 			"region": schema.StringAttribute{

@@ -13,7 +13,7 @@ type NamednetworkNamedNetwork struct {
 	NamednetworkTagBasedPolicyAssignments *int64              `json:"namednetworkTagBasedPolicyAssignments,omitempty"`
 	ProgramAsInternet                     *bool               `json:"programAsInternet,omitempty"`
 	ProgramAsIntranet                     *bool               `json:"programAsIntranet,omitempty"`
-	Provider                              *string             `json:"provider,omitempty"`
+	Vendor                                *string             `json:"vendor,omitempty"`
 	Region                                *string             `json:"region,omitempty"`
 	Service                               *string             `json:"service,omitempty"`
 	TotalComments                         *int64              `json:"totalComments,omitempty"`
@@ -91,11 +91,11 @@ func (o *NamednetworkNamedNetwork) GetProgramAsIntranet() *bool {
 	return o.ProgramAsIntranet
 }
 
-func (o *NamednetworkNamedNetwork) GetProvider() *string {
+func (o *NamednetworkNamedNetwork) GetVendor() *string {
 	if o == nil {
 		return nil
 	}
-	return o.Provider
+	return o.Vendor
 }
 
 func (o *NamednetworkNamedNetwork) GetRegion() *string {

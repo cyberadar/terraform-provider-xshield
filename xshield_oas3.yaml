@@ -6265,7 +6265,8 @@ components:
           type: boolean
         programAsIntranet:
           type: boolean
-        provider:
+        vendor:
+          x-speakeasy-terraform-ignore: true
           type: string
         region:
           type: string

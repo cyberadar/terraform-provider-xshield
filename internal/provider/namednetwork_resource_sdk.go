@@ -89,12 +89,6 @@ func (r *NamedNetworkResourceModel) ToSharedNamednetworkNamedNetwork() *shared.N
 	} else {
 		programAsIntranet = nil
 	}
-	provider := new(string)
-	if !r.Provider.IsUnknown() && !r.Provider.IsNull() {
-		*provider = r.Provider.ValueString()
-	} else {
-		provider = nil
-	}
 	region := new(string)
 	if !r.Region.IsUnknown() && !r.Region.IsNull() {
 		*region = r.Region.ValueString()
@@ -136,7 +130,6 @@ func (r *NamedNetworkResourceModel) ToSharedNamednetworkNamedNetwork() *shared.N
 		NamednetworkTagBasedPolicyAssignments: namednetworkTagBasedPolicyAssignments,
 		ProgramAsInternet:                     programAsInternet,
 		ProgramAsIntranet:                     programAsIntranet,
-		Provider:                              provider,
 		Region:                                region,
 		Service:                               service,
 		TotalComments:                         totalComments,
@@ -174,7 +167,6 @@ func (r *NamedNetworkResourceModel) RefreshFromSharedNamednetworkNamedNetwork(re
 		r.NamednetworkTagBasedPolicyAssignments = types.Int64PointerValue(resp.NamednetworkTagBasedPolicyAssignments)
 		r.ProgramAsInternet = types.BoolPointerValue(resp.ProgramAsInternet)
 		r.ProgramAsIntranet = types.BoolPointerValue(resp.ProgramAsIntranet)
-		r.Provider = types.StringPointerValue(resp.Provider)
 		r.Region = types.StringPointerValue(resp.Region)
 		r.Service = types.StringPointerValue(resp.Service)
 		r.TotalComments = types.Int64PointerValue(resp.TotalComments)

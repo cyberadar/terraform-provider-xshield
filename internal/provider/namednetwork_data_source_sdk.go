@@ -36,7 +36,6 @@ func (r *NamedNetworkDataSourceModel) RefreshFromSharedNamednetworkNamedNetwork(
 		r.NamednetworkTagBasedPolicyAssignments = types.Int64PointerValue(resp.NamednetworkTagBasedPolicyAssignments)
 		r.ProgramAsInternet = types.BoolPointerValue(resp.ProgramAsInternet)
 		r.ProgramAsIntranet = types.BoolPointerValue(resp.ProgramAsIntranet)
-		r.Provider = types.StringPointerValue(resp.Provider)
 		r.Region = types.StringPointerValue(resp.Region)
 		r.Service = types.StringPointerValue(resp.Service)
 		r.TotalComments = types.Int64PointerValue(resp.TotalComments)

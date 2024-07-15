@@ -39,7 +39,7 @@ func (p *XshieldSDKProvider) Schema(ctx context.Context, req provider.SchemaRequ
 		Description: `ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)`,
 		Attributes: map[string]schema.Attribute{
 			"server_url": schema.StringAttribute{
-				MarkdownDescription: "Server URL (defaults to https:///)",
+				MarkdownDescription: "Server URL (defaults to https://ng.colortokens.com)",
 				Optional:            true,
 				Required:            false,
 			},
@@ -63,7 +63,7 @@ func (p *XshieldSDKProvider) Configure(ctx context.Context, req provider.Configu
 	ServerURL := data.ServerURL.ValueString()
 
 	if ServerURL == "" {
-		ServerURL = "https:///"
+		ServerURL = "https://ng.colortokens.com"
 	}
 
 	jwt := new(string)
