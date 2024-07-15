@@ -8,13 +8,19 @@ import (
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/hooks"
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
+	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
 	"net/http"
 	"time"
 )
 
 // ServerList contains the list of servers available to the SDK
 var ServerList = []string{
-	"https:///",
+	// US Region
+	"https://ng.colortokens.com",
+	// India Region
+	"https://bom.colortokens.com",
+	// European Region
+	"https://fra.colortokens.com",
 }
 
 // HTTPClient provides an interface for suplying the SDK with a custom HTTP client
@@ -50,8 +56,9 @@ type sdkConfiguration struct {
 	SDKVersion        string
 	GenVersion        string
 	UserAgent         string
-	RetryConfig       *utils.RetryConfig
+	RetryConfig       *retry.Config
 	Hooks             *hooks.Hooks
+	Timeout           *time.Duration
 }
 
 func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
@@ -136,9 +143,16 @@ func WithSecuritySource(security func(context.Context) (shared.Security, error))
 	}
 }
 
-func WithRetryConfig(retryConfig utils.RetryConfig) SDKOption {
+func WithRetryConfig(retryConfig retry.Config) SDKOption {
 	return func(sdk *XshieldSDK) {
 		sdk.sdkConfiguration.RetryConfig = &retryConfig
+	}
+}
+
+// WithTimeout Optional request timeout applied to each operation
+func WithTimeout(timeout time.Duration) SDKOption {
+	return func(sdk *XshieldSDK) {
+		sdk.sdkConfiguration.Timeout = &timeout
 	}
 }
 
@@ -149,8 +163,8 @@ func New(opts ...SDKOption) *XshieldSDK {
 			Language:          "go",
 			OpenAPIDocVersion: "202202",
 			SDKVersion:        "0.0.1",
-			GenVersion:        "2.356.0",
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.356.0 202202 github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk",
+			GenVersion:        "2.372.3",
+			UserAgent:         "speakeasy-sdk/go 0.0.1 2.372.3 202202 github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk",
 			Hooks:             hooks.New(),
 		},
 	}
