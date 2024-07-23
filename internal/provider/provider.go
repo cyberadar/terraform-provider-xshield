@@ -115,7 +115,7 @@ func buildConfigProvider(data XshieldSDKProviderModel, resp *provider.ConfigureR
 		return nil
 	}
 
-	return shared.NewRawConfigProvider(data.TenancyId.String(), data.PrincipalId.String(), data.FingerPrint.String(), data.PrivateKeyLocation.String())
+	return shared.NewRawConfigProvider(data.TenancyId.ValueString(), data.PrincipalId.ValueString(), data.FingerPrint.ValueString(), data.PrivateKeyLocation.ValueString())
 }
 
 func (p *XshieldSDKProvider) Resources(ctx context.Context) []func() resource.Resource {

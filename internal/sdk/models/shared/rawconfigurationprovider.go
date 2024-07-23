@@ -7,7 +7,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"os"
-	"path/filepath"
 )
 
 type ConfigurationProvider interface {
@@ -27,7 +26,7 @@ type privateKeyFromFile struct {
 }
 
 func NewPrivateKeyFromFileLoader(ctx context.Context, path, passphrase string) PrivateKeyLoader {
-	return privateKeyFromFile{filePath: filepath.Clean(path), passphrase: passphrase}
+	return privateKeyFromFile{filePath: path, passphrase: passphrase}
 }
 
 func (pkff privateKeyFromFile) LoadKey() (*rsa.PrivateKey, error) {
@@ -38,10 +37,27 @@ func (pkff privateKeyFromFile) LoadKey() (*rsa.PrivateKey, error) {
 
 	priv, err := os.ReadFile(pkff.filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read private key. Path: %s, Error: %v", pkff.filePath, err.Error())
 	}
 
 	return privateKeyFromBytesWithPassword(priv, []byte(pkff.passphrase))
+}
+
+type privateKeyFromByteSlice struct {
+	content []byte
+}
+
+func NewPrivateKeyFromByteSlice(content string) PrivateKeyLoader {
+	return privateKeyFromByteSlice{content: []byte(content)}
+}
+
+func (pkfs privateKeyFromByteSlice) LoadKey() (*rsa.PrivateKey, error) {
+
+	if len(pkfs.content) == 0 {
+		return nil, fmt.Errorf("byte slice empty. No key content available")
+	}
+
+	return privateKeyFromBytesWithPassword(pkfs.content, []byte(""))
 }
 
 func privateKeyFromBytesWithPassword(pemData, _ []byte) (key *rsa.PrivateKey, e error) {
@@ -99,5 +115,14 @@ func NewRawConfigProvider(tenancyId, userId, fingerprint, keyLocation string) Ra
 		principalId: userId,
 		fingerprint: fingerprint,
 		loader:      NewPrivateKeyFromFileLoader(context.Background(), keyLocation, ""),
+	}
+}
+
+func NewDirectConfigProvider(tenancyId, userId, fingerprint, privateKey string) RawConfigProvider {
+	return RawConfigProvider{
+		tenantId:    tenancyId,
+		principalId: userId,
+		fingerprint: fingerprint,
+		loader:      NewPrivateKeyFromByteSlice(privateKey),
 	}
 }

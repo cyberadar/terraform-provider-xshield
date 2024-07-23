@@ -7,11 +7,14 @@ info:
   version: "202202"
 servers:
 - url: https://ng.colortokens.com
-  description: US Region
+  description: US Region (IAD)
+  x-speakeasy-server-id: "iad"
 - url: https://bom.colortokens.com
-  description: India Region
+  description: India Region (BOM)
+  x-speakeasy-server-id: "bom"
 - url: https://fra.colortokens.com
-  description: European Region
+  description: European Region (FRA)
+  x-speakeasy-server-id: "fra"
 x-speakeasy-retries:
   strategy: backoff
   backoff:
@@ -3343,10 +3346,10 @@ paths:
     post:
       tags:
       - tagrules
-
       summary: Create a new TagRule for micro-segmentation
       description: Defines a new TagRule for micro-segmenting and policy authoring.
       operationId: CreateTagRule
+      x-speakeasy-entity-operation: TagRule#create
       requestBody:
         description: tagrule details
         content:
@@ -3389,11 +3392,11 @@ paths:
     get:
       tags:
       - tagrules
-
       summary: Fetches a TagRule by its identifier.
       description: Retrieves TagRule by identifier if match found. If no match found
         for identifier empty response returned.
       operationId: GetTagRule
+      x-speakeasy-entity-operation: TagRule#read
       parameters:
       - name: ruleId
         in: path
@@ -3428,12 +3431,12 @@ paths:
     put:
       tags:
       - tagrules
-
       summary: Update an existing TagRule by its identifier
       description: Updates an existing TagRule by its identifier if located otherwise
         results in a no-op. Any conflicts will result in 409 conflict error being
         returned.
       operationId: UpdateTagRule
+      x-speakeasy-entity-operation: TagRule#update
       parameters:
       - name: ruleId
         in: path
@@ -3488,11 +3491,11 @@ paths:
     delete:
       tags:
       - tagrules
-
       summary: Deletes a TagRule by its identifier.
       description: Deletes a TagRule using its identifier and any corresponding references
         are cleaned up too.
       operationId: DeleteTagRule
+      x-speakeasy-entity-operation: TagRule#delete
       parameters:
       - name: ruleId
         in: path
@@ -3534,7 +3537,6 @@ paths:
     get:
       tags:
       - tagrules
-
       summary: Retrieves all assets the specified tagrule has in its membership list.
       description: Returns list of Asset Identifiers representing the assets that
         this tagrule currently has as members.
@@ -3580,7 +3582,6 @@ paths:
     post:
       tags:
       - tagrules
-
       summary: Lists all tagrules filtering results by specified filters if provided.
       description: Returns list of matching tagrules identified from filters else
         all tagrules.
@@ -3805,6 +3806,7 @@ paths:
       description: Creates a template with the given name and payload (if present).
         Template name must be unique.
       operationId: CreateTemplate
+      x-speakeasy-entity-operation: Template#create
       requestBody:
         description: template details
         content:
@@ -3859,6 +3861,7 @@ paths:
       summary: retrieves a template for the tenant by id
       description: retrieves a template for the tenant by id
       operationId: GetTemplate
+      x-speakeasy-entity-operation: Template#read
       parameters:
       - name: templateid
         in: path
@@ -3905,6 +3908,7 @@ paths:
       summary: Edits the template metadata
       description: Edits the template name and description
       operationId: EditTemplateMetadata
+      x-speakeasy-entity-operation: Template#update
       parameters:
       - name: templateid
         in: path
@@ -3957,6 +3961,7 @@ paths:
       description: Removes and un-applies the template from all the assets it is applied
         to.
       operationId: DeleteTemplate
+      x-speakeasy-entity-operation: Template#delete
       parameters:
       - name: templateid
         in: path
@@ -5910,6 +5915,7 @@ components:
       required:
       - ruleCriteria
       type: object
+      x-speakeasy-entity: TagRule
       properties:
         matchingAssets:
           type: integer
@@ -5925,7 +5931,7 @@ components:
           type: string
         ruleEnabled:
           type: boolean
-        ruleId:
+        id:
           type: string
         ruleName:
           type: string
@@ -5970,6 +5976,7 @@ components:
       description: Tags Definition Returned by tag listing
     Template:
       type: object
+      x-speakeasy-entity: Template
       properties:
         accessPolicyTemplate:
           type: boolean

@@ -32,7 +32,10 @@ func (ah *AuthenticationHook) BeforeRequest(hookCtx BeforeRequestContext, req *h
 		return nil, errors.New("invalid security source configuration")
 	}
 
-	ah.signRequest(req, pkiSigningMaterial)
+	err = ah.signRequest(req, pkiSigningMaterial)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
