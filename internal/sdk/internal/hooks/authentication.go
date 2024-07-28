@@ -65,6 +65,7 @@ func (ah *AuthenticationHook) signRequest(req *http.Request, signingMaterial sha
 	req.Header.Set("Authorization", fmt.Sprintf(`Signature version="1",keyId="%s::%s::%s",algorithm="rsa-sha256",headers="%s",signature="%s"`, signingMaterial.TenancyId(), signingMaterial.PrincipalId(), signingMaterial.FingerPrint(), strings.Join(signatureHeaders, " "), signature))
 	req.Header.Set("date", date)
 	req.Header.Set("host", req.Host)
+
 	return nil
 }
 
