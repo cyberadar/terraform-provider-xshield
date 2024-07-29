@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -17,7 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	speakeasy_int64planmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/int64planmodifier"
+	speakeasy_boolplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/boolplanmodifier"
 	speakeasy_listplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/listplanmodifier"
 	speakeasy_objectplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/objectplanmodifier"
 	speakeasy_stringplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/stringplanmodifier"
@@ -47,7 +46,7 @@ type TemplateResourceModel struct {
 	TemplateCategory     types.String           `tfsdk:"template_category"`
 	TemplateDescription  types.String           `tfsdk:"template_description"`
 	TemplateName         types.String           `tfsdk:"template_name"`
-	TemplatePaths        []tfTypes.TemplatePath `tfsdk:"template_paths"`
+	TemplatePaths        []tfTypes.MetadataPath `tfsdk:"template_paths"`
 	TemplatePorts        []tfTypes.MetadataPort `tfsdk:"template_ports"`
 	TemplateType         types.String           `tfsdk:"template_type"`
 }
@@ -62,12 +61,21 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"access_policy_template": schema.BoolAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
+				},
 			},
 			"colortokens_managed": schema.BoolAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
+				},
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+				},
 			},
 			"template_category": schema.StringAttribute{
 				Computed: true,
@@ -105,52 +113,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"destination_asset": schema.SingleNestedAttribute{
-							Computed: true,
-							Attributes: map[string]schema.Attribute{
-								"asset_id": schema.StringAttribute{
-									Computed: true,
-								},
-								"asset_name": schema.StringAttribute{
-									Computed: true,
-								},
-								"auto_synchronize_enabled": schema.BoolAttribute{
-									Computed: true,
-								},
-								"cluster_identifier": schema.StringAttribute{
-									Computed: true,
-								},
-								"container_namespace": schema.StringAttribute{
-									Computed: true,
-								},
-								"core_tags": schema.MapAttribute{
-									Computed:    true,
-									ElementType: types.StringType,
-								},
-								"inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_progressive_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"type": schema.StringAttribute{
-									Computed: true,
-								},
-								"vendor_info": schema.StringAttribute{
-									Computed: true,
-								},
-							},
-							Description: `AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against`,
-						},
 						"destination_asset_id": schema.StringAttribute{
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
@@ -188,9 +150,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 								},
 							},
 							Description: `Requires replacement if changed. `,
-						},
-						"destination_process": schema.StringAttribute{
-							Computed: true,
 						},
 						"destination_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
@@ -317,52 +276,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							Optional:    true,
 							Description: `Requires replacement if changed. `,
 						},
-						"source_asset": schema.SingleNestedAttribute{
-							Computed: true,
-							Attributes: map[string]schema.Attribute{
-								"asset_id": schema.StringAttribute{
-									Computed: true,
-								},
-								"asset_name": schema.StringAttribute{
-									Computed: true,
-								},
-								"auto_synchronize_enabled": schema.BoolAttribute{
-									Computed: true,
-								},
-								"cluster_identifier": schema.StringAttribute{
-									Computed: true,
-								},
-								"container_namespace": schema.StringAttribute{
-									Computed: true,
-								},
-								"core_tags": schema.MapAttribute{
-									Computed:    true,
-									ElementType: types.StringType,
-								},
-								"inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_progressive_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"type": schema.StringAttribute{
-									Computed: true,
-								},
-								"vendor_info": schema.StringAttribute{
-									Computed: true,
-								},
-							},
-							Description: `AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against`,
-						},
 						"source_asset_id": schema.StringAttribute{
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
@@ -400,9 +313,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 								},
 							},
 							Description: `Requires replacement if changed. `,
-						},
-						"source_process": schema.StringAttribute{
-							Computed: true,
 						},
 						"source_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
@@ -497,11 +407,11 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
 						},
-						"listen_port": schema.Int64Attribute{
+						"listen_port": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplaceIfConfigured(),
+								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
 							Optional:    true,
 							Description: `Requires replacement if changed. `,
@@ -515,11 +425,11 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							Optional:    true,
 							Description: `Requires replacement if changed. `,
 						},
-						"listen_port_protocol": schema.Int64Attribute{
+						"listen_port_protocol": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplaceIfConfigured(),
+								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
 							Optional:    true,
 							Description: `Requires replacement if changed. `,
@@ -531,18 +441,13 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
 							Optional:    true,
-							Description: `Requires replacement if changed. ; must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]`,
+							Description: `Requires replacement if changed. ; must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]`,
 							Validators: []validator.String{
 								stringvalidator.OneOf(
-									"PortUnreviewed",
-									"PortDenied",
-									"PortAllowIntranet",
-									"PortAllowAny",
-									"PortPathRestricted",
-									"PortDeniedByTemplate",
-									"PortAllowIntranetByTemplate",
-									"PortAllowAnyByTemplate",
-									"PortAllowAnyByProgressive",
+									"denied",
+									"allow-intranet",
+									"allow-any",
+									"path-restricted",
 								),
 							},
 						},
@@ -617,7 +522,7 @@ func (r *TemplateResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	request := *data.ToSharedCreateTemplateDetails()
+	request := *data.ToSharedTemplate()
 	res, err := r.client.Templates.CreateTemplate(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -639,34 +544,6 @@ func (r *TemplateResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 	data.RefreshFromSharedTemplate(res.Template)
-	refreshPlan(ctx, plan, &data, resp.Diagnostics)
-	var templateid string
-	templateid = data.ID.ValueString()
-
-	request1 := operations.GetTemplateRequest{
-		Templateid: templateid,
-	}
-	res1, err := r.client.Templates.GetTemplate(ctx, request1)
-	if err != nil {
-		resp.Diagnostics.AddError("failure to invoke API", err.Error())
-		if res1 != nil && res1.RawResponse != nil {
-			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
-		}
-		return
-	}
-	if res1 == nil {
-		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
-		return
-	}
-	if res1.StatusCode != 200 {
-		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
-		return
-	}
-	if !(res1.Template != nil) {
-		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res1.RawResponse))
-		return
-	}
-	data.RefreshFromSharedTemplate(res1.Template)
 	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state

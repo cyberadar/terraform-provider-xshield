@@ -3820,7 +3820,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTemplateDetails'
+              $ref: '#/components/schemas/Template'
         required: true
       responses:
         "201":
@@ -4557,11 +4557,11 @@ components:
       type: object
       properties:
         listenPort:
-          type: integer
+          type: string
         listenPortName:
           type: string
         listenPortProtocol:
-          type: integer
+          type: string
         listenPortReviewed:
           $ref: '#/components/schemas/metadata.PortState'
         listenProcessNames:
@@ -4575,15 +4575,10 @@ components:
     metadata.PortState:
       type: string
       enum:
-      - PortUnreviewed
-      - PortDenied
-      - PortAllowIntranet
-      - PortAllowAny
-      - PortPathRestricted
-      - PortDeniedByTemplate
-      - PortAllowIntranetByTemplate
-      - PortAllowAnyByTemplate
-      - PortAllowAnyByProgressive
+      - denied
+      - allow-intranet
+      - allow-any
+      - path-restricted
     metadata.TagBasedPolicyReference:
       type: object
       properties:
@@ -5089,28 +5084,28 @@ components:
           type: string
         templateName:
           type: string
-    CreateTemplateDetails:
-      type: object
-      properties:
-        templateCategory:
-          type: string
-        templateDescription:
-          type: string
-        templateName:
-          type: string
-        templatePaths:
-          type: array
-          items:
-            $ref: '#/components/schemas/metadata.Path'
-        templatePorts:
-          type: array
-          items:
-            $ref: '#/components/schemas/metadata.Port'
-        templateType:
-          type: string
-          enum:
-          - application-template
-          - block-template
+    # CreateTemplateDetails:
+    #   type: object
+    #   properties:
+    #     templateCategory:
+    #       type: string
+    #     templateDescription:
+    #       type: string
+    #     templateName:
+    #       type: string
+    #     templatePaths:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/metadata.Path'
+    #     templatePorts:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/metadata.Port'
+    #     templateType:
+    #       type: string
+    #       enum:
+    #       - application-template
+    #       - block-template
     ErrorResponse:
       type: object
       properties:
@@ -6023,13 +6018,16 @@ components:
         templatePaths:
           type: array
           items:
-            $ref: '#/components/schemas/TemplatePath'
+            $ref: '#/components/schemas/metadata.Path'
         templatePorts:
           type: array
           items:
             $ref: '#/components/schemas/metadata.Port'
         templateType:
           type: string
+          enum:
+          - application-template
+          - block-template
     TemplateBodyWithComment:
       type: object
       properties:

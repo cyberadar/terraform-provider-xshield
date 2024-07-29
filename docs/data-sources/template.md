@@ -31,51 +31,31 @@ data "xshield-sdk_template" "my_template" {
 - `template_name` (String)
 - `template_paths` (Attributes List) (see [below for nested schema](#nestedatt--template_paths))
 - `template_ports` (Attributes List) (see [below for nested schema](#nestedatt--template_ports))
-- `template_type` (String)
+- `template_type` (String) must be one of ["application-template", "block-template"]
 
 <a id="nestedatt--template_paths"></a>
 ### Nested Schema for `template_paths`
 
 Read-Only:
 
-- `destination_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--destination_asset))
+- `destination_asset_id` (String)
 - `destination_named_network` (Attributes) (see [below for nested schema](#nestedatt--template_paths--destination_named_network))
-- `destination_process` (String)
 - `destination_tag_based_policy` (Attributes) (see [below for nested schema](#nestedatt--template_paths--destination_tag_based_policy))
 - `direction` (String)
 - `domain` (String)
 - `dst_ip` (String)
+- `dst_process` (String)
 - `id` (String)
 - `method` (String)
 - `port` (String)
 - `port_name` (String)
 - `protocol` (String)
-- `source_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--source_asset))
+- `source_asset_id` (String)
 - `source_named_network` (Attributes) (see [below for nested schema](#nestedatt--template_paths--source_named_network))
-- `source_process` (String)
 - `source_tag_based_policy` (Attributes) (see [below for nested schema](#nestedatt--template_paths--source_tag_based_policy))
 - `src_ip` (String)
+- `src_process` (String)
 - `uri` (String)
-
-<a id="nestedatt--template_paths--destination_asset"></a>
-### Nested Schema for `template_paths.destination_asset`
-
-Read-Only:
-
-- `asset_id` (String)
-- `asset_name` (String)
-- `auto_synchronize_enabled` (Boolean)
-- `cluster_identifier` (String)
-- `container_namespace` (String)
-- `core_tags` (Map of String)
-- `inbound_asset_status` (String)
-- `lowest_inbound_asset_status` (String)
-- `lowest_outbound_asset_status` (String)
-- `lowest_progressive_inbound_asset_status` (String)
-- `outbound_asset_status` (String)
-- `type` (String)
-- `vendor_info` (String)
-
 
 <a id="nestedatt--template_paths--destination_named_network"></a>
 ### Nested Schema for `template_paths.destination_named_network`
@@ -95,26 +75,6 @@ Read-Only:
 - `criteria_as_params` (String)
 - `tag_based_policy_id` (String)
 - `tag_based_policy_name` (String)
-
-
-<a id="nestedatt--template_paths--source_asset"></a>
-### Nested Schema for `template_paths.source_asset`
-
-Read-Only:
-
-- `asset_id` (String)
-- `asset_name` (String)
-- `auto_synchronize_enabled` (Boolean)
-- `cluster_identifier` (String)
-- `container_namespace` (String)
-- `core_tags` (Map of String)
-- `inbound_asset_status` (String)
-- `lowest_inbound_asset_status` (String)
-- `lowest_outbound_asset_status` (String)
-- `lowest_progressive_inbound_asset_status` (String)
-- `outbound_asset_status` (String)
-- `type` (String)
-- `vendor_info` (String)
 
 
 <a id="nestedatt--template_paths--source_named_network"></a>
@@ -144,10 +104,10 @@ Read-Only:
 Read-Only:
 
 - `id` (String)
-- `listen_port` (Number)
+- `listen_port` (String)
 - `listen_port_name` (String)
-- `listen_port_protocol` (Number)
-- `listen_port_reviewed` (String) must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]
+- `listen_port_protocol` (String)
+- `listen_port_reviewed` (String) must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]
 - `listen_process_names` (List of String)
 
 

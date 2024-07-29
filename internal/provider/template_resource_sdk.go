@@ -8,7 +8,19 @@ import (
 	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
 )
 
-func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTemplateDetails {
+func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
+	accessPolicyTemplate := new(bool)
+	if !r.AccessPolicyTemplate.IsUnknown() && !r.AccessPolicyTemplate.IsNull() {
+		*accessPolicyTemplate = r.AccessPolicyTemplate.ValueBool()
+	} else {
+		accessPolicyTemplate = nil
+	}
+	colortokensManaged := new(bool)
+	if !r.ColortokensManaged.IsUnknown() && !r.ColortokensManaged.IsNull() {
+		*colortokensManaged = r.ColortokensManaged.ValueBool()
+	} else {
+		colortokensManaged = nil
+	}
 	templateCategory := new(string)
 	if !r.TemplateCategory.IsUnknown() && !r.TemplateCategory.IsNull() {
 		*templateCategory = r.TemplateCategory.ValueString()
@@ -21,6 +33,12 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 	} else {
 		templateDescription = nil
 	}
+	id := new(string)
+	if !r.ID.IsUnknown() && !r.ID.IsNull() {
+		*id = r.ID.ValueString()
+	} else {
+		id = nil
+	}
 	templateName := new(string)
 	if !r.TemplateName.IsUnknown() && !r.TemplateName.IsNull() {
 		*templateName = r.TemplateName.ValueString()
@@ -29,11 +47,11 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 	}
 	var templatePaths []shared.MetadataPath = []shared.MetadataPath{}
 	for _, templatePathsItem := range r.TemplatePaths {
-		id := new(string)
+		id1 := new(string)
 		if !templatePathsItem.ID.IsUnknown() && !templatePathsItem.ID.IsNull() {
-			*id = templatePathsItem.ID.ValueString()
+			*id1 = templatePathsItem.ID.ValueString()
 		} else {
-			id = nil
+			id1 = nil
 		}
 		destinationAssetID := new(string)
 		if !templatePathsItem.DestinationAssetID.IsUnknown() && !templatePathsItem.DestinationAssetID.IsNull() {
@@ -218,7 +236,7 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 			uri = nil
 		}
 		templatePaths = append(templatePaths, shared.MetadataPath{
-			ID:                        id,
+			ID:                        id1,
 			DestinationAssetID:        destinationAssetID,
 			DestinationNamedNetwork:   destinationNamedNetwork,
 			DestinationTagBasedPolicy: destinationTagBasedPolicy,
@@ -240,9 +258,9 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 	}
 	var templatePorts []shared.MetadataPort = []shared.MetadataPort{}
 	for _, templatePortsItem := range r.TemplatePorts {
-		listenPort := new(int64)
+		listenPort := new(string)
 		if !templatePortsItem.ListenPort.IsUnknown() && !templatePortsItem.ListenPort.IsNull() {
-			*listenPort = templatePortsItem.ListenPort.ValueInt64()
+			*listenPort = templatePortsItem.ListenPort.ValueString()
 		} else {
 			listenPort = nil
 		}
@@ -252,9 +270,9 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 		} else {
 			listenPortName = nil
 		}
-		listenPortProtocol := new(int64)
+		listenPortProtocol := new(string)
 		if !templatePortsItem.ListenPortProtocol.IsUnknown() && !templatePortsItem.ListenPortProtocol.IsNull() {
-			*listenPortProtocol = templatePortsItem.ListenPortProtocol.ValueInt64()
+			*listenPortProtocol = templatePortsItem.ListenPortProtocol.ValueString()
 		} else {
 			listenPortProtocol = nil
 		}
@@ -268,11 +286,11 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 		for _, listenProcessNamesItem := range templatePortsItem.ListenProcessNames {
 			listenProcessNames = append(listenProcessNames, listenProcessNamesItem.ValueString())
 		}
-		id1 := new(string)
+		id2 := new(string)
 		if !templatePortsItem.ID.IsUnknown() && !templatePortsItem.ID.IsNull() {
-			*id1 = templatePortsItem.ID.ValueString()
+			*id2 = templatePortsItem.ID.ValueString()
 		} else {
-			id1 = nil
+			id2 = nil
 		}
 		templatePorts = append(templatePorts, shared.MetadataPort{
 			ListenPort:         listenPort,
@@ -280,7 +298,7 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 			ListenPortProtocol: listenPortProtocol,
 			ListenPortReviewed: listenPortReviewed,
 			ListenProcessNames: listenProcessNames,
-			ID:                 id1,
+			ID:                 id2,
 		})
 	}
 	templateType := new(shared.TemplateType)
@@ -289,13 +307,16 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 	} else {
 		templateType = nil
 	}
-	out := shared.CreateTemplateDetails{
-		TemplateCategory:    templateCategory,
-		TemplateDescription: templateDescription,
-		TemplateName:        templateName,
-		TemplatePaths:       templatePaths,
-		TemplatePorts:       templatePorts,
-		TemplateType:        templateType,
+	out := shared.Template{
+		AccessPolicyTemplate: accessPolicyTemplate,
+		ColortokensManaged:   colortokensManaged,
+		TemplateCategory:     templateCategory,
+		TemplateDescription:  templateDescription,
+		ID:                   id,
+		TemplateName:         templateName,
+		TemplatePaths:        templatePaths,
+		TemplatePorts:        templatePorts,
+		TemplateType:         templateType,
 	}
 	return &out
 }
@@ -308,35 +329,13 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 		r.TemplateCategory = types.StringPointerValue(resp.TemplateCategory)
 		r.TemplateDescription = types.StringPointerValue(resp.TemplateDescription)
 		r.TemplateName = types.StringPointerValue(resp.TemplateName)
-		r.TemplatePaths = []tfTypes.TemplatePath{}
+		r.TemplatePaths = []tfTypes.MetadataPath{}
 		if len(r.TemplatePaths) > len(resp.TemplatePaths) {
 			r.TemplatePaths = r.TemplatePaths[:len(resp.TemplatePaths)]
 		}
 		for templatePathsCount, templatePathsItem := range resp.TemplatePaths {
-			var templatePaths1 tfTypes.TemplatePath
-			if templatePathsItem.DestinationAsset == nil {
-				templatePaths1.DestinationAsset = nil
-			} else {
-				templatePaths1.DestinationAsset = &tfTypes.AssetSummary{}
-				templatePaths1.DestinationAsset.AssetID = types.StringPointerValue(templatePathsItem.DestinationAsset.AssetID)
-				templatePaths1.DestinationAsset.AssetName = types.StringValue(templatePathsItem.DestinationAsset.AssetName)
-				templatePaths1.DestinationAsset.AutoSynchronizeEnabled = types.BoolPointerValue(templatePathsItem.DestinationAsset.AutoSynchronizeEnabled)
-				templatePaths1.DestinationAsset.ClusterIdentifier = types.StringPointerValue(templatePathsItem.DestinationAsset.ClusterIdentifier)
-				templatePaths1.DestinationAsset.ContainerNamespace = types.StringPointerValue(templatePathsItem.DestinationAsset.ContainerNamespace)
-				if len(templatePathsItem.DestinationAsset.CoreTags) > 0 {
-					templatePaths1.DestinationAsset.CoreTags = make(map[string]types.String)
-					for key, value := range templatePathsItem.DestinationAsset.CoreTags {
-						templatePaths1.DestinationAsset.CoreTags[key] = types.StringValue(value)
-					}
-				}
-				templatePaths1.DestinationAsset.InboundAssetStatus = types.StringPointerValue(templatePathsItem.DestinationAsset.InboundAssetStatus)
-				templatePaths1.DestinationAsset.LowestInboundAssetStatus = types.StringPointerValue(templatePathsItem.DestinationAsset.LowestInboundAssetStatus)
-				templatePaths1.DestinationAsset.LowestOutboundAssetStatus = types.StringPointerValue(templatePathsItem.DestinationAsset.LowestOutboundAssetStatus)
-				templatePaths1.DestinationAsset.LowestProgressiveInboundAssetStatus = types.StringPointerValue(templatePathsItem.DestinationAsset.LowestProgressiveInboundAssetStatus)
-				templatePaths1.DestinationAsset.OutboundAssetStatus = types.StringPointerValue(templatePathsItem.DestinationAsset.OutboundAssetStatus)
-				templatePaths1.DestinationAsset.Type = types.StringValue(templatePathsItem.DestinationAsset.Type)
-				templatePaths1.DestinationAsset.VendorInfo = types.StringPointerValue(templatePathsItem.DestinationAsset.VendorInfo)
-			}
+			var templatePaths1 tfTypes.MetadataPath
+			templatePaths1.DestinationAssetID = types.StringPointerValue(templatePathsItem.DestinationAssetID)
 			if templatePathsItem.DestinationNamedNetwork == nil {
 				templatePaths1.DestinationNamedNetwork = nil
 			} else {
@@ -344,7 +343,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 				templatePaths1.DestinationNamedNetwork.NamedNetworkID = types.StringPointerValue(templatePathsItem.DestinationNamedNetwork.NamedNetworkID)
 				templatePaths1.DestinationNamedNetwork.NamedNetworkName = types.StringPointerValue(templatePathsItem.DestinationNamedNetwork.NamedNetworkName)
 			}
-			templatePaths1.DestinationProcess = types.StringPointerValue(templatePathsItem.DestinationProcess)
 			if templatePathsItem.DestinationTagBasedPolicy == nil {
 				templatePaths1.DestinationTagBasedPolicy = nil
 			} else {
@@ -357,34 +355,13 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			templatePaths1.Direction = types.StringPointerValue(templatePathsItem.Direction)
 			templatePaths1.Domain = types.StringPointerValue(templatePathsItem.Domain)
 			templatePaths1.DstIP = types.StringPointerValue(templatePathsItem.DstIP)
+			templatePaths1.DstProcess = types.StringPointerValue(templatePathsItem.DstProcess)
 			templatePaths1.ID = types.StringPointerValue(templatePathsItem.ID)
 			templatePaths1.Method = types.StringPointerValue(templatePathsItem.Method)
 			templatePaths1.Port = types.StringPointerValue(templatePathsItem.Port)
 			templatePaths1.PortName = types.StringPointerValue(templatePathsItem.PortName)
 			templatePaths1.Protocol = types.StringPointerValue(templatePathsItem.Protocol)
-			if templatePathsItem.SourceAsset == nil {
-				templatePaths1.SourceAsset = nil
-			} else {
-				templatePaths1.SourceAsset = &tfTypes.AssetSummary{}
-				templatePaths1.SourceAsset.AssetID = types.StringPointerValue(templatePathsItem.SourceAsset.AssetID)
-				templatePaths1.SourceAsset.AssetName = types.StringValue(templatePathsItem.SourceAsset.AssetName)
-				templatePaths1.SourceAsset.AutoSynchronizeEnabled = types.BoolPointerValue(templatePathsItem.SourceAsset.AutoSynchronizeEnabled)
-				templatePaths1.SourceAsset.ClusterIdentifier = types.StringPointerValue(templatePathsItem.SourceAsset.ClusterIdentifier)
-				templatePaths1.SourceAsset.ContainerNamespace = types.StringPointerValue(templatePathsItem.SourceAsset.ContainerNamespace)
-				if len(templatePathsItem.SourceAsset.CoreTags) > 0 {
-					templatePaths1.SourceAsset.CoreTags = make(map[string]types.String)
-					for key1, value1 := range templatePathsItem.SourceAsset.CoreTags {
-						templatePaths1.SourceAsset.CoreTags[key1] = types.StringValue(value1)
-					}
-				}
-				templatePaths1.SourceAsset.InboundAssetStatus = types.StringPointerValue(templatePathsItem.SourceAsset.InboundAssetStatus)
-				templatePaths1.SourceAsset.LowestInboundAssetStatus = types.StringPointerValue(templatePathsItem.SourceAsset.LowestInboundAssetStatus)
-				templatePaths1.SourceAsset.LowestOutboundAssetStatus = types.StringPointerValue(templatePathsItem.SourceAsset.LowestOutboundAssetStatus)
-				templatePaths1.SourceAsset.LowestProgressiveInboundAssetStatus = types.StringPointerValue(templatePathsItem.SourceAsset.LowestProgressiveInboundAssetStatus)
-				templatePaths1.SourceAsset.OutboundAssetStatus = types.StringPointerValue(templatePathsItem.SourceAsset.OutboundAssetStatus)
-				templatePaths1.SourceAsset.Type = types.StringValue(templatePathsItem.SourceAsset.Type)
-				templatePaths1.SourceAsset.VendorInfo = types.StringPointerValue(templatePathsItem.SourceAsset.VendorInfo)
-			}
+			templatePaths1.SourceAssetID = types.StringPointerValue(templatePathsItem.SourceAssetID)
 			if templatePathsItem.SourceNamedNetwork == nil {
 				templatePaths1.SourceNamedNetwork = nil
 			} else {
@@ -392,7 +369,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 				templatePaths1.SourceNamedNetwork.NamedNetworkID = types.StringPointerValue(templatePathsItem.SourceNamedNetwork.NamedNetworkID)
 				templatePaths1.SourceNamedNetwork.NamedNetworkName = types.StringPointerValue(templatePathsItem.SourceNamedNetwork.NamedNetworkName)
 			}
-			templatePaths1.SourceProcess = types.StringPointerValue(templatePathsItem.SourceProcess)
 			if templatePathsItem.SourceTagBasedPolicy == nil {
 				templatePaths1.SourceTagBasedPolicy = nil
 			} else {
@@ -403,27 +379,28 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 				templatePaths1.SourceTagBasedPolicy.TagBasedPolicyName = types.StringPointerValue(templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyName)
 			}
 			templatePaths1.SrcIP = types.StringPointerValue(templatePathsItem.SrcIP)
+			templatePaths1.SrcProcess = types.StringPointerValue(templatePathsItem.SrcProcess)
 			templatePaths1.URI = types.StringPointerValue(templatePathsItem.URI)
 			if templatePathsCount+1 > len(r.TemplatePaths) {
 				r.TemplatePaths = append(r.TemplatePaths, templatePaths1)
 			} else {
-				r.TemplatePaths[templatePathsCount].DestinationAsset = templatePaths1.DestinationAsset
+				r.TemplatePaths[templatePathsCount].DestinationAssetID = templatePaths1.DestinationAssetID
 				r.TemplatePaths[templatePathsCount].DestinationNamedNetwork = templatePaths1.DestinationNamedNetwork
-				r.TemplatePaths[templatePathsCount].DestinationProcess = templatePaths1.DestinationProcess
 				r.TemplatePaths[templatePathsCount].DestinationTagBasedPolicy = templatePaths1.DestinationTagBasedPolicy
 				r.TemplatePaths[templatePathsCount].Direction = templatePaths1.Direction
 				r.TemplatePaths[templatePathsCount].Domain = templatePaths1.Domain
 				r.TemplatePaths[templatePathsCount].DstIP = templatePaths1.DstIP
+				r.TemplatePaths[templatePathsCount].DstProcess = templatePaths1.DstProcess
 				r.TemplatePaths[templatePathsCount].ID = templatePaths1.ID
 				r.TemplatePaths[templatePathsCount].Method = templatePaths1.Method
 				r.TemplatePaths[templatePathsCount].Port = templatePaths1.Port
 				r.TemplatePaths[templatePathsCount].PortName = templatePaths1.PortName
 				r.TemplatePaths[templatePathsCount].Protocol = templatePaths1.Protocol
-				r.TemplatePaths[templatePathsCount].SourceAsset = templatePaths1.SourceAsset
+				r.TemplatePaths[templatePathsCount].SourceAssetID = templatePaths1.SourceAssetID
 				r.TemplatePaths[templatePathsCount].SourceNamedNetwork = templatePaths1.SourceNamedNetwork
-				r.TemplatePaths[templatePathsCount].SourceProcess = templatePaths1.SourceProcess
 				r.TemplatePaths[templatePathsCount].SourceTagBasedPolicy = templatePaths1.SourceTagBasedPolicy
 				r.TemplatePaths[templatePathsCount].SrcIP = templatePaths1.SrcIP
+				r.TemplatePaths[templatePathsCount].SrcProcess = templatePaths1.SrcProcess
 				r.TemplatePaths[templatePathsCount].URI = templatePaths1.URI
 			}
 		}
@@ -434,9 +411,9 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 		for templatePortsCount, templatePortsItem := range resp.TemplatePorts {
 			var templatePorts1 tfTypes.MetadataPort
 			templatePorts1.ID = types.StringPointerValue(templatePortsItem.ID)
-			templatePorts1.ListenPort = types.Int64PointerValue(templatePortsItem.ListenPort)
+			templatePorts1.ListenPort = types.StringPointerValue(templatePortsItem.ListenPort)
 			templatePorts1.ListenPortName = types.StringPointerValue(templatePortsItem.ListenPortName)
-			templatePorts1.ListenPortProtocol = types.Int64PointerValue(templatePortsItem.ListenPortProtocol)
+			templatePorts1.ListenPortProtocol = types.StringPointerValue(templatePortsItem.ListenPortProtocol)
 			if templatePortsItem.ListenPortReviewed != nil {
 				templatePorts1.ListenPortReviewed = types.StringValue(string(*templatePortsItem.ListenPortReviewed))
 			} else {

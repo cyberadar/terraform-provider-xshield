@@ -29,15 +29,15 @@ type TemplateDataSource struct {
 
 // TemplateDataSourceModel describes the data model.
 type TemplateDataSourceModel struct {
-	AccessPolicyTemplate types.Bool              `tfsdk:"access_policy_template"`
-	ColortokensManaged   types.Bool              `tfsdk:"colortokens_managed"`
-	ID                   types.String            `tfsdk:"id"`
-	TemplateCategory     types.String            `tfsdk:"template_category"`
-	TemplateDescription  types.String            `tfsdk:"template_description"`
-	TemplateName         types.String            `tfsdk:"template_name"`
-	TemplatePaths        []tfTypes.TemplatePath1 `tfsdk:"template_paths"`
-	TemplatePorts        []tfTypes.MetadataPort  `tfsdk:"template_ports"`
-	TemplateType         types.String            `tfsdk:"template_type"`
+	AccessPolicyTemplate types.Bool             `tfsdk:"access_policy_template"`
+	ColortokensManaged   types.Bool             `tfsdk:"colortokens_managed"`
+	ID                   types.String           `tfsdk:"id"`
+	TemplateCategory     types.String           `tfsdk:"template_category"`
+	TemplateDescription  types.String           `tfsdk:"template_description"`
+	TemplateName         types.String           `tfsdk:"template_name"`
+	TemplatePaths        []tfTypes.MetadataPath `tfsdk:"template_paths"`
+	TemplatePorts        []tfTypes.MetadataPort `tfsdk:"template_ports"`
+	TemplateType         types.String           `tfsdk:"template_type"`
 }
 
 // Metadata returns the data source type name.
@@ -73,51 +73,8 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"destination_asset": schema.SingleNestedAttribute{
+						"destination_asset_id": schema.StringAttribute{
 							Computed: true,
-							Attributes: map[string]schema.Attribute{
-								"asset_id": schema.StringAttribute{
-									Computed: true,
-								},
-								"asset_name": schema.StringAttribute{
-									Computed: true,
-								},
-								"auto_synchronize_enabled": schema.BoolAttribute{
-									Computed: true,
-								},
-								"cluster_identifier": schema.StringAttribute{
-									Computed: true,
-								},
-								"container_namespace": schema.StringAttribute{
-									Computed: true,
-								},
-								"core_tags": schema.MapAttribute{
-									Computed:    true,
-									ElementType: types.StringType,
-								},
-								"inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_progressive_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"type": schema.StringAttribute{
-									Computed: true,
-								},
-								"vendor_info": schema.StringAttribute{
-									Computed: true,
-								},
-							},
-							Description: `AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against`,
 						},
 						"destination_named_network": schema.SingleNestedAttribute{
 							Computed: true,
@@ -129,9 +86,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 									Computed: true,
 								},
 							},
-						},
-						"destination_process": schema.StringAttribute{
-							Computed: true,
 						},
 						"destination_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
@@ -159,6 +113,9 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"dst_ip": schema.StringAttribute{
 							Computed: true,
 						},
+						"dst_process": schema.StringAttribute{
+							Computed: true,
+						},
 						"id": schema.StringAttribute{
 							Computed: true,
 						},
@@ -174,51 +131,8 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"protocol": schema.StringAttribute{
 							Computed: true,
 						},
-						"source_asset": schema.SingleNestedAttribute{
+						"source_asset_id": schema.StringAttribute{
 							Computed: true,
-							Attributes: map[string]schema.Attribute{
-								"asset_id": schema.StringAttribute{
-									Computed: true,
-								},
-								"asset_name": schema.StringAttribute{
-									Computed: true,
-								},
-								"auto_synchronize_enabled": schema.BoolAttribute{
-									Computed: true,
-								},
-								"cluster_identifier": schema.StringAttribute{
-									Computed: true,
-								},
-								"container_namespace": schema.StringAttribute{
-									Computed: true,
-								},
-								"core_tags": schema.MapAttribute{
-									Computed:    true,
-									ElementType: types.StringType,
-								},
-								"inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"lowest_progressive_inbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"outbound_asset_status": schema.StringAttribute{
-									Computed: true,
-								},
-								"type": schema.StringAttribute{
-									Computed: true,
-								},
-								"vendor_info": schema.StringAttribute{
-									Computed: true,
-								},
-							},
-							Description: `AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against`,
 						},
 						"source_named_network": schema.SingleNestedAttribute{
 							Computed: true,
@@ -230,9 +144,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 									Computed: true,
 								},
 							},
-						},
-						"source_process": schema.StringAttribute{
-							Computed: true,
 						},
 						"source_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
@@ -254,6 +165,9 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"src_ip": schema.StringAttribute{
 							Computed: true,
 						},
+						"src_process": schema.StringAttribute{
+							Computed: true,
+						},
 						"uri": schema.StringAttribute{
 							Computed: true,
 						},
@@ -267,18 +181,18 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"id": schema.StringAttribute{
 							Computed: true,
 						},
-						"listen_port": schema.Int64Attribute{
+						"listen_port": schema.StringAttribute{
 							Computed: true,
 						},
 						"listen_port_name": schema.StringAttribute{
 							Computed: true,
 						},
-						"listen_port_protocol": schema.Int64Attribute{
+						"listen_port_protocol": schema.StringAttribute{
 							Computed: true,
 						},
 						"listen_port_reviewed": schema.StringAttribute{
 							Computed:    true,
-							Description: `must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]`,
+							Description: `must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]`,
 						},
 						"listen_process_names": schema.ListAttribute{
 							Computed:    true,
@@ -288,7 +202,8 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				},
 			},
 			"template_type": schema.StringAttribute{
-				Computed: true,
+				Computed:    true,
+				Description: `must be one of ["application-template", "block-template"]`,
 			},
 		},
 	}

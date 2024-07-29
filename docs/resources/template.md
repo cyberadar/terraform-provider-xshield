@@ -65,11 +65,7 @@ Optional:
 
 Read-Only:
 
-- `destination_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--destination_asset))
-- `destination_process` (String)
 - `id` (String)
-- `source_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--source_asset))
-- `source_process` (String)
 
 <a id="nestedatt--template_paths--destination_named_network"></a>
 ### Nested Schema for `template_paths.destination_named_network`
@@ -111,56 +107,16 @@ Optional:
 - `tag_based_policy_name` (String) Requires replacement if changed.
 
 
-<a id="nestedatt--template_paths--destination_asset"></a>
-### Nested Schema for `template_paths.destination_asset`
-
-Read-Only:
-
-- `asset_id` (String)
-- `asset_name` (String)
-- `auto_synchronize_enabled` (Boolean)
-- `cluster_identifier` (String)
-- `container_namespace` (String)
-- `core_tags` (Map of String)
-- `inbound_asset_status` (String)
-- `lowest_inbound_asset_status` (String)
-- `lowest_outbound_asset_status` (String)
-- `lowest_progressive_inbound_asset_status` (String)
-- `outbound_asset_status` (String)
-- `type` (String)
-- `vendor_info` (String)
-
-
-<a id="nestedatt--template_paths--source_asset"></a>
-### Nested Schema for `template_paths.source_asset`
-
-Read-Only:
-
-- `asset_id` (String)
-- `asset_name` (String)
-- `auto_synchronize_enabled` (Boolean)
-- `cluster_identifier` (String)
-- `container_namespace` (String)
-- `core_tags` (Map of String)
-- `inbound_asset_status` (String)
-- `lowest_inbound_asset_status` (String)
-- `lowest_outbound_asset_status` (String)
-- `lowest_progressive_inbound_asset_status` (String)
-- `outbound_asset_status` (String)
-- `type` (String)
-- `vendor_info` (String)
-
-
 
 <a id="nestedatt--template_ports"></a>
 ### Nested Schema for `template_ports`
 
 Optional:
 
-- `listen_port` (Number) Requires replacement if changed.
+- `listen_port` (String) Requires replacement if changed.
 - `listen_port_name` (String) Requires replacement if changed.
-- `listen_port_protocol` (Number) Requires replacement if changed.
-- `listen_port_reviewed` (String) Requires replacement if changed. ; must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]
+- `listen_port_protocol` (String) Requires replacement if changed.
+- `listen_port_reviewed` (String) Requires replacement if changed. ; must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]
 - `listen_process_names` (List of String) Requires replacement if changed.
 
 Read-Only:

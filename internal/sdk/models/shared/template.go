@@ -2,6 +2,37 @@
 
 package shared
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type TemplateType string
+
+const (
+	TemplateTypeApplicationTemplate TemplateType = "application-template"
+	TemplateTypeBlockTemplate       TemplateType = "block-template"
+)
+
+func (e TemplateType) ToPointer() *TemplateType {
+	return &e
+}
+func (e *TemplateType) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "application-template":
+		fallthrough
+	case "block-template":
+		*e = TemplateType(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for TemplateType: %v", v)
+	}
+}
+
 type Template struct {
 	AccessPolicyTemplate *bool          `json:"accessPolicyTemplate,omitempty"`
 	ColortokensManaged   *bool          `json:"oobTemplate,omitempty"`
@@ -9,9 +40,9 @@ type Template struct {
 	TemplateDescription  *string        `json:"templateDescription,omitempty"`
 	ID                   *string        `json:"templateId,omitempty"`
 	TemplateName         *string        `json:"templateName,omitempty"`
-	TemplatePaths        []TemplatePath `json:"templatePaths,omitempty"`
+	TemplatePaths        []MetadataPath `json:"templatePaths,omitempty"`
 	TemplatePorts        []MetadataPort `json:"templatePorts,omitempty"`
-	TemplateType         *string        `json:"templateType,omitempty"`
+	TemplateType         *TemplateType  `json:"templateType,omitempty"`
 }
 
 func (o *Template) GetAccessPolicyTemplate() *bool {
@@ -56,7 +87,7 @@ func (o *Template) GetTemplateName() *string {
 	return o.TemplateName
 }
 
-func (o *Template) GetTemplatePaths() []TemplatePath {
+func (o *Template) GetTemplatePaths() []MetadataPath {
 	if o == nil {
 		return nil
 	}
@@ -70,7 +101,7 @@ func (o *Template) GetTemplatePorts() []MetadataPort {
 	return o.TemplatePorts
 }
 
-func (o *Template) GetTemplateType() *string {
+func (o *Template) GetTemplateType() *TemplateType {
 	if o == nil {
 		return nil
 	}

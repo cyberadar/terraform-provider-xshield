@@ -4,23 +4,23 @@ package types
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-type TemplatePath1 struct {
-	DestinationAsset          *AssetSummary                    `tfsdk:"destination_asset"`
+type MetadataPath struct {
+	DestinationAssetID        types.String                     `tfsdk:"destination_asset_id"`
 	DestinationNamedNetwork   *MetadataNamedNetworkReference   `tfsdk:"destination_named_network"`
-	DestinationProcess        types.String                     `tfsdk:"destination_process"`
 	DestinationTagBasedPolicy *MetadataTagBasedPolicyReference `tfsdk:"destination_tag_based_policy"`
 	Direction                 types.String                     `tfsdk:"direction"`
 	Domain                    types.String                     `tfsdk:"domain"`
 	DstIP                     types.String                     `tfsdk:"dst_ip"`
+	DstProcess                types.String                     `tfsdk:"dst_process"`
 	ID                        types.String                     `tfsdk:"id"`
 	Method                    types.String                     `tfsdk:"method"`
 	Port                      types.String                     `tfsdk:"port"`
 	PortName                  types.String                     `tfsdk:"port_name"`
 	Protocol                  types.String                     `tfsdk:"protocol"`
-	SourceAsset               *AssetSummary                    `tfsdk:"source_asset"`
+	SourceAssetID             types.String                     `tfsdk:"source_asset_id"`
 	SourceNamedNetwork        *MetadataNamedNetworkReference   `tfsdk:"source_named_network"`
-	SourceProcess             types.String                     `tfsdk:"source_process"`
 	SourceTagBasedPolicy      *MetadataTagBasedPolicyReference `tfsdk:"source_tag_based_policy"`
 	SrcIP                     types.String                     `tfsdk:"src_ip"`
+	SrcProcess                types.String                     `tfsdk:"src_process"`
 	URI                       types.String                     `tfsdk:"uri"`
 }

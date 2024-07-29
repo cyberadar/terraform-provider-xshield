@@ -10,15 +10,10 @@ import (
 type MetadataPortState string
 
 const (
-	MetadataPortStatePortUnreviewed              MetadataPortState = "PortUnreviewed"
-	MetadataPortStatePortDenied                  MetadataPortState = "PortDenied"
-	MetadataPortStatePortAllowIntranet           MetadataPortState = "PortAllowIntranet"
-	MetadataPortStatePortAllowAny                MetadataPortState = "PortAllowAny"
-	MetadataPortStatePortPathRestricted          MetadataPortState = "PortPathRestricted"
-	MetadataPortStatePortDeniedByTemplate        MetadataPortState = "PortDeniedByTemplate"
-	MetadataPortStatePortAllowIntranetByTemplate MetadataPortState = "PortAllowIntranetByTemplate"
-	MetadataPortStatePortAllowAnyByTemplate      MetadataPortState = "PortAllowAnyByTemplate"
-	MetadataPortStatePortAllowAnyByProgressive   MetadataPortState = "PortAllowAnyByProgressive"
+	MetadataPortStateDenied         MetadataPortState = "denied"
+	MetadataPortStateAllowIntranet  MetadataPortState = "allow-intranet"
+	MetadataPortStateAllowAny       MetadataPortState = "allow-any"
+	MetadataPortStatePathRestricted MetadataPortState = "path-restricted"
 )
 
 func (e MetadataPortState) ToPointer() *MetadataPortState {
@@ -30,23 +25,13 @@ func (e *MetadataPortState) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch v {
-	case "PortUnreviewed":
+	case "denied":
 		fallthrough
-	case "PortDenied":
+	case "allow-intranet":
 		fallthrough
-	case "PortAllowIntranet":
+	case "allow-any":
 		fallthrough
-	case "PortAllowAny":
-		fallthrough
-	case "PortPathRestricted":
-		fallthrough
-	case "PortDeniedByTemplate":
-		fallthrough
-	case "PortAllowIntranetByTemplate":
-		fallthrough
-	case "PortAllowAnyByTemplate":
-		fallthrough
-	case "PortAllowAnyByProgressive":
+	case "path-restricted":
 		*e = MetadataPortState(v)
 		return nil
 	default:

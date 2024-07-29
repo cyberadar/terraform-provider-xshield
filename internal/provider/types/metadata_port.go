@@ -6,9 +6,9 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type MetadataPort struct {
 	ID                 types.String   `tfsdk:"id"`
-	ListenPort         types.Int64    `tfsdk:"listen_port"`
+	ListenPort         types.String   `tfsdk:"listen_port"`
 	ListenPortName     types.String   `tfsdk:"listen_port_name"`
-	ListenPortProtocol types.Int64    `tfsdk:"listen_port_protocol"`
+	ListenPortProtocol types.String   `tfsdk:"listen_port_protocol"`
 	ListenPortReviewed types.String   `tfsdk:"listen_port_reviewed"`
 	ListenProcessNames []types.String `tfsdk:"listen_process_names"`
 }

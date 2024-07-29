@@ -3,15 +3,15 @@
 package shared
 
 type MetadataPort struct {
-	ListenPort         *int64             `json:"listenPort,omitempty"`
+	ListenPort         *string            `json:"listenPort,omitempty"`
 	ListenPortName     *string            `json:"listenPortName,omitempty"`
-	ListenPortProtocol *int64             `json:"listenPortProtocol,omitempty"`
+	ListenPortProtocol *string            `json:"listenPortProtocol,omitempty"`
 	ListenPortReviewed *MetadataPortState `json:"listenPortReviewed,omitempty"`
 	ListenProcessNames []string           `json:"listenProcessNames,omitempty"`
 	ID                 *string            `json:"lpId,omitempty"`
 }
 
-func (o *MetadataPort) GetListenPort() *int64 {
+func (o *MetadataPort) GetListenPort() *string {
 	if o == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (o *MetadataPort) GetListenPortName() *string {
 	return o.ListenPortName
 }
 
-func (o *MetadataPort) GetListenPortProtocol() *int64 {
+func (o *MetadataPort) GetListenPortProtocol() *string {
 	if o == nil {
 		return nil
 	}

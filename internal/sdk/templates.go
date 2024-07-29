@@ -828,7 +828,7 @@ func (s *Templates) BulkTemplateUnApply(ctx context.Context, request shared.Appl
 
 // CreateTemplate - Creates a template and adds the payload (if present)
 // Creates a template with the given name and payload (if present). Template name must be unique.
-func (s *Templates) CreateTemplate(ctx context.Context, request shared.CreateTemplateDetails, opts ...operations.Option) (*operations.CreateTemplateResponse, error) {
+func (s *Templates) CreateTemplate(ctx context.Context, request shared.Template, opts ...operations.Option) (*operations.CreateTemplateResponse, error) {
 	hookCtx := hooks.HookContext{
 		Context:        ctx,
 		OperationID:    "CreateTemplate",
