@@ -24,8 +24,8 @@ data "xshield-sdk_template" "my_template" {
 ### Read-Only
 
 - `access_policy_template` (Boolean)
+- `colortokens_managed` (Boolean)
 - `id` (String) The ID of this resource.
-- `oob_template` (Boolean)
 - `template_category` (String)
 - `template_description` (String)
 - `template_name` (String)
@@ -38,7 +38,6 @@ data "xshield-sdk_template" "my_template" {
 
 Read-Only:
 
-- `channel_hash` (String)
 - `destination_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--destination_asset))
 - `destination_named_network` (Attributes) (see [below for nested schema](#nestedatt--template_paths--destination_named_network))
 - `destination_process` (String)
@@ -46,6 +45,7 @@ Read-Only:
 - `direction` (String)
 - `domain` (String)
 - `dst_ip` (String)
+- `id` (String)
 - `method` (String)
 - `port` (String)
 - `port_name` (String)
@@ -143,11 +143,11 @@ Read-Only:
 
 Read-Only:
 
+- `id` (String)
 - `listen_port` (Number)
 - `listen_port_name` (String)
 - `listen_port_protocol` (Number)
 - `listen_port_reviewed` (String) must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]
 - `listen_process_names` (List of String)
-- `lp_id` (String)
 
 

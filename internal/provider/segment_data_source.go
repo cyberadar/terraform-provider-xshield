@@ -31,7 +31,6 @@ type SegmentDataSource struct {
 type SegmentDataSourceModel struct {
 	AutoSynchronizeEnabled               types.Bool                         `tfsdk:"auto_synchronize_enabled"`
 	Criteria                             types.String                       `tfsdk:"criteria"`
-	CriteriaAsParams                     types.String                       `tfsdk:"criteria_as_params"`
 	Description                          types.String                       `tfsdk:"description"`
 	ID                                   types.String                       `tfsdk:"id"`
 	LowestInboundPolicyStatus            types.String                       `tfsdk:"lowest_inbound_policy_status"`
@@ -62,9 +61,6 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"criteria": schema.StringAttribute{
 				Computed: true,
 			},
-			"criteria_as_params": schema.StringAttribute{
-				Computed: true,
-			},
 			"description": schema.StringAttribute{
 				Computed: true,
 			},
@@ -90,6 +86,9 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 						"assigned_by_tag_based_policy": schema.BoolAttribute{
 							Computed: true,
 						},
+						"colortokens_managed": schema.BoolAttribute{
+							Computed: true,
+						},
 						"id": schema.StringAttribute{
 							Computed: true,
 						},
@@ -108,9 +107,6 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 									},
 								},
 							},
-						},
-						"is_oob_network": schema.BoolAttribute{
-							Computed: true,
 						},
 						"named_network_assignments": schema.Int64Attribute{
 							Computed: true,

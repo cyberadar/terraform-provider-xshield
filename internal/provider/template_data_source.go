@@ -30,8 +30,8 @@ type TemplateDataSource struct {
 // TemplateDataSourceModel describes the data model.
 type TemplateDataSourceModel struct {
 	AccessPolicyTemplate types.Bool              `tfsdk:"access_policy_template"`
+	ColortokensManaged   types.Bool              `tfsdk:"colortokens_managed"`
 	ID                   types.String            `tfsdk:"id"`
-	OobTemplate          types.Bool              `tfsdk:"oob_template"`
 	TemplateCategory     types.String            `tfsdk:"template_category"`
 	TemplateDescription  types.String            `tfsdk:"template_description"`
 	TemplateName         types.String            `tfsdk:"template_name"`
@@ -54,10 +54,10 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			"access_policy_template": schema.BoolAttribute{
 				Computed: true,
 			},
-			"id": schema.StringAttribute{
+			"colortokens_managed": schema.BoolAttribute{
 				Computed: true,
 			},
-			"oob_template": schema.BoolAttribute{
+			"id": schema.StringAttribute{
 				Computed: true,
 			},
 			"template_category": schema.StringAttribute{
@@ -73,9 +73,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"channel_hash": schema.StringAttribute{
-							Computed: true,
-						},
 						"destination_asset": schema.SingleNestedAttribute{
 							Computed: true,
 							Attributes: map[string]schema.Attribute{
@@ -160,6 +157,9 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							Computed: true,
 						},
 						"dst_ip": schema.StringAttribute{
+							Computed: true,
+						},
+						"id": schema.StringAttribute{
 							Computed: true,
 						},
 						"method": schema.StringAttribute{
@@ -264,6 +264,9 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"id": schema.StringAttribute{
+							Computed: true,
+						},
 						"listen_port": schema.Int64Attribute{
 							Computed: true,
 						},
@@ -280,9 +283,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"listen_process_names": schema.ListAttribute{
 							Computed:    true,
 							ElementType: types.StringType,
-						},
-						"lp_id": schema.StringAttribute{
-							Computed: true,
 						},
 					},
 				},

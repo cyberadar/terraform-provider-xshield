@@ -8,7 +8,7 @@ type TagRule struct {
 	RuleCriteria    string            `json:"ruleCriteria"`
 	RuleDescription *string           `json:"ruleDescription,omitempty"`
 	RuleEnabled     *bool             `json:"ruleEnabled,omitempty"`
-	ID              *string           `json:"id,omitempty"`
+	ID              *string           `json:"ruleId,omitempty"`
 	RuleName        *string           `json:"ruleName,omitempty"`
 }
 

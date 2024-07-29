@@ -5,7 +5,6 @@ package types
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type TemplatePath1 struct {
-	ChannelHash               types.String                     `tfsdk:"channel_hash"`
 	DestinationAsset          *AssetSummary                    `tfsdk:"destination_asset"`
 	DestinationNamedNetwork   *MetadataNamedNetworkReference   `tfsdk:"destination_named_network"`
 	DestinationProcess        types.String                     `tfsdk:"destination_process"`
@@ -13,6 +12,7 @@ type TemplatePath1 struct {
 	Direction                 types.String                     `tfsdk:"direction"`
 	Domain                    types.String                     `tfsdk:"domain"`
 	DstIP                     types.String                     `tfsdk:"dst_ip"`
+	ID                        types.String                     `tfsdk:"id"`
 	Method                    types.String                     `tfsdk:"method"`
 	Port                      types.String                     `tfsdk:"port"`
 	PortName                  types.String                     `tfsdk:"port_name"`

@@ -22,12 +22,6 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 	} else {
 		criteria = nil
 	}
-	criteriaAsParams := new(string)
-	if !r.CriteriaAsParams.IsUnknown() && !r.CriteriaAsParams.IsNull() {
-		*criteriaAsParams = r.CriteriaAsParams.ValueString()
-	} else {
-		criteriaAsParams = nil
-	}
 	description := new(string)
 	if !r.Description.IsUnknown() && !r.Description.IsNull() {
 		*description = r.Description.ValueString()
@@ -98,11 +92,11 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 				IPRange: ipRange,
 			})
 		}
-		isOOBNetwork := new(bool)
-		if !namednetworksItem.IsOOBNetwork.IsUnknown() && !namednetworksItem.IsOOBNetwork.IsNull() {
-			*isOOBNetwork = namednetworksItem.IsOOBNetwork.ValueBool()
+		colortokensManaged := new(bool)
+		if !namednetworksItem.ColortokensManaged.IsUnknown() && !namednetworksItem.ColortokensManaged.IsNull() {
+			*colortokensManaged = namednetworksItem.ColortokensManaged.ValueBool()
 		} else {
-			isOOBNetwork = nil
+			colortokensManaged = nil
 		}
 		namedNetworkAssignments := new(int64)
 		if !namednetworksItem.NamedNetworkAssignments.IsUnknown() && !namednetworksItem.NamedNetworkAssignments.IsNull() {
@@ -174,7 +168,7 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 			ID:                                    id,
 			AssignedByTagBasedPolicy:              assignedByTagBasedPolicy,
 			IPRanges:                              ipRanges,
-			IsOOBNetwork:                          isOOBNetwork,
+			ColortokensManaged:                    colortokensManaged,
 			NamedNetworkAssignments:               namedNetworkAssignments,
 			NamedNetworkDescription:               namedNetworkDescription,
 			NamedNetworkName:                      namedNetworkName,
@@ -322,7 +316,6 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 	out := shared.TagBasedPolicy{
 		AutoSynchronizeEnabled:               autoSynchronizeEnabled,
 		Criteria:                             criteria,
-		CriteriaAsParams:                     criteriaAsParams,
 		Description:                          description,
 		LowestInboundPolicyStatus:            lowestInboundPolicyStatus,
 		LowestOutboundPolicyStatus:           lowestOutboundPolicyStatus,
@@ -342,7 +335,6 @@ func (r *SegmentResourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.TagB
 	if resp != nil {
 		r.AutoSynchronizeEnabled = types.BoolPointerValue(resp.AutoSynchronizeEnabled)
 		r.Criteria = types.StringPointerValue(resp.Criteria)
-		r.CriteriaAsParams = types.StringPointerValue(resp.CriteriaAsParams)
 		r.Description = types.StringPointerValue(resp.Description)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.LowestInboundPolicyStatus = types.StringPointerValue(resp.LowestInboundPolicyStatus)
@@ -356,6 +348,7 @@ func (r *SegmentResourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.TagB
 		for namednetworksCount, namednetworksItem := range resp.Namednetworks {
 			var namednetworks1 tfTypes.NamednetworkNamedNetwork
 			namednetworks1.AssignedByTagBasedPolicy = types.BoolPointerValue(namednetworksItem.AssignedByTagBasedPolicy)
+			namednetworks1.ColortokensManaged = types.BoolPointerValue(namednetworksItem.ColortokensManaged)
 			namednetworks1.ID = types.StringPointerValue(namednetworksItem.ID)
 			namednetworks1.IPRanges = []tfTypes.NamednetworkRange{}
 			for ipRangesCount, ipRangesItem := range namednetworksItem.IPRanges {
@@ -371,7 +364,6 @@ func (r *SegmentResourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.TagB
 					namednetworks1.IPRanges[ipRangesCount].IPRange = ipRanges1.IPRange
 				}
 			}
-			namednetworks1.IsOOBNetwork = types.BoolPointerValue(namednetworksItem.IsOOBNetwork)
 			namednetworks1.NamedNetworkAssignments = types.Int64PointerValue(namednetworksItem.NamedNetworkAssignments)
 			namednetworks1.NamedNetworkDescription = types.StringPointerValue(namednetworksItem.NamedNetworkDescription)
 			namednetworks1.NamedNetworkName = types.StringPointerValue(namednetworksItem.NamedNetworkName)
@@ -387,9 +379,9 @@ func (r *SegmentResourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.TagB
 				r.Namednetworks = append(r.Namednetworks, namednetworks1)
 			} else {
 				r.Namednetworks[namednetworksCount].AssignedByTagBasedPolicy = namednetworks1.AssignedByTagBasedPolicy
+				r.Namednetworks[namednetworksCount].ColortokensManaged = namednetworks1.ColortokensManaged
 				r.Namednetworks[namednetworksCount].ID = namednetworks1.ID
 				r.Namednetworks[namednetworksCount].IPRanges = namednetworks1.IPRanges
-				r.Namednetworks[namednetworksCount].IsOOBNetwork = namednetworks1.IsOOBNetwork
 				r.Namednetworks[namednetworksCount].NamedNetworkAssignments = namednetworks1.NamedNetworkAssignments
 				r.Namednetworks[namednetworksCount].NamedNetworkDescription = namednetworks1.NamedNetworkDescription
 				r.Namednetworks[namednetworksCount].NamedNetworkName = namednetworks1.NamedNetworkName

@@ -3,7 +3,7 @@
 package shared
 
 type NamednetworkRange struct {
-	ID      *string `json:"id,omitempty"`
+	ID      *string `json:"rangeID,omitempty"`
 	IPCount *int64  `json:"ipCount,omitempty"`
 	IPRange *string `json:"ipRange,omitempty"`
 }

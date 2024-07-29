@@ -44,7 +44,6 @@ type SegmentResource struct {
 type SegmentResourceModel struct {
 	AutoSynchronizeEnabled               types.Bool                         `tfsdk:"auto_synchronize_enabled"`
 	Criteria                             types.String                       `tfsdk:"criteria"`
-	CriteriaAsParams                     types.String                       `tfsdk:"criteria_as_params"`
 	Description                          types.String                       `tfsdk:"description"`
 	ID                                   types.String                       `tfsdk:"id"`
 	LowestInboundPolicyStatus            types.String                       `tfsdk:"lowest_inbound_policy_status"`
@@ -84,15 +83,6 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:    true,
 				Description: `Requires replacement if changed. `,
 			},
-			"criteria_as_params": schema.StringAttribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
 			"description": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -105,11 +95,8 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"id": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
 			},
 			"lowest_inbound_policy_status": schema.StringAttribute{
 				Computed: true,
@@ -141,11 +128,8 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"matching_assets": schema.Int64Attribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
 			},
 			"namednetworks": schema.ListNestedAttribute{
 				Computed: true,
@@ -162,14 +146,17 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
 							},
 						},
+						"colortokens_managed": schema.BoolAttribute{
+							Computed: true,
+							PlanModifiers: []planmodifier.Bool{
+								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
+							},
+						},
 						"id": schema.StringAttribute{
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
 						},
 						"ip_ranges": schema.ListNestedAttribute{
 							Computed: true,
@@ -183,11 +170,8 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 									"id": schema.StringAttribute{
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplaceIfConfigured(),
 											speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 										},
-										Optional:    true,
-										Description: `Requires replacement if changed. `,
 									},
 									"ip_count": schema.Int64Attribute{
 										Computed: true,
@@ -207,12 +191,6 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 								},
 							},
 							Description: `Requires replacement if changed. `,
-						},
-						"is_oob_network": schema.BoolAttribute{
-							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
 						},
 						"named_network_assignments": schema.Int64Attribute{
 							Computed: true,
@@ -311,11 +289,8 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"policy_progressive_last_refreshed": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
 				Validators: []validator.String{
 					validators.IsRFC3339(),
 				},

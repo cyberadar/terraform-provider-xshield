@@ -4,10 +4,10 @@ package shared
 
 type Template struct {
 	AccessPolicyTemplate *bool          `json:"accessPolicyTemplate,omitempty"`
-	OobTemplate          *bool          `json:"oobTemplate,omitempty"`
+	ColortokensManaged   *bool          `json:"oobTemplate,omitempty"`
 	TemplateCategory     *string        `json:"templateCategory,omitempty"`
 	TemplateDescription  *string        `json:"templateDescription,omitempty"`
-	ID                   *string        `json:"id,omitempty"`
+	ID                   *string        `json:"templateId,omitempty"`
 	TemplateName         *string        `json:"templateName,omitempty"`
 	TemplatePaths        []TemplatePath `json:"templatePaths,omitempty"`
 	TemplatePorts        []MetadataPort `json:"templatePorts,omitempty"`
@@ -21,11 +21,11 @@ func (o *Template) GetAccessPolicyTemplate() *bool {
 	return o.AccessPolicyTemplate
 }
 
-func (o *Template) GetOobTemplate() *bool {
+func (o *Template) GetColortokensManaged() *bool {
 	if o == nil {
 		return nil
 	}
-	return o.OobTemplate
+	return o.ColortokensManaged
 }
 
 func (o *Template) GetTemplateCategory() *string {

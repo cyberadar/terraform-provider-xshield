@@ -31,9 +31,9 @@ type NamedNetworkResource struct {
 // NamedNetworkResourceModel describes the resource data model.
 type NamedNetworkResourceModel struct {
 	AssignedByTagBasedPolicy              types.Bool                  `tfsdk:"assigned_by_tag_based_policy"`
+	ColortokensManaged                    types.Bool                  `tfsdk:"colortokens_managed"`
 	ID                                    types.String                `tfsdk:"id"`
 	IPRanges                              []tfTypes.NamednetworkRange `tfsdk:"ip_ranges"`
-	IsOOBNetwork                          types.Bool                  `tfsdk:"is_oob_network"`
 	NamedNetworkAssignments               types.Int64                 `tfsdk:"named_network_assignments"`
 	NamedNetworkDescription               types.String                `tfsdk:"named_network_description"`
 	NamedNetworkName                      types.String                `tfsdk:"named_network_name"`
@@ -58,9 +58,11 @@ func (r *NamedNetworkResource) Schema(ctx context.Context, req resource.SchemaRe
 			"assigned_by_tag_based_policy": schema.BoolAttribute{
 				Computed: true,
 			},
+			"colortokens_managed": schema.BoolAttribute{
+				Computed: true,
+			},
 			"id": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
 			},
 			"ip_ranges": schema.ListNestedAttribute{
 				Computed: true,
@@ -69,7 +71,6 @@ func (r *NamedNetworkResource) Schema(ctx context.Context, req resource.SchemaRe
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							Computed: true,
-							Optional: true,
 						},
 						"ip_count": schema.Int64Attribute{
 							Computed: true,
@@ -80,9 +81,6 @@ func (r *NamedNetworkResource) Schema(ctx context.Context, req resource.SchemaRe
 						},
 					},
 				},
-			},
-			"is_oob_network": schema.BoolAttribute{
-				Computed: true,
 			},
 			"named_network_assignments": schema.Int64Attribute{
 				Computed: true,

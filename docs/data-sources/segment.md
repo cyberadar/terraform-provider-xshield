@@ -25,7 +25,6 @@ data "xshield-sdk_segment" "my_segment" {
 
 - `auto_synchronize_enabled` (Boolean)
 - `criteria` (String)
-- `criteria_as_params` (String)
 - `description` (String)
 - `id` (String) The ID of this resource.
 - `lowest_inbound_policy_status` (String)
@@ -44,9 +43,9 @@ data "xshield-sdk_segment" "my_segment" {
 Read-Only:
 
 - `assigned_by_tag_based_policy` (Boolean)
+- `colortokens_managed` (Boolean)
 - `id` (String)
 - `ip_ranges` (Attributes List) (see [below for nested schema](#nestedatt--namednetworks--ip_ranges))
-- `is_oob_network` (Boolean)
 - `named_network_assignments` (Number)
 - `named_network_description` (String)
 - `named_network_name` (String)

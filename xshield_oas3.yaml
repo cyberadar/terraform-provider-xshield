@@ -4516,6 +4516,8 @@ components:
       type: object
       properties:
         channelHash:
+          x-speakeasy-name-override: id        
+          x-speakeasy-param-readonly: true          
           type: string
         destinationAssetID:
           type: string
@@ -4567,6 +4569,8 @@ components:
           items:
             type: string
         lpId:
+          x-speakeasy-name-override: id        
+          x-speakeasy-param-readonly: true          
           type: string
     metadata.PortState:
       type: string
@@ -5856,6 +5860,7 @@ components:
         criteria:
           type: string
         criteriaAsParams:
+          x-speakeasy-ignore: true
           type: string
         description:
           type: string
@@ -5866,6 +5871,7 @@ components:
         lowestProgressiveInboundPolicyStatus:
           type: string
         matchingAssets:
+          x-speakeasy-param-readonly: true        
           type: integer
         namednetworks:
           type: array
@@ -5875,8 +5881,11 @@ components:
           type: boolean
         policyProgressiveLastRefreshed:
           type: string
+          x-speakeasy-param-readonly: true
           format: date-time
-        id:
+        tagBasedPolicyId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
           type: string
         tagBasedPolicyName:
           type: string
@@ -5945,7 +5954,8 @@ components:
           type: string
         ruleEnabled:
           type: boolean
-        id:
+        ruleId:
+          x-speakeasy-name-override: id
           x-speakeasy-param-readonly: true
           type: string
         ruleName:
@@ -5994,14 +6004,19 @@ components:
       x-speakeasy-entity: Template
       properties:
         accessPolicyTemplate:
+          x-speakeasy-param-readonly: true        
           type: boolean
         oobTemplate:
+          x-speakeasy-name-override: colortokensManaged
+          x-speakeasy-param-readonly: true          
           type: boolean
         templateCategory:
           type: string
         templateDescription:
           type: string
-        id:
+        templateId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true          
           type: string
         templateName:
           type: string
@@ -6039,6 +6054,8 @@ components:
       type: object
       properties:
         channelHash:
+          x-speakeasy-name-override: id        
+          x-speakeasy-param-readonly: true        
           type: string
         destinationAsset:
           $ref: '#/components/schemas/AssetSummary'
@@ -6257,7 +6274,9 @@ components:
       type: object
       x-speakeasy-entity: NamedNetwork
       properties:
-        id:
+        namedNetworkId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
           type: string
         assignedByTagBasedPolicy:
           x-speakeasy-param-readonly: true
@@ -6270,6 +6289,7 @@ components:
           items:
             $ref: '#/components/schemas/namednetwork.Range'
         isOOBNetwork:
+          x-speakeasy-name-override: colortokensManaged
           x-speakeasy-param-readonly: true
           type: boolean
         namedNetworkAssignments:
@@ -6287,7 +6307,8 @@ components:
           type: boolean
         programAsIntranet:
           type: boolean
-        vendor:
+        provider:
+          x-speakeasy-name-override: vendor
           x-speakeasy-terraform-ignore: true
           type: string
         region:
@@ -6307,7 +6328,9 @@ components:
       type: object
       x-speakeasy-entity: NamedNetworkRange
       properties:
-        id:
+        rangeID:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
           type: string
         # inputIPRange:
         #   type: string

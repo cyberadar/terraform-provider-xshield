@@ -18,7 +18,7 @@ resource "xshield-sdk_template" "my_template" {
   template_description = "...my_template_description..."
   templateid           = "...my_templateid..."
   template_name        = "...my_template_name..."
-  template_type        = "block-template"
+  template_type        = "application-template"
 }
 ```
 
@@ -37,15 +37,14 @@ resource "xshield-sdk_template" "my_template" {
 ### Read-Only
 
 - `access_policy_template` (Boolean)
+- `colortokens_managed` (Boolean)
 - `id` (String) The ID of this resource.
-- `oob_template` (Boolean)
 
 <a id="nestedatt--template_paths"></a>
 ### Nested Schema for `template_paths`
 
 Optional:
 
-- `channel_hash` (String) Requires replacement if changed.
 - `destination_asset_id` (String) Requires replacement if changed.
 - `destination_named_network` (Attributes) Requires replacement if changed. (see [below for nested schema](#nestedatt--template_paths--destination_named_network))
 - `destination_tag_based_policy` (Attributes) Requires replacement if changed. (see [below for nested schema](#nestedatt--template_paths--destination_tag_based_policy))
@@ -68,6 +67,7 @@ Read-Only:
 
 - `destination_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--destination_asset))
 - `destination_process` (String)
+- `id` (String)
 - `source_asset` (Attributes) AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against (see [below for nested schema](#nestedatt--template_paths--source_asset))
 - `source_process` (String)
 
@@ -162,7 +162,10 @@ Optional:
 - `listen_port_protocol` (Number) Requires replacement if changed.
 - `listen_port_reviewed` (String) Requires replacement if changed. ; must be one of ["PortUnreviewed", "PortDenied", "PortAllowIntranet", "PortAllowAny", "PortPathRestricted", "PortDeniedByTemplate", "PortAllowIntranetByTemplate", "PortAllowAnyByTemplate", "PortAllowAnyByProgressive"]
 - `listen_process_names` (List of String) Requires replacement if changed.
-- `lp_id` (String) Requires replacement if changed.
+
+Read-Only:
+
+- `id` (String)
 
 ## Import
 

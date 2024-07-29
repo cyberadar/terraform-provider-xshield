@@ -11,6 +11,7 @@ import (
 func (r *NamedNetworkDataSourceModel) RefreshFromSharedNamednetworkNamedNetwork(resp *shared.NamednetworkNamedNetwork) {
 	if resp != nil {
 		r.AssignedByTagBasedPolicy = types.BoolPointerValue(resp.AssignedByTagBasedPolicy)
+		r.ColortokensManaged = types.BoolPointerValue(resp.ColortokensManaged)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.IPRanges = []tfTypes.NamednetworkRange{}
 		if len(r.IPRanges) > len(resp.IPRanges) {
@@ -29,7 +30,6 @@ func (r *NamedNetworkDataSourceModel) RefreshFromSharedNamednetworkNamedNetwork(
 				r.IPRanges[ipRangesCount].IPRange = ipRanges1.IPRange
 			}
 		}
-		r.IsOOBNetwork = types.BoolPointerValue(resp.IsOOBNetwork)
 		r.NamedNetworkAssignments = types.Int64PointerValue(resp.NamedNetworkAssignments)
 		r.NamedNetworkDescription = types.StringPointerValue(resp.NamedNetworkDescription)
 		r.NamedNetworkName = types.StringPointerValue(resp.NamedNetworkName)

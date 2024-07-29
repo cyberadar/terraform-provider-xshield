@@ -3,17 +3,17 @@
 package shared
 
 type NamednetworkNamedNetwork struct {
-	ID                                    *string             `json:"id,omitempty"`
+	ID                                    *string             `json:"namedNetworkId,omitempty"`
 	AssignedByTagBasedPolicy              *bool               `json:"assignedByTagBasedPolicy,omitempty"`
 	IPRanges                              []NamednetworkRange `json:"ipRanges,omitempty"`
-	IsOOBNetwork                          *bool               `json:"isOOBNetwork,omitempty"`
+	ColortokensManaged                    *bool               `json:"isOOBNetwork,omitempty"`
 	NamedNetworkAssignments               *int64              `json:"namedNetworkAssignments,omitempty"`
 	NamedNetworkDescription               *string             `json:"namedNetworkDescription,omitempty"`
 	NamedNetworkName                      *string             `json:"namedNetworkName,omitempty"`
 	NamednetworkTagBasedPolicyAssignments *int64              `json:"namednetworkTagBasedPolicyAssignments,omitempty"`
 	ProgramAsInternet                     *bool               `json:"programAsInternet,omitempty"`
 	ProgramAsIntranet                     *bool               `json:"programAsIntranet,omitempty"`
-	Vendor                                *string             `json:"vendor,omitempty"`
+	Vendor                                *string             `json:"provider,omitempty"`
 	Region                                *string             `json:"region,omitempty"`
 	Service                               *string             `json:"service,omitempty"`
 	TotalComments                         *int64              `json:"totalComments,omitempty"`
@@ -42,11 +42,11 @@ func (o *NamednetworkNamedNetwork) GetIPRanges() []NamednetworkRange {
 	return o.IPRanges
 }
 
-func (o *NamednetworkNamedNetwork) GetIsOOBNetwork() *bool {
+func (o *NamednetworkNamedNetwork) GetColortokensManaged() *bool {
 	if o == nil {
 		return nil
 	}
-	return o.IsOOBNetwork
+	return o.ColortokensManaged
 }
 
 func (o *NamednetworkNamedNetwork) GetNamedNetworkAssignments() *int64 {

@@ -24,9 +24,9 @@ data "xshield-sdk_named_network" "my_namednetwork" {
 ### Read-Only
 
 - `assigned_by_tag_based_policy` (Boolean)
+- `colortokens_managed` (Boolean)
 - `id` (String) The ID of this resource.
 - `ip_ranges` (Attributes List) (see [below for nested schema](#nestedatt--ip_ranges))
-- `is_oob_network` (Boolean)
 - `named_network_assignments` (Number)
 - `named_network_description` (String)
 - `named_network_name` (String)

@@ -30,9 +30,9 @@ type NamedNetworkDataSource struct {
 // NamedNetworkDataSourceModel describes the data model.
 type NamedNetworkDataSourceModel struct {
 	AssignedByTagBasedPolicy              types.Bool                  `tfsdk:"assigned_by_tag_based_policy"`
+	ColortokensManaged                    types.Bool                  `tfsdk:"colortokens_managed"`
 	ID                                    types.String                `tfsdk:"id"`
 	IPRanges                              []tfTypes.NamednetworkRange `tfsdk:"ip_ranges"`
-	IsOOBNetwork                          types.Bool                  `tfsdk:"is_oob_network"`
 	NamedNetworkAssignments               types.Int64                 `tfsdk:"named_network_assignments"`
 	NamedNetworkDescription               types.String                `tfsdk:"named_network_description"`
 	NamedNetworkName                      types.String                `tfsdk:"named_network_name"`
@@ -60,6 +60,9 @@ func (r *NamedNetworkDataSource) Schema(ctx context.Context, req datasource.Sche
 			"assigned_by_tag_based_policy": schema.BoolAttribute{
 				Computed: true,
 			},
+			"colortokens_managed": schema.BoolAttribute{
+				Computed: true,
+			},
 			"id": schema.StringAttribute{
 				Computed: true,
 			},
@@ -78,9 +81,6 @@ func (r *NamedNetworkDataSource) Schema(ctx context.Context, req datasource.Sche
 						},
 					},
 				},
-			},
-			"is_oob_network": schema.BoolAttribute{
-				Computed: true,
 			},
 			"named_network_assignments": schema.Int64Attribute{
 				Computed: true,

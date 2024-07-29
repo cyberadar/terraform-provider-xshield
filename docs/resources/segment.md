@@ -14,17 +14,13 @@ Segment Resource
 
 ```terraform
 resource "xshield-sdk_segment" "my_segment" {
-  auto_synchronize_enabled                 = true
+  auto_synchronize_enabled                 = false
   criteria                                 = "...my_criteria..."
-  criteria_as_params                       = "...my_criteria_as_params..."
   description                              = "...my_description..."
-  id                                       = "f8974958-c4b6-4069-95c2-7ba88febfa1d"
   lowest_inbound_policy_status             = "...my_lowest_inbound_policy_status..."
   lowest_outbound_policy_status            = "...my_lowest_outbound_policy_status..."
   lowest_progressive_inbound_policy_status = "...my_lowest_progressive_inbound_policy_status..."
-  matching_assets                          = 1
   policy_automation_configurable           = false
-  policy_progressive_last_refreshed        = "2021-09-22T17:14:52.971Z"
   tagbasedpolicy_id                        = "...my_tagbasedpolicy_id..."
   tag_based_policy_name                    = "...my_tag_based_policy_name..."
 }
@@ -37,25 +33,26 @@ resource "xshield-sdk_segment" "my_segment" {
 
 - `auto_synchronize_enabled` (Boolean) Requires replacement if changed.
 - `criteria` (String) Requires replacement if changed.
-- `criteria_as_params` (String) Requires replacement if changed.
 - `description` (String) Requires replacement if changed.
-- `id` (String) Requires replacement if changed.
 - `lowest_inbound_policy_status` (String) Requires replacement if changed.
 - `lowest_outbound_policy_status` (String) Requires replacement if changed.
 - `lowest_progressive_inbound_policy_status` (String) Requires replacement if changed.
-- `matching_assets` (Number) Requires replacement if changed.
 - `namednetworks` (Attributes List) Requires replacement if changed. (see [below for nested schema](#nestedatt--namednetworks))
 - `policy_automation_configurable` (Boolean) Requires replacement if changed.
-- `policy_progressive_last_refreshed` (String) Requires replacement if changed.
 - `tag_based_policy_name` (String) Requires replacement if changed.
 - `templates` (Attributes List) Requires replacement if changed. (see [below for nested schema](#nestedatt--templates))
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
+- `matching_assets` (Number)
+- `policy_progressive_last_refreshed` (String)
 
 <a id="nestedatt--namednetworks"></a>
 ### Nested Schema for `namednetworks`
 
 Optional:
 
-- `id` (String) Requires replacement if changed.
 - `ip_ranges` (Attributes List) Requires replacement if changed. (see [below for nested schema](#nestedatt--namednetworks--ip_ranges))
 - `named_network_description` (String) Requires replacement if changed.
 - `named_network_name` (String) Requires replacement if changed.
@@ -66,7 +63,8 @@ Optional:
 Read-Only:
 
 - `assigned_by_tag_based_policy` (Boolean)
-- `is_oob_network` (Boolean)
+- `colortokens_managed` (Boolean)
+- `id` (String)
 - `named_network_assignments` (Number)
 - `namednetwork_tag_based_policy_assignments` (Number)
 - `program_as_internet` (Boolean)
@@ -79,11 +77,11 @@ Read-Only:
 
 Optional:
 
-- `id` (String) Requires replacement if changed.
 - `ip_range` (String) Requires replacement if changed.
 
 Read-Only:
 
+- `id` (String)
 - `ip_count` (Number)
 
 

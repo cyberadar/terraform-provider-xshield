@@ -47,11 +47,11 @@ func (r *NamedNetworkResourceModel) ToSharedNamednetworkNamedNetwork() *shared.N
 			IPRange: ipRange,
 		})
 	}
-	isOOBNetwork := new(bool)
-	if !r.IsOOBNetwork.IsUnknown() && !r.IsOOBNetwork.IsNull() {
-		*isOOBNetwork = r.IsOOBNetwork.ValueBool()
+	colortokensManaged := new(bool)
+	if !r.ColortokensManaged.IsUnknown() && !r.ColortokensManaged.IsNull() {
+		*colortokensManaged = r.ColortokensManaged.ValueBool()
 	} else {
-		isOOBNetwork = nil
+		colortokensManaged = nil
 	}
 	namedNetworkAssignments := new(int64)
 	if !r.NamedNetworkAssignments.IsUnknown() && !r.NamedNetworkAssignments.IsNull() {
@@ -123,7 +123,7 @@ func (r *NamedNetworkResourceModel) ToSharedNamednetworkNamedNetwork() *shared.N
 		ID:                                    id,
 		AssignedByTagBasedPolicy:              assignedByTagBasedPolicy,
 		IPRanges:                              ipRanges,
-		IsOOBNetwork:                          isOOBNetwork,
+		ColortokensManaged:                    colortokensManaged,
 		NamedNetworkAssignments:               namedNetworkAssignments,
 		NamedNetworkDescription:               namedNetworkDescription,
 		NamedNetworkName:                      namedNetworkName,
@@ -142,6 +142,7 @@ func (r *NamedNetworkResourceModel) ToSharedNamednetworkNamedNetwork() *shared.N
 func (r *NamedNetworkResourceModel) RefreshFromSharedNamednetworkNamedNetwork(resp *shared.NamednetworkNamedNetwork) {
 	if resp != nil {
 		r.AssignedByTagBasedPolicy = types.BoolPointerValue(resp.AssignedByTagBasedPolicy)
+		r.ColortokensManaged = types.BoolPointerValue(resp.ColortokensManaged)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.IPRanges = []tfTypes.NamednetworkRange{}
 		if len(r.IPRanges) > len(resp.IPRanges) {
@@ -160,7 +161,6 @@ func (r *NamedNetworkResourceModel) RefreshFromSharedNamednetworkNamedNetwork(re
 				r.IPRanges[ipRangesCount].IPRange = ipRanges1.IPRange
 			}
 		}
-		r.IsOOBNetwork = types.BoolPointerValue(resp.IsOOBNetwork)
 		r.NamedNetworkAssignments = types.Int64PointerValue(resp.NamedNetworkAssignments)
 		r.NamedNetworkDescription = types.StringPointerValue(resp.NamedNetworkDescription)
 		r.NamedNetworkName = types.StringPointerValue(resp.NamedNetworkName)

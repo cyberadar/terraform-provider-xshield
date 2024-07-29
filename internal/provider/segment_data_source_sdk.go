@@ -13,7 +13,6 @@ func (r *SegmentDataSourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.Ta
 	if resp != nil {
 		r.AutoSynchronizeEnabled = types.BoolPointerValue(resp.AutoSynchronizeEnabled)
 		r.Criteria = types.StringPointerValue(resp.Criteria)
-		r.CriteriaAsParams = types.StringPointerValue(resp.CriteriaAsParams)
 		r.Description = types.StringPointerValue(resp.Description)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.LowestInboundPolicyStatus = types.StringPointerValue(resp.LowestInboundPolicyStatus)
@@ -27,6 +26,7 @@ func (r *SegmentDataSourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.Ta
 		for namednetworksCount, namednetworksItem := range resp.Namednetworks {
 			var namednetworks1 tfTypes.NamednetworkNamedNetwork
 			namednetworks1.AssignedByTagBasedPolicy = types.BoolPointerValue(namednetworksItem.AssignedByTagBasedPolicy)
+			namednetworks1.ColortokensManaged = types.BoolPointerValue(namednetworksItem.ColortokensManaged)
 			namednetworks1.ID = types.StringPointerValue(namednetworksItem.ID)
 			namednetworks1.IPRanges = []tfTypes.NamednetworkRange{}
 			for ipRangesCount, ipRangesItem := range namednetworksItem.IPRanges {
@@ -42,7 +42,6 @@ func (r *SegmentDataSourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.Ta
 					namednetworks1.IPRanges[ipRangesCount].IPRange = ipRanges1.IPRange
 				}
 			}
-			namednetworks1.IsOOBNetwork = types.BoolPointerValue(namednetworksItem.IsOOBNetwork)
 			namednetworks1.NamedNetworkAssignments = types.Int64PointerValue(namednetworksItem.NamedNetworkAssignments)
 			namednetworks1.NamedNetworkDescription = types.StringPointerValue(namednetworksItem.NamedNetworkDescription)
 			namednetworks1.NamedNetworkName = types.StringPointerValue(namednetworksItem.NamedNetworkName)
@@ -58,9 +57,9 @@ func (r *SegmentDataSourceModel) RefreshFromSharedTagBasedPolicy(resp *shared.Ta
 				r.Namednetworks = append(r.Namednetworks, namednetworks1)
 			} else {
 				r.Namednetworks[namednetworksCount].AssignedByTagBasedPolicy = namednetworks1.AssignedByTagBasedPolicy
+				r.Namednetworks[namednetworksCount].ColortokensManaged = namednetworks1.ColortokensManaged
 				r.Namednetworks[namednetworksCount].ID = namednetworks1.ID
 				r.Namednetworks[namednetworksCount].IPRanges = namednetworks1.IPRanges
-				r.Namednetworks[namednetworksCount].IsOOBNetwork = namednetworks1.IsOOBNetwork
 				r.Namednetworks[namednetworksCount].NamedNetworkAssignments = namednetworks1.NamedNetworkAssignments
 				r.Namednetworks[namednetworksCount].NamedNetworkDescription = namednetworks1.NamedNetworkDescription
 				r.Namednetworks[namednetworksCount].NamedNetworkName = namednetworks1.NamedNetworkName

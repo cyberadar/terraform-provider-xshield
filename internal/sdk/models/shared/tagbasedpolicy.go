@@ -10,7 +10,6 @@ import (
 type TagBasedPolicy struct {
 	AutoSynchronizeEnabled               *bool                      `json:"autoSynchronizeEnabled,omitempty"`
 	Criteria                             *string                    `json:"criteria,omitempty"`
-	CriteriaAsParams                     *string                    `json:"criteriaAsParams,omitempty"`
 	Description                          *string                    `json:"description,omitempty"`
 	LowestInboundPolicyStatus            *string                    `json:"lowestInboundPolicyStatus,omitempty"`
 	LowestOutboundPolicyStatus           *string                    `json:"lowestOutboundPolicyStatus,omitempty"`
@@ -19,7 +18,7 @@ type TagBasedPolicy struct {
 	Namednetworks                        []NamednetworkNamedNetwork `json:"namednetworks,omitempty"`
 	PolicyAutomationConfigurable         *bool                      `json:"policyAutomationConfigurable,omitempty"`
 	PolicyProgressiveLastRefreshed       *time.Time                 `json:"policyProgressiveLastRefreshed,omitempty"`
-	ID                                   *string                    `json:"id,omitempty"`
+	ID                                   *string                    `json:"tagBasedPolicyId,omitempty"`
 	TagBasedPolicyName                   *string                    `json:"tagBasedPolicyName,omitempty"`
 	Templates                            []TemplateSummary          `json:"templates,omitempty"`
 }
@@ -47,13 +46,6 @@ func (o *TagBasedPolicy) GetCriteria() *string {
 		return nil
 	}
 	return o.Criteria
-}
-
-func (o *TagBasedPolicy) GetCriteriaAsParams() *string {
-	if o == nil {
-		return nil
-	}
-	return o.CriteriaAsParams
 }
 
 func (o *TagBasedPolicy) GetDescription() *string {

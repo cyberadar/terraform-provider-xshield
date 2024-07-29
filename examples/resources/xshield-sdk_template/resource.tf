@@ -3,5 +3,5 @@ resource "xshield-sdk_template" "my_template" {
   template_description = "...my_template_description..."
   templateid           = "...my_templateid..."
   template_name        = "...my_template_name..."
-  template_type        = "block-template"
+  template_type        = "application-template"
 }

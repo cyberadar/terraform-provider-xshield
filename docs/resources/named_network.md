@@ -14,7 +14,6 @@ NamedNetwork Resource
 
 ```terraform
 resource "xshield-sdk_named_network" "my_namednetwork" {
-  id                        = "d4d52241-3e8e-4267-80b2-00bdfdd17835"
   named_network_description = "...my_named_network_description..."
   named_network_id          = "...my_named_network_id..."
   named_network_name        = "...my_named_network_name..."
@@ -39,8 +38,8 @@ resource "xshield-sdk_named_network" "my_namednetwork" {
 ### Read-Only
 
 - `assigned_by_tag_based_policy` (Boolean)
+- `colortokens_managed` (Boolean)
 - `id` (String) The ID of this resource.
-- `is_oob_network` (Boolean)
 - `named_network_assignments` (Number)
 - `namednetwork_tag_based_policy_assignments` (Number)
 - `program_as_internet` (Boolean)
@@ -53,11 +52,11 @@ resource "xshield-sdk_named_network" "my_namednetwork" {
 
 Optional:
 
-- `id` (String)
 - `ip_range` (String)
 
 Read-Only:
 
+- `id` (String)
 - `ip_count` (Number)
 
 ## Import

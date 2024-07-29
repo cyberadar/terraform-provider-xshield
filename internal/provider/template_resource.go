@@ -42,8 +42,8 @@ type TemplateResource struct {
 // TemplateResourceModel describes the resource data model.
 type TemplateResourceModel struct {
 	AccessPolicyTemplate types.Bool             `tfsdk:"access_policy_template"`
+	ColortokensManaged   types.Bool             `tfsdk:"colortokens_managed"`
 	ID                   types.String           `tfsdk:"id"`
-	OobTemplate          types.Bool             `tfsdk:"oob_template"`
 	TemplateCategory     types.String           `tfsdk:"template_category"`
 	TemplateDescription  types.String           `tfsdk:"template_description"`
 	TemplateName         types.String           `tfsdk:"template_name"`
@@ -63,10 +63,10 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 			"access_policy_template": schema.BoolAttribute{
 				Computed: true,
 			},
-			"id": schema.StringAttribute{
+			"colortokens_managed": schema.BoolAttribute{
 				Computed: true,
 			},
-			"oob_template": schema.BoolAttribute{
+			"id": schema.StringAttribute{
 				Computed: true,
 			},
 			"template_category": schema.StringAttribute{
@@ -105,15 +105,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"channel_hash": schema.StringAttribute{
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
-						},
 						"destination_asset": schema.SingleNestedAttribute{
 							Computed: true,
 							Attributes: map[string]schema.Attribute{
@@ -283,6 +274,12 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							},
 							Optional:    true,
 							Description: `Requires replacement if changed. `,
+						},
+						"id": schema.StringAttribute{
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+							},
 						},
 						"method": schema.StringAttribute{
 							Computed: true,
@@ -494,6 +491,12 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"id": schema.StringAttribute{
+							Computed: true,
+							PlanModifiers: []planmodifier.String{
+								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+							},
+						},
 						"listen_port": schema.Int64Attribute{
 							Computed: true,
 							PlanModifiers: []planmodifier.Int64{
@@ -551,15 +554,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							},
 							Optional:    true,
 							ElementType: types.StringType,
-							Description: `Requires replacement if changed. `,
-						},
-						"lp_id": schema.StringAttribute{
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
 							Description: `Requires replacement if changed. `,
 						},
 					},

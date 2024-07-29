@@ -3,7 +3,7 @@
 package shared
 
 type MetadataPath struct {
-	ChannelHash               *string                          `json:"channelHash,omitempty"`
+	ID                        *string                          `json:"channelHash,omitempty"`
 	DestinationAssetID        *string                          `json:"destinationAssetID,omitempty"`
 	DestinationNamedNetwork   *MetadataNamedNetworkReference   `json:"destinationNamedNetwork,omitempty"`
 	DestinationTagBasedPolicy *MetadataTagBasedPolicyReference `json:"destinationTagBasedPolicy,omitempty"`
@@ -23,11 +23,11 @@ type MetadataPath struct {
 	URI                       *string                          `json:"uri,omitempty"`
 }
 
-func (o *MetadataPath) GetChannelHash() *string {
+func (o *MetadataPath) GetID() *string {
 	if o == nil {
 		return nil
 	}
-	return o.ChannelHash
+	return o.ID
 }
 
 func (o *MetadataPath) GetDestinationAssetID() *string {

@@ -8,7 +8,7 @@ type MetadataPort struct {
 	ListenPortProtocol *int64             `json:"listenPortProtocol,omitempty"`
 	ListenPortReviewed *MetadataPortState `json:"listenPortReviewed,omitempty"`
 	ListenProcessNames []string           `json:"listenProcessNames,omitempty"`
-	LpID               *string            `json:"lpId,omitempty"`
+	ID                 *string            `json:"lpId,omitempty"`
 }
 
 func (o *MetadataPort) GetListenPort() *int64 {
@@ -46,9 +46,9 @@ func (o *MetadataPort) GetListenProcessNames() []string {
 	return o.ListenProcessNames
 }
 
-func (o *MetadataPort) GetLpID() *string {
+func (o *MetadataPort) GetID() *string {
 	if o == nil {
 		return nil
 	}
-	return o.LpID
+	return o.ID
 }

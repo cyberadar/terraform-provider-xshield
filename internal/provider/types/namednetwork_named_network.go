@@ -6,9 +6,9 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type NamednetworkNamedNetwork struct {
 	AssignedByTagBasedPolicy              types.Bool          `tfsdk:"assigned_by_tag_based_policy"`
+	ColortokensManaged                    types.Bool          `tfsdk:"colortokens_managed"`
 	ID                                    types.String        `tfsdk:"id"`
 	IPRanges                              []NamednetworkRange `tfsdk:"ip_ranges"`
-	IsOOBNetwork                          types.Bool          `tfsdk:"is_oob_network"`
 	NamedNetworkAssignments               types.Int64         `tfsdk:"named_network_assignments"`
 	NamedNetworkDescription               types.String        `tfsdk:"named_network_description"`
 	NamedNetworkName                      types.String        `tfsdk:"named_network_name"`

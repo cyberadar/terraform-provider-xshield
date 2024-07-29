@@ -3,7 +3,7 @@
 package shared
 
 type TemplatePath struct {
-	ChannelHash *string `json:"channelHash,omitempty"`
+	ID *string `json:"channelHash,omitempty"`
 	// AssetSummary definition Summary of host or application running on a host that can be observed to apply segmentation policies against
 	DestinationAsset          *AssetSummary                    `json:"destinationAsset,omitempty"`
 	DestinationNamedNetwork   *MetadataNamedNetworkReference   `json:"destinationNamedNetwork,omitempty"`
@@ -25,11 +25,11 @@ type TemplatePath struct {
 	URI                  *string                          `json:"uri,omitempty"`
 }
 
-func (o *TemplatePath) GetChannelHash() *string {
+func (o *TemplatePath) GetID() *string {
 	if o == nil {
 		return nil
 	}
-	return o.ChannelHash
+	return o.ID
 }
 
 func (o *TemplatePath) GetDestinationAsset() *AssetSummary {

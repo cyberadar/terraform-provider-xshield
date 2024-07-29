@@ -29,11 +29,11 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 	}
 	var templatePaths []shared.MetadataPath = []shared.MetadataPath{}
 	for _, templatePathsItem := range r.TemplatePaths {
-		channelHash := new(string)
-		if !templatePathsItem.ChannelHash.IsUnknown() && !templatePathsItem.ChannelHash.IsNull() {
-			*channelHash = templatePathsItem.ChannelHash.ValueString()
+		id := new(string)
+		if !templatePathsItem.ID.IsUnknown() && !templatePathsItem.ID.IsNull() {
+			*id = templatePathsItem.ID.ValueString()
 		} else {
-			channelHash = nil
+			id = nil
 		}
 		destinationAssetID := new(string)
 		if !templatePathsItem.DestinationAssetID.IsUnknown() && !templatePathsItem.DestinationAssetID.IsNull() {
@@ -218,7 +218,7 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 			uri = nil
 		}
 		templatePaths = append(templatePaths, shared.MetadataPath{
-			ChannelHash:               channelHash,
+			ID:                        id,
 			DestinationAssetID:        destinationAssetID,
 			DestinationNamedNetwork:   destinationNamedNetwork,
 			DestinationTagBasedPolicy: destinationTagBasedPolicy,
@@ -268,11 +268,11 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 		for _, listenProcessNamesItem := range templatePortsItem.ListenProcessNames {
 			listenProcessNames = append(listenProcessNames, listenProcessNamesItem.ValueString())
 		}
-		lpID := new(string)
-		if !templatePortsItem.LpID.IsUnknown() && !templatePortsItem.LpID.IsNull() {
-			*lpID = templatePortsItem.LpID.ValueString()
+		id1 := new(string)
+		if !templatePortsItem.ID.IsUnknown() && !templatePortsItem.ID.IsNull() {
+			*id1 = templatePortsItem.ID.ValueString()
 		} else {
-			lpID = nil
+			id1 = nil
 		}
 		templatePorts = append(templatePorts, shared.MetadataPort{
 			ListenPort:         listenPort,
@@ -280,7 +280,7 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 			ListenPortProtocol: listenPortProtocol,
 			ListenPortReviewed: listenPortReviewed,
 			ListenProcessNames: listenProcessNames,
-			LpID:               lpID,
+			ID:                 id1,
 		})
 	}
 	templateType := new(shared.TemplateType)
@@ -303,8 +303,8 @@ func (r *TemplateResourceModel) ToSharedCreateTemplateDetails() *shared.CreateTe
 func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template) {
 	if resp != nil {
 		r.AccessPolicyTemplate = types.BoolPointerValue(resp.AccessPolicyTemplate)
+		r.ColortokensManaged = types.BoolPointerValue(resp.ColortokensManaged)
 		r.ID = types.StringPointerValue(resp.ID)
-		r.OobTemplate = types.BoolPointerValue(resp.OobTemplate)
 		r.TemplateCategory = types.StringPointerValue(resp.TemplateCategory)
 		r.TemplateDescription = types.StringPointerValue(resp.TemplateDescription)
 		r.TemplateName = types.StringPointerValue(resp.TemplateName)
@@ -314,7 +314,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 		}
 		for templatePathsCount, templatePathsItem := range resp.TemplatePaths {
 			var templatePaths1 tfTypes.TemplatePath
-			templatePaths1.ChannelHash = types.StringPointerValue(templatePathsItem.ChannelHash)
 			if templatePathsItem.DestinationAsset == nil {
 				templatePaths1.DestinationAsset = nil
 			} else {
@@ -358,6 +357,7 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			templatePaths1.Direction = types.StringPointerValue(templatePathsItem.Direction)
 			templatePaths1.Domain = types.StringPointerValue(templatePathsItem.Domain)
 			templatePaths1.DstIP = types.StringPointerValue(templatePathsItem.DstIP)
+			templatePaths1.ID = types.StringPointerValue(templatePathsItem.ID)
 			templatePaths1.Method = types.StringPointerValue(templatePathsItem.Method)
 			templatePaths1.Port = types.StringPointerValue(templatePathsItem.Port)
 			templatePaths1.PortName = types.StringPointerValue(templatePathsItem.PortName)
@@ -407,7 +407,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			if templatePathsCount+1 > len(r.TemplatePaths) {
 				r.TemplatePaths = append(r.TemplatePaths, templatePaths1)
 			} else {
-				r.TemplatePaths[templatePathsCount].ChannelHash = templatePaths1.ChannelHash
 				r.TemplatePaths[templatePathsCount].DestinationAsset = templatePaths1.DestinationAsset
 				r.TemplatePaths[templatePathsCount].DestinationNamedNetwork = templatePaths1.DestinationNamedNetwork
 				r.TemplatePaths[templatePathsCount].DestinationProcess = templatePaths1.DestinationProcess
@@ -415,6 +414,7 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 				r.TemplatePaths[templatePathsCount].Direction = templatePaths1.Direction
 				r.TemplatePaths[templatePathsCount].Domain = templatePaths1.Domain
 				r.TemplatePaths[templatePathsCount].DstIP = templatePaths1.DstIP
+				r.TemplatePaths[templatePathsCount].ID = templatePaths1.ID
 				r.TemplatePaths[templatePathsCount].Method = templatePaths1.Method
 				r.TemplatePaths[templatePathsCount].Port = templatePaths1.Port
 				r.TemplatePaths[templatePathsCount].PortName = templatePaths1.PortName
@@ -433,6 +433,7 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 		}
 		for templatePortsCount, templatePortsItem := range resp.TemplatePorts {
 			var templatePorts1 tfTypes.MetadataPort
+			templatePorts1.ID = types.StringPointerValue(templatePortsItem.ID)
 			templatePorts1.ListenPort = types.Int64PointerValue(templatePortsItem.ListenPort)
 			templatePorts1.ListenPortName = types.StringPointerValue(templatePortsItem.ListenPortName)
 			templatePorts1.ListenPortProtocol = types.Int64PointerValue(templatePortsItem.ListenPortProtocol)
@@ -445,16 +446,15 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			for _, v := range templatePortsItem.ListenProcessNames {
 				templatePorts1.ListenProcessNames = append(templatePorts1.ListenProcessNames, types.StringValue(v))
 			}
-			templatePorts1.LpID = types.StringPointerValue(templatePortsItem.LpID)
 			if templatePortsCount+1 > len(r.TemplatePorts) {
 				r.TemplatePorts = append(r.TemplatePorts, templatePorts1)
 			} else {
+				r.TemplatePorts[templatePortsCount].ID = templatePorts1.ID
 				r.TemplatePorts[templatePortsCount].ListenPort = templatePorts1.ListenPort
 				r.TemplatePorts[templatePortsCount].ListenPortName = templatePorts1.ListenPortName
 				r.TemplatePorts[templatePortsCount].ListenPortProtocol = templatePorts1.ListenPortProtocol
 				r.TemplatePorts[templatePortsCount].ListenPortReviewed = templatePorts1.ListenPortReviewed
 				r.TemplatePorts[templatePortsCount].ListenProcessNames = templatePorts1.ListenProcessNames
-				r.TemplatePorts[templatePortsCount].LpID = templatePorts1.LpID
 			}
 		}
 		if resp.TemplateType != nil {
