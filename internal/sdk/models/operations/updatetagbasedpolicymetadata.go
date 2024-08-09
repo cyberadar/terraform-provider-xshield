@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
 	"net/http"
 )
 
@@ -11,7 +11,7 @@ type UpdateTagBasedPolicyMetadataRequest struct {
 	// TagBasedPolicy ID
 	TagbasedpolicyID string `pathParam:"style=simple,explode=false,name=tagbasedpolicyId"`
 	// tagbasedpolicy metadata
-	TagBasedPolicyMetadata shared.TagBasedPolicyMetadata `request:"mediaType=application/json"`
+	TagBasedPolicy shared.TagBasedPolicy `request:"mediaType=application/json"`
 }
 
 func (o *UpdateTagBasedPolicyMetadataRequest) GetTagbasedpolicyID() string {
@@ -21,11 +21,11 @@ func (o *UpdateTagBasedPolicyMetadataRequest) GetTagbasedpolicyID() string {
 	return o.TagbasedpolicyID
 }
 
-func (o *UpdateTagBasedPolicyMetadataRequest) GetTagBasedPolicyMetadata() shared.TagBasedPolicyMetadata {
+func (o *UpdateTagBasedPolicyMetadataRequest) GetTagBasedPolicy() shared.TagBasedPolicy {
 	if o == nil {
-		return shared.TagBasedPolicyMetadata{}
+		return shared.TagBasedPolicy{}
 	}
-	return o.TagBasedPolicyMetadata
+	return o.TagBasedPolicy
 }
 
 type UpdateTagBasedPolicyMetadataResponse struct {

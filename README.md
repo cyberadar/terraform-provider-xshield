@@ -12,13 +12,13 @@ To install this provider, copy and paste this code into your Terraform configura
 terraform {
   required_providers {
     xshield-sdk = {
-      source  = "speakeasy/xshield-sdk"
+      source  = "colortokens/xshield"
       version = "0.0.1"
     }
   }
 }
 
-provider "xshield-sdk" {
+provider "xshield" {
   # Configuration options
 }
 ```
@@ -57,14 +57,14 @@ To install this provider, copy and paste this code into your Terraform configura
 ```hcl
 terraform {
   required_providers {
-    xshield-sdk = {
-      source  = "speakeasy/xshield-sdk"
-      version = "0.2.5"
+    xshield = {
+      source  = "colortokens/xshield"
+      version = "0.3.2"
     }
   }
 }
 
-provider "xshield-sdk" {
+provider "xshield" {
   # Configuration options
 }
 ```

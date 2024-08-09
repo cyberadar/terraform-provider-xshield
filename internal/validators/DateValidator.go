@@ -4,9 +4,9 @@ package validators
 
 import (
 	"context"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/types"
 	"github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatordiag"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/types"
 )
 
 var _ validator.String = DateValidator{}

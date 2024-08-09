@@ -1,4 +1,4 @@
-resource "xshield-sdk_template" "my_template" {
+resource "xshield_template" "my_template" {
   template_category    = "...my_template_category..."
   template_description = "...my_template_description..."
   templateid           = "...my_templateid..."

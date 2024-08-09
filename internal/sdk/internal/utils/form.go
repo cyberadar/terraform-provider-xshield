@@ -12,7 +12,7 @@ import (
 
 	"github.com/ericlagergren/decimal"
 
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/types"
 )
 
 func populateForm(paramName string, explode bool, objType reflect.Type, objValue reflect.Value, delimiter string, getFieldName func(reflect.StructField) string) url.Values {

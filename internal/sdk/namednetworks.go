@@ -7,12 +7,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/cenkalti/backoff/v4"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/hooks"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/errors"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/hooks"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/errors"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"io"
 	"net/http"
 	"net/url"
@@ -1181,6 +1181,17 @@ func (s *Namednetworks) CreateNamedNetwork(ctx context.Context, request shared.N
 
 	switch {
 	case httpRes.StatusCode == 201:
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			var out shared.NamednetworkNamedNetwork
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.NamednetworkNamedNetwork = &out
+		default:
+			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode == 400:
 		fallthrough
 	case httpRes.StatusCode == 401:
@@ -1746,6 +1757,17 @@ func (s *Namednetworks) AddToNamedNetwork(ctx context.Context, request operation
 	case httpRes.StatusCode == 202:
 		res.Headers = httpRes.Header
 
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			var out []shared.NamednetworkRange
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.NamednetworkRanges = out
+		default:
+			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode == 400:
 		fallthrough
 	case httpRes.StatusCode == 401:
@@ -1934,6 +1956,17 @@ func (s *Namednetworks) DeleteFromNamedNetwork(ctx context.Context, request oper
 	case httpRes.StatusCode == 202:
 		res.Headers = httpRes.Header
 
+		switch {
+		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
+			var out []shared.NamednetworkRange
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.NamednetworkRanges = out
+		default:
+			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
+		}
 	case httpRes.StatusCode == 400:
 		fallthrough
 	case httpRes.StatusCode == 401:

@@ -5,13 +5,13 @@ package provider
 import (
 	"context"
 	"fmt"
+	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	tfTypes "github.com/speakeasy/terraform-provider-xshield-sdk/internal/provider/types"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -24,7 +24,7 @@ func NewNamedNetworkDataSource() datasource.DataSource {
 
 // NamedNetworkDataSource is the data source implementation.
 type NamedNetworkDataSource struct {
-	client *sdk.XshieldSDK
+	client *sdk.Xshield
 }
 
 // NamedNetworkDataSourceModel describes the data model.
@@ -125,12 +125,12 @@ func (r *NamedNetworkDataSource) Configure(ctx context.Context, req datasource.C
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.XshieldSDK)
+	client, ok := req.ProviderData.(*sdk.Xshield)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected DataSource Configure Type",
-			fmt.Sprintf("Expected *sdk.XshieldSDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.Xshield, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

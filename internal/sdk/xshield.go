@@ -5,10 +5,10 @@ package sdk
 import (
 	"context"
 	"fmt"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/hooks"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/hooks"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"net/http"
 	"time"
 )
@@ -79,8 +79,8 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 	return ServerList[c.Server], nil
 }
 
-// XshieldSDK - ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)
-type XshieldSDK struct {
+// Xshield - ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)
+type Xshield struct {
 	Assets           *Assets
 	Openports        *Openports
 	Paths            *Paths
@@ -99,18 +99,18 @@ type XshieldSDK struct {
 	sdkConfiguration sdkConfiguration
 }
 
-type SDKOption func(*XshieldSDK)
+type SDKOption func(*Xshield)
 
 // WithServerURL allows the overriding of the default server URL
 func WithServerURL(serverURL string) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		sdk.sdkConfiguration.ServerURL = serverURL
 	}
 }
 
 // WithTemplatedServerURL allows the overriding of the default server URL with a templated URL populated with the provided parameters
 func WithTemplatedServerURL(serverURL string, params map[string]string) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		if params != nil {
 			serverURL = utils.ReplaceParameters(serverURL, params)
 		}
@@ -121,7 +121,7 @@ func WithTemplatedServerURL(serverURL string, params map[string]string) SDKOptio
 
 // WithServer allows the overriding of the default server by name
 func WithServer(server string) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		_, ok := ServerList[server]
 		if !ok {
 			panic(fmt.Errorf("server %s not found", server))
@@ -133,55 +133,56 @@ func WithServer(server string) SDKOption {
 
 // WithClient allows the overriding of the default HTTP client used by the SDK
 func WithClient(client HTTPClient) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		sdk.sdkConfiguration.Client = client
 	}
 }
 
 // // WithSecurity configures the SDK to use the provided security details
 // func WithSecurity(security shared.Security) SDKOption {
-// 	return func(sdk *XshieldSDK) {
+// 	return func(sdk *Xshield) {
 // 		sdk.sdkConfiguration.Security = utils.AsSecuritySource(security)
 // 	}
 // }
 
 // // WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
 // func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
-// 	return func(sdk *XshieldSDK) {
+// 	return func(sdk *Xshield) {
 // 		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
 // 			return security(ctx)
 // 		}
 // 	}
 // }
 
+// WithSecurity configures the SDK to use the provided configuration details
 func WithConfigProvider(config shared.ConfigurationProvider) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		sdk.sdkConfiguration.Security = utils.AsSecuritySource(config)
 	}
 }
 
 func WithRetryConfig(retryConfig retry.Config) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		sdk.sdkConfiguration.RetryConfig = &retryConfig
 	}
 }
 
 // WithTimeout Optional request timeout applied to each operation
 func WithTimeout(timeout time.Duration) SDKOption {
-	return func(sdk *XshieldSDK) {
+	return func(sdk *Xshield) {
 		sdk.sdkConfiguration.Timeout = &timeout
 	}
 }
 
 // New creates a new instance of the SDK with the provided options
-func New(opts ...SDKOption) *XshieldSDK {
-	sdk := &XshieldSDK{
+func New(opts ...SDKOption) *Xshield {
+	sdk := &Xshield{
 		sdkConfiguration: sdkConfiguration{
 			Language:          "go",
 			OpenAPIDocVersion: "202202",
 			SDKVersion:        "0.0.1",
-			GenVersion:        "2.380.1",
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.380.1 202202 github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk",
+			GenVersion:        "2.392.0",
+			UserAgent:         "speakeasy-sdk/go 0.0.1 2.392.0 202202 github.com/colortokens/terraform-provider-xshield/internal/sdk",
 			Hooks:             hooks.New(),
 		},
 	}

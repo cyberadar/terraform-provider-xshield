@@ -4,8 +4,8 @@ package operations
 
 import (
 	"errors"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"time"
 )
 

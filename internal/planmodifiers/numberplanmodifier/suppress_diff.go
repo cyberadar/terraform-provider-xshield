@@ -4,7 +4,7 @@ package numberplanmodifier
 
 import (
 	"context"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/planmodifiers/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 )

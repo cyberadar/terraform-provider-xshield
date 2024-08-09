@@ -5,6 +5,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -12,8 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -26,7 +26,7 @@ func NewTagRuleResource() resource.Resource {
 
 // TagRuleResource defines the resource implementation.
 type TagRuleResource struct {
-	client *sdk.XshieldSDK
+	client *sdk.Xshield
 }
 
 // TagRuleResourceModel describes the resource data model.
@@ -92,12 +92,12 @@ func (r *TagRuleResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.XshieldSDK)
+	client, ok := req.ProviderData.(*sdk.Xshield)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.XshieldSDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.Xshield, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

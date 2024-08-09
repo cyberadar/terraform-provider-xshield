@@ -3,9 +3,9 @@
 package provider
 
 import (
+	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	tfTypes "github.com/speakeasy/terraform-provider-xshield-sdk/internal/provider/types"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
 )
 
 func (r *TemplateDataSourceModel) RefreshFromSharedTemplate(resp *shared.Template) {

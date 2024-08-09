@@ -1,6 +1,6 @@
 configVersion: 2.0.0
 generation:
-  sdkClassName: xshieldSDK
+  sdkClassName: xshield
   maintainOpenAPIOrder: true
   usageSnippets:
     optionalPropertyRendering: withExample
@@ -12,11 +12,11 @@ generation:
   auth:
     oAuth2ClientCredentialsEnabled: true
 terraform:
-  version: 0.0.1
+  version: 0.3.2
   additionalDataSources: []
   additionalDependencies: {}
   additionalResources: []
   allowUnknownFieldsInWeakUnions: false
-  author: speakeasy
+  author: colortokens
   environmentVariables: []
-  packageName: xshield-sdk
+  packageName: xshield

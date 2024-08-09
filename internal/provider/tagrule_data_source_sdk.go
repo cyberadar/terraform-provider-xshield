@@ -3,8 +3,8 @@
 package provider
 
 import (
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
 )
 
 func (r *TagRuleDataSourceModel) RefreshFromSharedTagRule(resp *shared.TagRule) {

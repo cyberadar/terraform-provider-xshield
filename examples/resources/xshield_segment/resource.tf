@@ -1,4 +1,4 @@
-resource "xshield-sdk_segment" "my_segment" {
+resource "xshield_segment" "my_segment" {
   auto_synchronize_enabled                 = false
   criteria                                 = "...my_criteria..."
   description                              = "...my_description..."

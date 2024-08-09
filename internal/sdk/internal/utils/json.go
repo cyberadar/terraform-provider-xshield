@@ -13,7 +13,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/types"
 
 	"github.com/ericlagergren/decimal"
 )

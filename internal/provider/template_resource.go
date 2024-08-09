@@ -5,6 +5,13 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_boolplanmodifier "github.com/colortokens/terraform-provider-xshield/internal/planmodifiers/boolplanmodifier"
+	speakeasy_listplanmodifier "github.com/colortokens/terraform-provider-xshield/internal/planmodifiers/listplanmodifier"
+	speakeasy_objectplanmodifier "github.com/colortokens/terraform-provider-xshield/internal/planmodifiers/objectplanmodifier"
+	speakeasy_stringplanmodifier "github.com/colortokens/terraform-provider-xshield/internal/planmodifiers/stringplanmodifier"
+	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -16,13 +23,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	speakeasy_boolplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/boolplanmodifier"
-	speakeasy_listplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/listplanmodifier"
-	speakeasy_objectplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/objectplanmodifier"
-	speakeasy_stringplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/stringplanmodifier"
-	tfTypes "github.com/speakeasy/terraform-provider-xshield-sdk/internal/provider/types"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -35,7 +35,7 @@ func NewTemplateResource() resource.Resource {
 
 // TemplateResource defines the resource implementation.
 type TemplateResource struct {
-	client *sdk.XshieldSDK
+	client *sdk.Xshield
 }
 
 // TemplateResourceModel describes the resource data model.
@@ -490,12 +490,12 @@ func (r *TemplateResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.XshieldSDK)
+	client, ok := req.ProviderData.(*sdk.Xshield)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.XshieldSDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.Xshield, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

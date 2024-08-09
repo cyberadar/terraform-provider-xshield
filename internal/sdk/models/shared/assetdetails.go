@@ -5,7 +5,7 @@ package shared
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
 	"time"
 )
 

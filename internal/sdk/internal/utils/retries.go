@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cenkalti/backoff/v4"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"net/http"
 	"net/url"
 	"strconv"

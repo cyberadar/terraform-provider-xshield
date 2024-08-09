@@ -3,7 +3,7 @@
 package operations
 
 import (
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
 	"net/http"
 )
 
@@ -14,6 +14,8 @@ type CreateNamedNetworkResponse struct {
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// Created
+	NamednetworkNamedNetwork *shared.NamednetworkNamedNetwork
 	// Bad Request
 	ErrorResponse *shared.ErrorResponse
 }
@@ -37,6 +39,13 @@ func (o *CreateNamedNetworkResponse) GetRawResponse() *http.Response {
 		return nil
 	}
 	return o.RawResponse
+}
+
+func (o *CreateNamedNetworkResponse) GetNamednetworkNamedNetwork() *shared.NamednetworkNamedNetwork {
+	if o == nil {
+		return nil
+	}
+	return o.NamednetworkNamedNetwork
 }
 
 func (o *CreateNamedNetworkResponse) GetErrorResponse() *shared.ErrorResponse {

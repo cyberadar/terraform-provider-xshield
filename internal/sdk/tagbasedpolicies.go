@@ -7,12 +7,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/cenkalti/backoff/v4"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/hooks"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/internal/utils"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/errors"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/shared"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/retry"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/hooks"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/errors"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"io"
 	"net/http"
 	"net/url"
@@ -442,7 +442,7 @@ func (s *Tagbasedpolicies) UpdateTagBasedPolicyMetadata(ctx context.Context, req
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
 
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "TagBasedPolicyMetadata", "json", `request:"mediaType=application/json"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "TagBasedPolicy", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}

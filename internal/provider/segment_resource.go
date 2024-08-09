@@ -5,26 +5,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
+	"github.com/colortokens/terraform-provider-xshield/internal/validators"
+	speakeasy_stringvalidators "github.com/colortokens/terraform-provider-xshield/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	speakeasy_boolplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/boolplanmodifier"
-	speakeasy_int64planmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/int64planmodifier"
-	speakeasy_listplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/listplanmodifier"
-	speakeasy_stringplanmodifier "github.com/speakeasy/terraform-provider-xshield-sdk/internal/planmodifiers/stringplanmodifier"
-	tfTypes "github.com/speakeasy/terraform-provider-xshield-sdk/internal/provider/types"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/validators"
-	speakeasy_stringvalidators "github.com/speakeasy/terraform-provider-xshield-sdk/internal/validators/stringvalidators"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -37,7 +28,7 @@ func NewSegmentResource() resource.Resource {
 
 // SegmentResource defines the resource implementation.
 type SegmentResource struct {
-	client *sdk.XshieldSDK
+	client *sdk.Xshield
 }
 
 // SegmentResourceModel describes the resource data model.
@@ -67,393 +58,192 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 		Attributes: map[string]schema.Attribute{
 			"auto_synchronize_enabled": schema.BoolAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"criteria": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"description": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
 			},
 			"lowest_inbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"lowest_outbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"lowest_progressive_inbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"matching_assets": schema.Int64Attribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.Int64{
-					speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-				},
 			},
 			"namednetworks": schema.ListNestedAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.List{
-					listplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
-				},
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"assigned_by_tag_based_policy": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
 						},
 						"colortokens_managed": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
 						},
 						"id": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
 						},
 						"ip_ranges": schema.ListNestedAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.List{
-								listplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
-							},
 							Optional: true,
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"id": schema.StringAttribute{
 										Computed: true,
-										PlanModifiers: []planmodifier.String{
-											speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-										},
 									},
 									"ip_count": schema.Int64Attribute{
 										Computed: true,
-										PlanModifiers: []planmodifier.Int64{
-											speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-										},
 									},
 									"ip_range": schema.StringAttribute{
 										Computed: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplaceIfConfigured(),
-											speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-										},
-										Optional:    true,
-										Description: `Requires replacement if changed. `,
+										Optional: true,
 									},
 								},
 							},
-							Description: `Requires replacement if changed. `,
 						},
 						"named_network_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
 						},
 						"named_network_description": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"named_network_name": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"namednetwork_tag_based_policy_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
 						},
 						"program_as_internet": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
 						},
 						"program_as_intranet": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								boolplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"region": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"service": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"total_comments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
 						},
 						"total_count": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
 						},
 						"usergroup_named_network_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
 						},
 					},
 				},
-				Description: `Requires replacement if changed. `,
 			},
 			"policy_automation_configurable": schema.BoolAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"policy_progressive_last_refreshed": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
 				Validators: []validator.String{
 					validators.IsRFC3339(),
 				},
 			},
 			"tag_based_policy_name": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Optional: true,
 			},
 			"templates": schema.ListNestedAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.List{
-					listplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
-				},
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"access_policy_template": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								boolplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"assigned_by_tag_based_policy": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								boolplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"oob_template": schema.BoolAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Bool{
-								boolplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_boolplanmodifier.SuppressDiff(speakeasy_boolplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_category": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_description": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_id": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_name": schema.StringAttribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_paths": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_ports": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_tag_based_policy_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"template_type": schema.StringAttribute{
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-							},
+							Computed:    true,
 							Optional:    true,
-							Description: `Requires replacement if changed. ; Not Null`,
+							Description: `Not Null`,
 							Validators: []validator.String{
 								speakeasy_stringvalidators.NotNull(),
 							},
 						},
 						"template_unassignments_pending_firewall_synchronize": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"total_comments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 						"usergroup_template_assignments": schema.Int64Attribute{
 							Computed: true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_int64planmodifier.SuppressDiff(speakeasy_int64planmodifier.ExplicitSuppress),
-							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Optional: true,
 						},
 					},
 				},
-				Description: `Requires replacement if changed. `,
 			},
 		},
 	}
@@ -465,12 +255,12 @@ func (r *SegmentResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.XshieldSDK)
+	client, ok := req.ProviderData.(*sdk.Xshield)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.XshieldSDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.Xshield, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -593,7 +383,54 @@ func (r *SegmentResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// Not Implemented; all attributes marked as RequiresReplace
+	var tagbasedpolicyID string
+	tagbasedpolicyID = data.ID.ValueString()
+
+	tagBasedPolicy := *data.ToSharedTagBasedPolicy()
+	request := operations.UpdateTagBasedPolicyMetadataRequest{
+		TagbasedpolicyID: tagbasedpolicyID,
+		TagBasedPolicy:   tagBasedPolicy,
+	}
+	res, err := r.client.Tagbasedpolicies.UpdateTagBasedPolicyMetadata(ctx, request)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
+		return
+	}
+	if res == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
+		return
+	}
+	if res.StatusCode != 204 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
+		return
+	}
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	var tagbasedpolicyId1 string
+	tagbasedpolicyId1 = data.ID.ValueString()
+
+	request1 := operations.AutomationConfigurationRequest{
+		TagbasedpolicyID: tagbasedpolicyId1,
+	}
+	res1, err := r.client.Tagbasedpolicies.AutomationConfiguration(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 202 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

@@ -5,12 +5,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk"
-	"github.com/speakeasy/terraform-provider-xshield-sdk/internal/sdk/models/operations"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -23,7 +23,7 @@ func NewTagRuleDataSource() datasource.DataSource {
 
 // TagRuleDataSource is the data source implementation.
 type TagRuleDataSource struct {
-	client *sdk.XshieldSDK
+	client *sdk.Xshield
 }
 
 // TagRuleDataSourceModel describes the data model.
@@ -80,12 +80,12 @@ func (r *TagRuleDataSource) Configure(ctx context.Context, req datasource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.XshieldSDK)
+	client, ok := req.ProviderData.(*sdk.Xshield)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected DataSource Configure Type",
-			fmt.Sprintf("Expected *sdk.XshieldSDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.Xshield, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
