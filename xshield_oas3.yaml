@@ -2123,7 +2123,10 @@ paths:
       responses:
         "201":
           description: Created
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/namednetwork.NamedNetwork'
         "400":
           description: Bad Request
           content:
@@ -2296,7 +2299,12 @@ paths:
                 api if it triggers a state change
               schema:
                 type: string
-          content: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/namednetwork.Range'
         "400":
           description: Bad Request
           content:
@@ -2355,7 +2363,12 @@ paths:
                 api if it triggers a state change
               schema:
                 type: string
-          content: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/namednetwork.Range'
         "400":
           description: Bad Request
           content:
@@ -3073,6 +3086,7 @@ paths:
       summary: Edits the TagBasedPolicy metadata
       description: Edits the TagBasedPolicy name and description
       operationId: UpdateTagBasedPolicyMetadata
+      x-speakeasy-entity-operation: Segment#update
       parameters:
       - name: tagbasedpolicyId
         in: path
@@ -3085,7 +3099,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TagBasedPolicyMetadata'
+              $ref: '#/components/schemas/TagBasedPolicy'
         required: true
       responses:
         "204":
@@ -3170,6 +3184,7 @@ paths:
       summary: Send Automation Request on all assets matching tag based policy.
       description: Send Automation Request on all assets matching tag based policy.
       operationId: AutomationConfiguration
+      x-speakeasy-entity-operation: Segment#update#2
       parameters:
       - name: tagbasedpolicyId
         in: path
