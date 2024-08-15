@@ -110,8 +110,9 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 						"domain": schema.StringAttribute{
 							Computed: true,
 						},
-						"dst_ip": schema.StringAttribute{
-							Computed: true,
+						"dst_ip": schema.ListAttribute{
+							Computed:    true,
+							ElementType: types.StringType,
 						},
 						"dst_process": schema.StringAttribute{
 							Computed: true,

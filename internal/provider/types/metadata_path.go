@@ -10,7 +10,7 @@ type MetadataPath struct {
 	DestinationTagBasedPolicy *MetadataTagBasedPolicyReference `tfsdk:"destination_tag_based_policy"`
 	Direction                 types.String                     `tfsdk:"direction"`
 	Domain                    types.String                     `tfsdk:"domain"`
-	DstIP                     types.String                     `tfsdk:"dst_ip"`
+	DstIP                     []types.String                   `tfsdk:"dst_ip"`
 	DstProcess                types.String                     `tfsdk:"dst_process"`
 	ID                        types.String                     `tfsdk:"id"`
 	Method                    types.String                     `tfsdk:"method"`

@@ -4545,7 +4545,9 @@ components:
         domain:
           type: string
         dstIp:
-          type: string
+          type: array
+          items:
+            type: string
         dstProcess:
           type: string
         method:
@@ -6083,9 +6085,9 @@ components:
         domain:
           type: string
         dstIp:
-          # type: array
-          # items:
-          type: string
+          type: array
+          items:
+            type: string
         method:
           type: string
         port:
