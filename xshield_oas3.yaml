@@ -3480,6 +3480,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TagRule'
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagRule'
         "400":
           description: Bad Request
           content:

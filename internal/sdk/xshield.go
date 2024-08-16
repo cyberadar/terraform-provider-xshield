@@ -181,8 +181,8 @@ func New(opts ...SDKOption) *Xshield {
 			Language:          "go",
 			OpenAPIDocVersion: "202202",
 			SDKVersion:        "0.0.1",
-			GenVersion:        "2.392.0",
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.392.0 202202 github.com/colortokens/terraform-provider-xshield/internal/sdk",
+			GenVersion:        "2.399.0",
+			UserAgent:         "speakeasy-sdk/go 0.0.1 2.399.0 202202 github.com/colortokens/terraform-provider-xshield/internal/sdk",
 			Hooks:             hooks.New(),
 		},
 	}

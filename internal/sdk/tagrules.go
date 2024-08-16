@@ -576,6 +576,8 @@ func (s *Tagrules) UpdateTagRule(ctx context.Context, request operations.UpdateT
 
 	switch {
 	case httpRes.StatusCode == 200:
+		fallthrough
+	case httpRes.StatusCode == 202:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			var out shared.TagRule
