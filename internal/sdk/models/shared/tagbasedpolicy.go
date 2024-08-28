@@ -2,106 +2,16 @@
 
 package shared
 
-import (
-	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
-	"time"
-)
-
 type TagBasedPolicy struct {
-	AutoSynchronizeEnabled               *bool                      `json:"autoSynchronizeEnabled,omitempty"`
-	Criteria                             *string                    `json:"criteria,omitempty"`
-	Description                          *string                    `json:"description,omitempty"`
-	LowestInboundPolicyStatus            *string                    `json:"lowestInboundPolicyStatus,omitempty"`
-	LowestOutboundPolicyStatus           *string                    `json:"lowestOutboundPolicyStatus,omitempty"`
-	LowestProgressiveInboundPolicyStatus *string                    `json:"lowestProgressiveInboundPolicyStatus,omitempty"`
-	MatchingAssets                       *int64                     `json:"matchingAssets,omitempty"`
-	Namednetworks                        []NamednetworkNamedNetwork `json:"namednetworks,omitempty"`
-	PolicyAutomationConfigurable         *bool                      `json:"policyAutomationConfigurable,omitempty"`
-	PolicyProgressiveLastRefreshed       *time.Time                 `json:"policyProgressiveLastRefreshed,omitempty"`
-	ID                                   *string                    `json:"tagBasedPolicyId,omitempty"`
-	TagBasedPolicyName                   *string                    `json:"tagBasedPolicyName,omitempty"`
-	Templates                            []TemplateSummary          `json:"templates,omitempty"`
-}
-
-func (t TagBasedPolicy) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(t, "", false)
-}
-
-func (t *TagBasedPolicy) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &t, "", false, false); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *TagBasedPolicy) GetAutoSynchronizeEnabled() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.AutoSynchronizeEnabled
-}
-
-func (o *TagBasedPolicy) GetCriteria() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Criteria
-}
-
-func (o *TagBasedPolicy) GetDescription() *string {
-	if o == nil {
-		return nil
-	}
-	return o.Description
-}
-
-func (o *TagBasedPolicy) GetLowestInboundPolicyStatus() *string {
-	if o == nil {
-		return nil
-	}
-	return o.LowestInboundPolicyStatus
-}
-
-func (o *TagBasedPolicy) GetLowestOutboundPolicyStatus() *string {
-	if o == nil {
-		return nil
-	}
-	return o.LowestOutboundPolicyStatus
-}
-
-func (o *TagBasedPolicy) GetLowestProgressiveInboundPolicyStatus() *string {
-	if o == nil {
-		return nil
-	}
-	return o.LowestProgressiveInboundPolicyStatus
-}
-
-func (o *TagBasedPolicy) GetMatchingAssets() *int64 {
-	if o == nil {
-		return nil
-	}
-	return o.MatchingAssets
-}
-
-func (o *TagBasedPolicy) GetNamednetworks() []NamednetworkNamedNetwork {
-	if o == nil {
-		return nil
-	}
-	return o.Namednetworks
-}
-
-func (o *TagBasedPolicy) GetPolicyAutomationConfigurable() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.PolicyAutomationConfigurable
-}
-
-func (o *TagBasedPolicy) GetPolicyProgressiveLastRefreshed() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.PolicyProgressiveLastRefreshed
+	ID                      *string                         `json:"tagBasedPolicyId,omitempty"`
+	Description             *string                         `json:"description,omitempty"`
+	TagBasedPolicyName      *string                         `json:"tagBasedPolicyName,omitempty"`
+	TargetBreachImpactScore *int64                          `json:"targetBreachImpactScore,omitempty"`
+	Timeline                *int64                          `json:"timeline,omitempty"`
+	Criteria                *string                         `json:"criteria,omitempty"`
+	CriteriaAsParams        *string                         `json:"criteriaAsParams,omitempty"`
+	Namednetworks           []MetadataNamedNetworkReference `json:"namednetworks,omitempty"`
+	Templates               []TemplateReference             `json:"templates,omitempty"`
 }
 
 func (o *TagBasedPolicy) GetID() *string {
@@ -111,6 +21,13 @@ func (o *TagBasedPolicy) GetID() *string {
 	return o.ID
 }
 
+func (o *TagBasedPolicy) GetDescription() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Description
+}
+
 func (o *TagBasedPolicy) GetTagBasedPolicyName() *string {
 	if o == nil {
 		return nil
@@ -118,7 +35,42 @@ func (o *TagBasedPolicy) GetTagBasedPolicyName() *string {
 	return o.TagBasedPolicyName
 }
 
-func (o *TagBasedPolicy) GetTemplates() []TemplateSummary {
+func (o *TagBasedPolicy) GetTargetBreachImpactScore() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.TargetBreachImpactScore
+}
+
+func (o *TagBasedPolicy) GetTimeline() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.Timeline
+}
+
+func (o *TagBasedPolicy) GetCriteria() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Criteria
+}
+
+func (o *TagBasedPolicy) GetCriteriaAsParams() *string {
+	if o == nil {
+		return nil
+	}
+	return o.CriteriaAsParams
+}
+
+func (o *TagBasedPolicy) GetNamednetworks() []MetadataNamedNetworkReference {
+	if o == nil {
+		return nil
+	}
+	return o.Namednetworks
+}
+
+func (o *TagBasedPolicy) GetTemplates() []TemplateReference {
 	if o == nil {
 		return nil
 	}

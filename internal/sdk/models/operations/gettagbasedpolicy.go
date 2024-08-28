@@ -27,7 +27,7 @@ type GetTagBasedPolicyResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// OK
-	TagBasedPolicy *shared.TagBasedPolicy
+	TagBasedPolicyResponse *shared.TagBasedPolicyResponse
 	// Bad Request
 	ErrorResponse *shared.ErrorResponse
 }
@@ -53,11 +53,11 @@ func (o *GetTagBasedPolicyResponse) GetRawResponse() *http.Response {
 	return o.RawResponse
 }
 
-func (o *GetTagBasedPolicyResponse) GetTagBasedPolicy() *shared.TagBasedPolicy {
+func (o *GetTagBasedPolicyResponse) GetTagBasedPolicyResponse() *shared.TagBasedPolicyResponse {
 	if o == nil {
 		return nil
 	}
-	return o.TagBasedPolicy
+	return o.TagBasedPolicyResponse
 }
 
 func (o *GetTagBasedPolicyResponse) GetErrorResponse() *shared.ErrorResponse {

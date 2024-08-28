@@ -8,8 +8,8 @@ import (
 	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
-	"github.com/colortokens/terraform-provider-xshield/internal/validators"
-	speakeasy_stringvalidators "github.com/colortokens/terraform-provider-xshield/internal/validators/stringvalidators"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -33,19 +33,24 @@ type SegmentResource struct {
 
 // SegmentResourceModel describes the resource data model.
 type SegmentResourceModel struct {
-	AutoSynchronizeEnabled               types.Bool                         `tfsdk:"auto_synchronize_enabled"`
-	Criteria                             types.String                       `tfsdk:"criteria"`
-	Description                          types.String                       `tfsdk:"description"`
-	ID                                   types.String                       `tfsdk:"id"`
-	LowestInboundPolicyStatus            types.String                       `tfsdk:"lowest_inbound_policy_status"`
-	LowestOutboundPolicyStatus           types.String                       `tfsdk:"lowest_outbound_policy_status"`
-	LowestProgressiveInboundPolicyStatus types.String                       `tfsdk:"lowest_progressive_inbound_policy_status"`
-	MatchingAssets                       types.Int64                        `tfsdk:"matching_assets"`
-	Namednetworks                        []tfTypes.NamednetworkNamedNetwork `tfsdk:"namednetworks"`
-	PolicyAutomationConfigurable         types.Bool                         `tfsdk:"policy_automation_configurable"`
-	PolicyProgressiveLastRefreshed       types.String                       `tfsdk:"policy_progressive_last_refreshed"`
-	TagBasedPolicyName                   types.String                       `tfsdk:"tag_based_policy_name"`
-	Templates                            []tfTypes.TemplateSummary          `tfsdk:"templates"`
+	AutoSynchronizeEnabled               types.Bool                              `tfsdk:"auto_synchronize_enabled"`
+	BaselineBreachImpactScore            types.Int64                             `tfsdk:"baseline_breach_impact_score"`
+	BaselineMatchingAssets               types.Int64                             `tfsdk:"baseline_matching_assets"`
+	Criteria                             types.String                            `tfsdk:"criteria"`
+	CriteriaAsParams                     types.String                            `tfsdk:"criteria_as_params"`
+	Description                          types.String                            `tfsdk:"description"`
+	ID                                   types.String                            `tfsdk:"id"`
+	LowestInboundPolicyStatus            types.String                            `tfsdk:"lowest_inbound_policy_status"`
+	LowestOutboundPolicyStatus           types.String                            `tfsdk:"lowest_outbound_policy_status"`
+	LowestProgressiveInboundPolicyStatus types.String                            `tfsdk:"lowest_progressive_inbound_policy_status"`
+	MatchingAssets                       types.Int64                             `tfsdk:"matching_assets"`
+	Milestones                           []tfTypes.TagBasedPolicyMilestone       `tfsdk:"milestones"`
+	Namednetworks                        []tfTypes.MetadataNamedNetworkReference `tfsdk:"namednetworks"`
+	PolicyAutomationConfigurable         types.Bool                              `tfsdk:"policy_automation_configurable"`
+	TagBasedPolicyName                   types.String                            `tfsdk:"tag_based_policy_name"`
+	TargetBreachImpactScore              types.Int64                             `tfsdk:"target_breach_impact_score"`
+	Templates                            []tfTypes.TemplateReference             `tfsdk:"templates"`
+	Timeline                             types.Int64                             `tfsdk:"timeline"`
 }
 
 func (r *SegmentResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -58,70 +63,65 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 		Attributes: map[string]schema.Attribute{
 			"auto_synchronize_enabled": schema.BoolAttribute{
 				Computed: true,
-				Optional: true,
+			},
+			"baseline_breach_impact_score": schema.Int64Attribute{
+				Computed: true,
+			},
+			"baseline_matching_assets": schema.Int64Attribute{
+				Computed: true,
 			},
 			"criteria": schema.StringAttribute{
+				Computed: true,
+				Optional: true,
+			},
+			"criteria_as_params": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
 			},
 			"description": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtMost(1000),
+				},
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
 			},
 			"lowest_inbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
 			},
 			"lowest_outbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
 			},
 			"lowest_progressive_inbound_policy_status": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
 			},
 			"matching_assets": schema.Int64Attribute{
 				Computed: true,
+			},
+			"milestones": schema.ListNestedAttribute{
+				Computed: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"completion_percentage": schema.NumberAttribute{
+							Computed: true,
+						},
+						"milestone_id": schema.Int64Attribute{
+							Computed: true,
+						},
+						"name": schema.StringAttribute{
+							Computed: true,
+						},
+					},
+				},
 			},
 			"namednetworks": schema.ListNestedAttribute{
 				Computed: true,
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"assigned_by_tag_based_policy": schema.BoolAttribute{
-							Computed: true,
-						},
-						"colortokens_managed": schema.BoolAttribute{
-							Computed: true,
-						},
-						"id": schema.StringAttribute{
-							Computed: true,
-						},
-						"ip_ranges": schema.ListNestedAttribute{
-							Computed: true,
-							Optional: true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"id": schema.StringAttribute{
-										Computed: true,
-									},
-									"ip_count": schema.Int64Attribute{
-										Computed: true,
-									},
-									"ip_range": schema.StringAttribute{
-										Computed: true,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"named_network_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"named_network_description": schema.StringAttribute{
+						"named_network_id": schema.StringAttribute{
 							Computed: true,
 							Optional: true,
 						},
@@ -129,79 +129,31 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 							Computed: true,
 							Optional: true,
 						},
-						"namednetwork_tag_based_policy_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"program_as_internet": schema.BoolAttribute{
-							Computed: true,
-						},
-						"program_as_intranet": schema.BoolAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"region": schema.StringAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"service": schema.StringAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"total_comments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"total_count": schema.Int64Attribute{
-							Computed: true,
-						},
-						"usergroup_named_network_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
 					},
 				},
 			},
 			"policy_automation_configurable": schema.BoolAttribute{
 				Computed: true,
-				Optional: true,
-			},
-			"policy_progressive_last_refreshed": schema.StringAttribute{
-				Computed: true,
-				Validators: []validator.String{
-					validators.IsRFC3339(),
-				},
 			},
 			"tag_based_policy_name": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtMost(256),
+				},
+			},
+			"target_breach_impact_score": schema.Int64Attribute{
+				Computed: true,
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtMost(100),
+				},
 			},
 			"templates": schema.ListNestedAttribute{
 				Computed: true,
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"access_policy_template": schema.BoolAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"assigned_by_tag_based_policy": schema.BoolAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"oob_template": schema.BoolAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_assignments": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_category": schema.StringAttribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_description": schema.StringAttribute{
-							Computed: true,
-							Optional: true,
-						},
 						"template_id": schema.StringAttribute{
 							Computed: true,
 							Optional: true,
@@ -210,39 +162,14 @@ func (r *SegmentResource) Schema(ctx context.Context, req resource.SchemaRequest
 							Computed: true,
 							Optional: true,
 						},
-						"template_paths": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_ports": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_tag_based_policy_assignments": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"template_type": schema.StringAttribute{
-							Computed:    true,
-							Optional:    true,
-							Description: `Not Null`,
-							Validators: []validator.String{
-								speakeasy_stringvalidators.NotNull(),
-							},
-						},
-						"template_unassignments_pending_firewall_synchronize": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"total_comments": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
-						"usergroup_template_assignments": schema.Int64Attribute{
-							Computed: true,
-							Optional: true,
-						},
 					},
+				},
+			},
+			"timeline": schema.Int64Attribute{
+				Computed: true,
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 		},
@@ -300,15 +227,15 @@ func (r *SegmentResource) Create(ctx context.Context, req resource.CreateRequest
 		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
 		return
 	}
-	if res.StatusCode != 200 {
+	if res.StatusCode != 202 {
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if !(res.TagBasedPolicy != nil) {
+	if !(res.TagBasedPolicyResponse != nil) {
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedTagBasedPolicy(res.TagBasedPolicy)
+	data.RefreshFromSharedTagBasedPolicyResponse(res.TagBasedPolicyResponse)
 	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
@@ -359,11 +286,11 @@ func (r *SegmentResource) Read(ctx context.Context, req resource.ReadRequest, re
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if !(res.TagBasedPolicy != nil) {
+	if !(res.TagBasedPolicyResponse != nil) {
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedTagBasedPolicy(res.TagBasedPolicy)
+	data.RefreshFromSharedTagBasedPolicyResponse(res.TagBasedPolicyResponse)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

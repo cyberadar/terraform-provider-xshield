@@ -51,7 +51,7 @@ func (s *Tagbasedpolicies) CreateTagBasedPolicy(ctx context.Context, request sha
 	}
 
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
-	opURL, err := url.JoinPath(baseURL, "/api/tagbasedpolicies")
+	opURL, err := url.JoinPath(baseURL, "/api/v2/tagbasedpolicies")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -189,15 +189,15 @@ func (s *Tagbasedpolicies) CreateTagBasedPolicy(ctx context.Context, request sha
 	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
 
 	switch {
-	case httpRes.StatusCode == 200:
+	case httpRes.StatusCode == 202:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
-			var out shared.TagBasedPolicy
+			var out shared.TagBasedPolicyResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.TagBasedPolicy = &out
+			res.TagBasedPolicyResponse = &out
 		default:
 			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
 		}
@@ -248,7 +248,7 @@ func (s *Tagbasedpolicies) GetTagBasedPolicy(ctx context.Context, request operat
 	}
 
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/v2/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -383,12 +383,12 @@ func (s *Tagbasedpolicies) GetTagBasedPolicy(ctx context.Context, request operat
 	case httpRes.StatusCode == 200:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
-			var out shared.TagBasedPolicy
+			var out shared.TagBasedPolicyResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.TagBasedPolicy = &out
+			res.TagBasedPolicyResponse = &out
 		default:
 			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
 		}
@@ -437,7 +437,7 @@ func (s *Tagbasedpolicies) UpdateTagBasedPolicyMetadata(ctx context.Context, req
 	}
 
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/v2/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -623,7 +623,7 @@ func (s *Tagbasedpolicies) DeleteTagBasedPolicy(ctx context.Context, request ope
 	}
 
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/api/v2/tagbasedpolicies/{tagbasedpolicyId}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

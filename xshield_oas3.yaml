@@ -2992,7 +2992,7 @@ paths:
         - ADMIN
         - USER
       x-codegen-request-body-name: input
-  /api/tagbasedpolicies:
+  /api/v2/tagbasedpolicies:
     post:
       tags:
       - tagbasedpolicies
@@ -3009,12 +3009,12 @@ paths:
               $ref: '#/components/schemas/TagBasedPolicy'
         required: true
       responses:
-        "200":
+        "202":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TagBasedPolicy'
+                $ref: '#/components/schemas/TagBasedPolicyResponse'
         "400":
           description: Bad Request
           content:
@@ -3039,7 +3039,7 @@ paths:
         - ADMIN
         - USER
       x-codegen-request-body-name: tagbasedpolicy
-  /api/tagbasedpolicies/{tagbasedpolicyId}:
+  /api/v2/tagbasedpolicies/{tagbasedpolicyId}:
     get:
       tags:
       - tagbasedpolicies
@@ -3062,7 +3062,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TagBasedPolicy'
+                $ref: '#/components/schemas/TagBasedPolicyResponse'
         "400":
           description: Bad Request
           content:
@@ -5873,44 +5873,107 @@ components:
       type: object
       x-speakeasy-entity: Segment
       properties:
-        autoSynchronizeEnabled:
-          type: boolean
-        criteria:
-          type: string
-        criteriaAsParams:
-          x-speakeasy-ignore: true
-          type: string
-        description:
-          type: string
-        lowestInboundPolicyStatus:
-          type: string
-        lowestOutboundPolicyStatus:
-          type: string
-        lowestProgressiveInboundPolicyStatus:
-          type: string
-        matchingAssets:
-          x-speakeasy-param-readonly: true        
-          type: integer
-        namednetworks:
-          type: array
-          items:
-            $ref: '#/components/schemas/namednetwork.NamedNetwork'
-        policyAutomationConfigurable:
-          type: boolean
-        policyProgressiveLastRefreshed:
-          type: string
-          x-speakeasy-param-readonly: true
-          format: date-time
         tagBasedPolicyId:
           x-speakeasy-name-override: id
           x-speakeasy-param-readonly: true
           type: string
-        tagBasedPolicyName:
+        description:
+          maxLength: 1000
           type: string
+        tagBasedPolicyName:
+          maxLength: 256
+          type: string
+        targetBreachImpactScore:
+          maximum: 100
+          minimum: 0
+          type: integer
+        timeline:
+          minimum: 1
+          type: integer
+        criteria:
+          type: string
+        criteriaAsParams:
+          type: string
+        namednetworks:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.NamedNetworkReference'
         templates:
           type: array
           items:
-            $ref: '#/components/schemas/TemplateSummary'
+            $ref: '#/components/schemas/TemplateReference'
+    TagBasedPolicyResponse:
+      type: object
+      x-speakeasy-entity: Segment
+      properties:
+        tagBasedPolicyId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
+          type: string
+        description:
+          maxLength: 1000
+          type: string
+        tagBasedPolicyName:
+          maxLength: 256
+          type: string
+        targetBreachImpactScore:
+          maximum: 100
+          minimum: 0
+          type: integer
+        timeline:
+          minimum: 1
+          type: integer
+        criteria:
+          type: string
+        criteriaAsParams:
+          type: string
+        namednetworks:
+          type: array
+          items:
+            $ref: '#/components/schemas/metadata.NamedNetworkReference'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateReference'
+        milestones:
+          x-speakeasy-param-readonly: true
+          type: array
+          items:
+            $ref: '#/components/schemas/TagBasedPolicyMilestone'
+        matchingAssets:
+          x-speakeasy-param-readonly: true
+          type: integer
+        baselineBreachImpactScore:
+          x-speakeasy-param-readonly: true
+          type: integer
+        baselineMatchingAssets:
+          x-speakeasy-param-readonly: true
+          type: integer
+        # createdAt:
+        #   x-speakeasy-param-readonly: true
+        #   format: date-time
+        #   type: string
+        policyAutomationConfigurable:
+          x-speakeasy-param-readonly: true
+          type: boolean
+        # policyProgressiveLastRefreshed:
+        #   nullable: true
+        #   x-go-custom-tag: 'omitempty'
+        #   x-speakeasy-param-readonly: true
+        #   format: date-time
+        #   type: string
+        autoSynchronizeEnabled:
+          x-speakeasy-param-readonly: true
+          type: boolean
+        lowestInboundPolicyStatus:
+          x-speakeasy-param-readonly: true
+          type: string
+        lowestOutboundPolicyStatus:
+          x-speakeasy-param-readonly: true
+          type: string
+        lowestProgressiveInboundPolicyStatus:
+          x-speakeasy-param-readonly: true
+          type: string
     TagBasedPolicyMetadata:
       type: object
       properties:
@@ -6121,6 +6184,24 @@ components:
           type: string
         templateName:
           type: string
+    TagBasedPolicyMilestone:
+      type: object
+      properties:
+        # completedAt:
+        #   format: date-time
+        #   type: string
+        completionPercentage:
+          type: number
+        milestoneId:
+          type: integer
+        name:
+          type: string
+        # startedAt:
+        #   format: date-time
+        #   type: string
+        # targetDate:
+        #   format: date-time
+        #   type: string
     TemplateSummary:
       required:
       - templateType

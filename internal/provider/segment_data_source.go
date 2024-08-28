@@ -29,19 +29,24 @@ type SegmentDataSource struct {
 
 // SegmentDataSourceModel describes the data model.
 type SegmentDataSourceModel struct {
-	AutoSynchronizeEnabled               types.Bool                         `tfsdk:"auto_synchronize_enabled"`
-	Criteria                             types.String                       `tfsdk:"criteria"`
-	Description                          types.String                       `tfsdk:"description"`
-	ID                                   types.String                       `tfsdk:"id"`
-	LowestInboundPolicyStatus            types.String                       `tfsdk:"lowest_inbound_policy_status"`
-	LowestOutboundPolicyStatus           types.String                       `tfsdk:"lowest_outbound_policy_status"`
-	LowestProgressiveInboundPolicyStatus types.String                       `tfsdk:"lowest_progressive_inbound_policy_status"`
-	MatchingAssets                       types.Int64                        `tfsdk:"matching_assets"`
-	Namednetworks                        []tfTypes.NamednetworkNamedNetwork `tfsdk:"namednetworks"`
-	PolicyAutomationConfigurable         types.Bool                         `tfsdk:"policy_automation_configurable"`
-	PolicyProgressiveLastRefreshed       types.String                       `tfsdk:"policy_progressive_last_refreshed"`
-	TagBasedPolicyName                   types.String                       `tfsdk:"tag_based_policy_name"`
-	Templates                            []tfTypes.TemplateSummary          `tfsdk:"templates"`
+	AutoSynchronizeEnabled               types.Bool                              `tfsdk:"auto_synchronize_enabled"`
+	BaselineBreachImpactScore            types.Int64                             `tfsdk:"baseline_breach_impact_score"`
+	BaselineMatchingAssets               types.Int64                             `tfsdk:"baseline_matching_assets"`
+	Criteria                             types.String                            `tfsdk:"criteria"`
+	CriteriaAsParams                     types.String                            `tfsdk:"criteria_as_params"`
+	Description                          types.String                            `tfsdk:"description"`
+	ID                                   types.String                            `tfsdk:"id"`
+	LowestInboundPolicyStatus            types.String                            `tfsdk:"lowest_inbound_policy_status"`
+	LowestOutboundPolicyStatus           types.String                            `tfsdk:"lowest_outbound_policy_status"`
+	LowestProgressiveInboundPolicyStatus types.String                            `tfsdk:"lowest_progressive_inbound_policy_status"`
+	MatchingAssets                       types.Int64                             `tfsdk:"matching_assets"`
+	Milestones                           []tfTypes.TagBasedPolicyMilestone       `tfsdk:"milestones"`
+	Namednetworks                        []tfTypes.MetadataNamedNetworkReference `tfsdk:"namednetworks"`
+	PolicyAutomationConfigurable         types.Bool                              `tfsdk:"policy_automation_configurable"`
+	TagBasedPolicyName                   types.String                            `tfsdk:"tag_based_policy_name"`
+	TargetBreachImpactScore              types.Int64                             `tfsdk:"target_breach_impact_score"`
+	Templates                            []tfTypes.TemplateReference             `tfsdk:"templates"`
+	Timeline                             types.Int64                             `tfsdk:"timeline"`
 }
 
 // Metadata returns the data source type name.
@@ -58,7 +63,16 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"auto_synchronize_enabled": schema.BoolAttribute{
 				Computed: true,
 			},
+			"baseline_breach_impact_score": schema.Int64Attribute{
+				Computed: true,
+			},
+			"baseline_matching_assets": schema.Int64Attribute{
+				Computed: true,
+			},
 			"criteria": schema.StringAttribute{
+				Computed: true,
+			},
+			"criteria_as_params": schema.StringAttribute{
 				Computed: true,
 			},
 			"description": schema.StringAttribute{
@@ -79,66 +93,30 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"matching_assets": schema.Int64Attribute{
 				Computed: true,
 			},
+			"milestones": schema.ListNestedAttribute{
+				Computed: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"completion_percentage": schema.NumberAttribute{
+							Computed: true,
+						},
+						"milestone_id": schema.Int64Attribute{
+							Computed: true,
+						},
+						"name": schema.StringAttribute{
+							Computed: true,
+						},
+					},
+				},
+			},
 			"namednetworks": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"assigned_by_tag_based_policy": schema.BoolAttribute{
-							Computed: true,
-						},
-						"colortokens_managed": schema.BoolAttribute{
-							Computed: true,
-						},
-						"id": schema.StringAttribute{
-							Computed: true,
-						},
-						"ip_ranges": schema.ListNestedAttribute{
-							Computed: true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"id": schema.StringAttribute{
-										Computed: true,
-									},
-									"ip_count": schema.Int64Attribute{
-										Computed: true,
-									},
-									"ip_range": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-						},
-						"named_network_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"named_network_description": schema.StringAttribute{
+						"named_network_id": schema.StringAttribute{
 							Computed: true,
 						},
 						"named_network_name": schema.StringAttribute{
-							Computed: true,
-						},
-						"namednetwork_tag_based_policy_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"program_as_internet": schema.BoolAttribute{
-							Computed: true,
-						},
-						"program_as_intranet": schema.BoolAttribute{
-							Computed: true,
-						},
-						"region": schema.StringAttribute{
-							Computed: true,
-						},
-						"service": schema.StringAttribute{
-							Computed: true,
-						},
-						"total_comments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"total_count": schema.Int64Attribute{
-							Computed: true,
-						},
-						"usergroup_named_network_assignments": schema.Int64Attribute{
 							Computed: true,
 						},
 					},
@@ -147,63 +125,27 @@ func (r *SegmentDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"policy_automation_configurable": schema.BoolAttribute{
 				Computed: true,
 			},
-			"policy_progressive_last_refreshed": schema.StringAttribute{
+			"tag_based_policy_name": schema.StringAttribute{
 				Computed: true,
 			},
-			"tag_based_policy_name": schema.StringAttribute{
+			"target_breach_impact_score": schema.Int64Attribute{
 				Computed: true,
 			},
 			"templates": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"access_policy_template": schema.BoolAttribute{
-							Computed: true,
-						},
-						"assigned_by_tag_based_policy": schema.BoolAttribute{
-							Computed: true,
-						},
-						"oob_template": schema.BoolAttribute{
-							Computed: true,
-						},
-						"template_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"template_category": schema.StringAttribute{
-							Computed: true,
-						},
-						"template_description": schema.StringAttribute{
-							Computed: true,
-						},
 						"template_id": schema.StringAttribute{
 							Computed: true,
 						},
 						"template_name": schema.StringAttribute{
 							Computed: true,
 						},
-						"template_paths": schema.Int64Attribute{
-							Computed: true,
-						},
-						"template_ports": schema.Int64Attribute{
-							Computed: true,
-						},
-						"template_tag_based_policy_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"template_type": schema.StringAttribute{
-							Computed: true,
-						},
-						"template_unassignments_pending_firewall_synchronize": schema.Int64Attribute{
-							Computed: true,
-						},
-						"total_comments": schema.Int64Attribute{
-							Computed: true,
-						},
-						"usergroup_template_assignments": schema.Int64Attribute{
-							Computed: true,
-						},
 					},
 				},
+			},
+			"timeline": schema.Int64Attribute{
+				Computed: true,
 			},
 		},
 	}
@@ -273,11 +215,11 @@ func (r *SegmentDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if !(res.TagBasedPolicy != nil) {
+	if !(res.TagBasedPolicyResponse != nil) {
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedTagBasedPolicy(res.TagBasedPolicy)
+	data.RefreshFromSharedTagBasedPolicyResponse(res.TagBasedPolicyResponse)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
