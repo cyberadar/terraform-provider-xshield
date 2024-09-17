@@ -297,8 +297,10 @@ paths:
       description: Retrieves Asset by identifier if match found. If no match found
         for identifier empty response returned.
       operationId: GetAsset
+      x-speakeasy-entity-operation: ["Asset#create", "Asset#read"]
       parameters:
       - name: assetId
+        x-speakeasy-match: id
         in: path
         description: Asset ID
         required: true
@@ -325,6 +327,54 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       x-permission:
         permission: READ_ASSET
+        permissionScope:
+        - AGENT
+        - ADMIN
+        - USER
+    put:
+      tags:
+      - assets
+      summary: Update a Asset by its identifier.
+      description: Update Asset by identifier if match found. If no match found
+        for identifier empty response returned.
+      operationId: UpdateAsset
+      x-speakeasy-entity-operation: Asset#update
+      requestBody:
+        description: asset definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssetDetails'
+        required: true
+      parameters:
+      - name: assetId
+        x-speakeasy-match: id
+        in: path
+        description: Asset ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetDetails'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-permission:
+        permission: UPDATE_ASSET
         permissionScope:
         - AGENT
         - ADMIN
@@ -4671,181 +4721,278 @@ components:
       - assetName
       - type
       type: object
+      x-speakeasy-entity: Asset
       properties:
         agentId:
+          x-speakeasy-param-readonly: true
           type: string
         agentName:
+          x-speakeasy-param-readonly: true
           type: string
         agentStatus:
+          x-speakeasy-param-readonly: true
           type: string
         agentVersion:
+          x-speakeasy-param-readonly: true
           type: string
         assetAvailability:
+          x-speakeasy-param-readonly: true
           type: string
         assetId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
           type: string
         assetInternetFacing:
+          x-speakeasy-param-readonly: true
           type: boolean
         assetName:
           type: string
           example: myhostname.company.com
-        assetProgressiveLastRefreshed:
-          type: string
-          format: date-time
+        # assetProgressiveLastRefreshed:
+        #   x-speakeasy-param-readonly: true
+        #   type: string
+        #   format: date-time
         assetRisk:
+          x-speakeasy-param-readonly: true
           type: string
         attackSurface:
+          x-speakeasy-param-readonly: true
           type: string
         attackSurfacePendingChanges:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/PendingChanges'
         autoSynchronizeEnabled:
+          x-speakeasy-param-readonly: true
           type: boolean
         blastRadius:
+          x-speakeasy-param-readonly: true
           type: string
         blastRadiusPendingChanges:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/PendingChanges'
         businessValue:
+          x-speakeasy-param-readonly: true
           type: string
         cloudTags:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/Tag'
         clusterIdentifier:
+          x-speakeasy-param-readonly: true
           type: string
         containerNamespace:
+          x-speakeasy-param-readonly: true
           type: string
         coreTags:
           type: object
           additionalProperties:
             type: string
         cpuCoreCount:
+          x-speakeasy-param-readonly: true
           type: integer
         cpuName:
+          x-speakeasy-param-readonly: true
           type: string
         currentTrafficConfiguration:
+          x-speakeasy-param-readonly: true
           type: string
           enum:
           - disabled
           - enable-all
           - enable-inbound-only
           - enable-outbound-only
-        deterministicId:
+        deterministicId:  
+          x-speakeasy-param-readonly: true
           type: string
         diskCapacityInGB:
+          x-speakeasy-param-readonly: true
           type: integer
         hostName:
+          x-speakeasy-param-readonly: true
           type: string
         inboundAssetStatus:
+          x-speakeasy-param-readonly: true
           type: string
         inboundInternetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         inboundInternetPorts:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         inboundIntranetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         inboundIntranetPorts:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         interfaces:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/NetworkInterface'
         kernelArchitecture:
+          x-speakeasy-param-readonly: true
           type: string
         kernelVersion:
+          x-speakeasy-param-readonly: true
           type: string
-        lastPolicyDeploymentTriggeredAt:
-          type: string
-          format: date-time
+        # lastPolicyDeploymentTriggeredAt:
+        #   x-speakeasy-param-readonly: true
+        #   type: string
+        #   format: date-time
         lowestInboundAssetStatus:
+          x-speakeasy-param-readonly: true
           type: string
         lowestOutboundAssetStatus:
+          x-speakeasy-param-readonly: true
           type: string
         lowestProgressiveInboundAssetStatus:
+          x-speakeasy-param-readonly: true
           type: string
-        mostRecentNewPath:
-          type: string
-          format: date-time
+        # mostRecentNewPath:
+        #   x-speakeasy-param-readonly: true
+        #   type: string
+        #   format: date-time
         namedNetworkChanges:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/metadata.NamedNetworkReference'
         namednetworksAssigned:
+          x-speakeasy-param-readonly: true
           type: integer
         osName:
+          x-speakeasy-param-readonly: true
           type: string
         outboundAssetStatus:
+          x-speakeasy-param-readonly: true
           type: string
         outboundInternetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         outboundIntranetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         pendingAttackSurfaceChanges:
+          x-speakeasy-param-readonly: true
           type: boolean
         pendingBlastRadiusChanges:
+          x-speakeasy-param-readonly: true
           type: boolean
         platform:
+          x-speakeasy-param-readonly: true
           type: string
         policiesAssigned:
+          x-speakeasy-param-readonly: true
           type: integer
         policyStatus:
+          x-speakeasy-param-readonly: true
           type: string
         ramCapacityInMB:
+          x-speakeasy-param-readonly: true
           type: integer
         securityPatches:
+          x-speakeasy-param-readonly: true
           type: integer
         tags:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/Tag'
         templateChanges:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/TemplateReference'
         templatesAssigned:
+          x-speakeasy-param-readonly: true
           type: integer
         totalComments:
+          x-speakeasy-param-readonly: true
           type: integer
         totalInboundComments:
+          x-speakeasy-param-readonly: true
           type: integer
         totalOutboundComments:
+          x-speakeasy-param-readonly: true
           type: integer
         totalPaths:
+          x-speakeasy-param-readonly: true
           type: integer
         totalPorts:
+          x-speakeasy-param-readonly: true
           type: integer
         totalPortsPathRestricted:
+          x-speakeasy-param-readonly: true
           type: integer
         type:
           type: string
         unreviewedPaths:
+          x-speakeasy-param-readonly: true
           type: integer
         unreviewedPorts:
+          x-speakeasy-param-readonly: true
           type: integer
-        usergroupMostRecentNewPath:
-          type: string
-          format: date-time
+        # usergroupMostRecentNewPath:
+        #   x-speakeasy-param-readonly: true
+        #   type: string
+        #   format: date-time
         usergroupOutboundInternetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         usergroupOutboundIntranetPaths:
+          x-speakeasy-param-readonly: true
           $ref: '#/components/schemas/ReviewCoverage'
         usergroupTotalPaths:
+          x-speakeasy-param-readonly: true
           type: integer
         usergroupUnreviewedPaths:
+          x-speakeasy-param-readonly: true
           type: integer
         usergroups:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/AssetGroup'
         users:
+          x-speakeasy-param-readonly: true
           type: array
           items:
             $ref: '#/components/schemas/AssetUser'
         vendorInfo:
+          x-speakeasy-param-readonly: true
           type: string
         virtualizationSystem:
+          x-speakeasy-param-readonly: true
           type: string
         vulnerabilities:
+          x-speakeasy-param-readonly: true
           type: integer
+    CreateAssetDetails:
+      required:
+      - assetName
+      - type
+      type: object
+      x-speakeasy-entity: Asset
+      properties:
+        agentId:
+          type: string
+        assetId:
+          type: string
+        assetName:
+          example: myhostname.company.com
+          type: string
+        type:
+          type: string
+        coreTags:
+          type: object
+          additionalProperties:
+            type: string
+        deterministicId:
+          type: string
+        vendorInfo:
+          type: string
     AssetGroup:
       type: object
       properties:

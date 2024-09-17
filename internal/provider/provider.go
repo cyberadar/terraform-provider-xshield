@@ -119,6 +119,7 @@ func buildConfigProvider(data XshieldProviderModel, resp *provider.ConfigureResp
 
 func (p *XshieldProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewAssetResource,
 		NewNamedNetworkResource,
 		NewSegmentResource,
 		NewTagRuleResource,
@@ -128,6 +129,7 @@ func (p *XshieldProvider) Resources(ctx context.Context) []func() resource.Resou
 
 func (p *XshieldProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewAssetDataSource,
 		NewNamedNetworkDataSource,
 		NewSegmentDataSource,
 		NewTagRuleDataSource,

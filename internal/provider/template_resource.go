@@ -12,6 +12,7 @@ import (
 	tfTypes "github.com/colortokens/terraform-provider-xshield/internal/provider/types"
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/operations"
+	speakeasy_objectvalidators "github.com/colortokens/terraform-provider-xshield/internal/validators/objectvalidators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -79,161 +80,168 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 			},
 			"template_category": schema.StringAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Description: `Requires replacement if changed.`,
 			},
 			"template_description": schema.StringAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Description: `Requires replacement if changed.`,
 			},
 			"template_name": schema.StringAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
+				Description: `Requires replacement if changed.`,
 			},
 			"template_paths": schema.ListNestedAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
 				},
-				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
+					Validators: []validator.Object{
+						speakeasy_objectvalidators.NotNull(),
+					},
+					PlanModifiers: []planmodifier.Object{
+						objectplanmodifier.RequiresReplaceIfConfigured(),
+						speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
+					},
 					Attributes: map[string]schema.Attribute{
 						"destination_asset_id": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"destination_named_network": schema.SingleNestedAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.Object{
 								objectplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
 							},
-							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"named_network_id": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"named_network_name": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 							},
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"destination_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.Object{
 								objectplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
 							},
-							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"criteria": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"criteria_as_params": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"tag_based_policy_id": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"tag_based_policy_name": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 							},
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"direction": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"domain": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"dst_ip": schema.ListAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.List{
 								listplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
 							ElementType: types.StringType,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"dst_process": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"id": schema.StringAttribute{
 							Computed: true,
@@ -243,164 +251,171 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 						},
 						"method": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"port": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"port_name": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"protocol": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"source_asset_id": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"source_named_network": schema.SingleNestedAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.Object{
 								objectplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
 							},
-							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"named_network_id": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"named_network_name": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 							},
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"source_tag_based_policy": schema.SingleNestedAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.Object{
 								objectplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
 							},
-							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"criteria": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"criteria_as_params": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"tag_based_policy_id": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 								"tag_based_policy_name": schema.StringAttribute{
 									Computed: true,
+									Optional: true,
 									PlanModifiers: []planmodifier.String{
 										stringplanmodifier.RequiresReplaceIfConfigured(),
 										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 									},
-									Optional:    true,
-									Description: `Requires replacement if changed. `,
+									Description: `Requires replacement if changed.`,
 								},
 							},
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"src_ip": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"src_process": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"uri": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 					},
 				},
-				Description: `Requires replacement if changed. `,
+				Description: `Requires replacement if changed.`,
 			},
 			"template_ports": schema.ListNestedAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
 				},
-				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
+					Validators: []validator.Object{
+						speakeasy_objectvalidators.NotNull(),
+					},
+					PlanModifiers: []planmodifier.Object{
+						objectplanmodifier.RequiresReplaceIfConfigured(),
+						speakeasy_objectplanmodifier.SuppressDiff(speakeasy_objectplanmodifier.ExplicitSuppress),
+					},
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							Computed: true,
@@ -410,39 +425,39 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 						},
 						"listen_port": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"listen_port_name": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"listen_port_protocol": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 						"listen_port_reviewed": schema.StringAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
-							Description: `Requires replacement if changed. ; must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]`,
+							Description: `must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]; Requires replacement if changed.`,
 							Validators: []validator.String{
 								stringvalidator.OneOf(
 									"denied",
@@ -454,26 +469,26 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 						},
 						"listen_process_names": schema.ListAttribute{
 							Computed: true,
+							Optional: true,
 							PlanModifiers: []planmodifier.List{
 								listplanmodifier.RequiresReplaceIfConfigured(),
 								speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
 							},
-							Optional:    true,
 							ElementType: types.StringType,
-							Description: `Requires replacement if changed. `,
+							Description: `Requires replacement if changed.`,
 						},
 					},
 				},
-				Description: `Requires replacement if changed. `,
+				Description: `Requires replacement if changed.`,
 			},
 			"template_type": schema.StringAttribute{
 				Computed: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplaceIfConfigured(),
 					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional:    true,
-				Description: `Requires replacement if changed. ; must be one of ["application-template", "block-template"]`,
+				Description: `must be one of ["application-template", "block-template"]; Requires replacement if changed.`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"application-template",

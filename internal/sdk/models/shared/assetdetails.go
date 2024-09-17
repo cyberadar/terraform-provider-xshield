@@ -5,8 +5,6 @@ package shared
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/colortokens/terraform-provider-xshield/internal/sdk/internal/utils"
-	"time"
 )
 
 type CurrentTrafficConfiguration string
@@ -47,10 +45,9 @@ type AssetDetails struct {
 	AgentStatus                         *string                         `json:"agentStatus,omitempty"`
 	AgentVersion                        *string                         `json:"agentVersion,omitempty"`
 	AssetAvailability                   *string                         `json:"assetAvailability,omitempty"`
-	AssetID                             *string                         `json:"assetId,omitempty"`
+	ID                                  *string                         `json:"assetId,omitempty"`
 	AssetInternetFacing                 *bool                           `json:"assetInternetFacing,omitempty"`
 	AssetName                           string                          `json:"assetName"`
-	AssetProgressiveLastRefreshed       *time.Time                      `json:"assetProgressiveLastRefreshed,omitempty"`
 	AssetRisk                           *string                         `json:"assetRisk,omitempty"`
 	AttackSurface                       *string                         `json:"attackSurface,omitempty"`
 	AttackSurfacePendingChanges         *PendingChanges                 `json:"attackSurfacePendingChanges,omitempty"`
@@ -76,11 +73,9 @@ type AssetDetails struct {
 	Interfaces                          []NetworkInterface              `json:"interfaces,omitempty"`
 	KernelArchitecture                  *string                         `json:"kernelArchitecture,omitempty"`
 	KernelVersion                       *string                         `json:"kernelVersion,omitempty"`
-	LastPolicyDeploymentTriggeredAt     *time.Time                      `json:"lastPolicyDeploymentTriggeredAt,omitempty"`
 	LowestInboundAssetStatus            *string                         `json:"lowestInboundAssetStatus,omitempty"`
 	LowestOutboundAssetStatus           *string                         `json:"lowestOutboundAssetStatus,omitempty"`
 	LowestProgressiveInboundAssetStatus *string                         `json:"lowestProgressiveInboundAssetStatus,omitempty"`
-	MostRecentNewPath                   *time.Time                      `json:"mostRecentNewPath,omitempty"`
 	NamedNetworkChanges                 []MetadataNamedNetworkReference `json:"namedNetworkChanges,omitempty"`
 	NamednetworksAssigned               *int64                          `json:"namednetworksAssigned,omitempty"`
 	OsName                              *string                         `json:"osName,omitempty"`
@@ -106,7 +101,6 @@ type AssetDetails struct {
 	Type                                string                          `json:"type"`
 	UnreviewedPaths                     *int64                          `json:"unreviewedPaths,omitempty"`
 	UnreviewedPorts                     *int64                          `json:"unreviewedPorts,omitempty"`
-	UsergroupMostRecentNewPath          *time.Time                      `json:"usergroupMostRecentNewPath,omitempty"`
 	UsergroupOutboundInternetPaths      *ReviewCoverage                 `json:"usergroupOutboundInternetPaths,omitempty"`
 	UsergroupOutboundIntranetPaths      *ReviewCoverage                 `json:"usergroupOutboundIntranetPaths,omitempty"`
 	UsergroupTotalPaths                 *int64                          `json:"usergroupTotalPaths,omitempty"`
@@ -116,17 +110,6 @@ type AssetDetails struct {
 	VendorInfo                          *string                         `json:"vendorInfo,omitempty"`
 	VirtualizationSystem                *string                         `json:"virtualizationSystem,omitempty"`
 	Vulnerabilities                     *int64                          `json:"vulnerabilities,omitempty"`
-}
-
-func (a AssetDetails) MarshalJSON() ([]byte, error) {
-	return utils.MarshalJSON(a, "", false)
-}
-
-func (a *AssetDetails) UnmarshalJSON(data []byte) error {
-	if err := utils.UnmarshalJSON(data, &a, "", false, false); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (o *AssetDetails) GetAgentID() *string {
@@ -164,11 +147,11 @@ func (o *AssetDetails) GetAssetAvailability() *string {
 	return o.AssetAvailability
 }
 
-func (o *AssetDetails) GetAssetID() *string {
+func (o *AssetDetails) GetID() *string {
 	if o == nil {
 		return nil
 	}
-	return o.AssetID
+	return o.ID
 }
 
 func (o *AssetDetails) GetAssetInternetFacing() *bool {
@@ -183,13 +166,6 @@ func (o *AssetDetails) GetAssetName() string {
 		return ""
 	}
 	return o.AssetName
-}
-
-func (o *AssetDetails) GetAssetProgressiveLastRefreshed() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.AssetProgressiveLastRefreshed
 }
 
 func (o *AssetDetails) GetAssetRisk() *string {
@@ -367,13 +343,6 @@ func (o *AssetDetails) GetKernelVersion() *string {
 	return o.KernelVersion
 }
 
-func (o *AssetDetails) GetLastPolicyDeploymentTriggeredAt() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.LastPolicyDeploymentTriggeredAt
-}
-
 func (o *AssetDetails) GetLowestInboundAssetStatus() *string {
 	if o == nil {
 		return nil
@@ -393,13 +362,6 @@ func (o *AssetDetails) GetLowestProgressiveInboundAssetStatus() *string {
 		return nil
 	}
 	return o.LowestProgressiveInboundAssetStatus
-}
-
-func (o *AssetDetails) GetMostRecentNewPath() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.MostRecentNewPath
 }
 
 func (o *AssetDetails) GetNamedNetworkChanges() []MetadataNamedNetworkReference {
@@ -575,13 +537,6 @@ func (o *AssetDetails) GetUnreviewedPorts() *int64 {
 		return nil
 	}
 	return o.UnreviewedPorts
-}
-
-func (o *AssetDetails) GetUsergroupMostRecentNewPath() *time.Time {
-	if o == nil {
-		return nil
-	}
-	return o.UsergroupMostRecentNewPath
 }
 
 func (o *AssetDetails) GetUsergroupOutboundInternetPaths() *ReviewCoverage {

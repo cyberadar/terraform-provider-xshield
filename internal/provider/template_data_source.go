@@ -192,8 +192,7 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							Computed: true,
 						},
 						"listen_port_reviewed": schema.StringAttribute{
-							Computed:    true,
-							Description: `must be one of ["denied", "allow-intranet", "allow-any", "path-restricted"]`,
+							Computed: true,
 						},
 						"listen_process_names": schema.ListAttribute{
 							Computed:    true,
@@ -203,8 +202,7 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				},
 			},
 			"template_type": schema.StringAttribute{
-				Computed:    true,
-				Description: `must be one of ["application-template", "block-template"]`,
+				Computed: true,
 			},
 		},
 	}

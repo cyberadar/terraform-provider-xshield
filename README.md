@@ -49,6 +49,19 @@ TF_REATTACH_PROVIDERS=... terraform apply
 
 <!-- End SDK <no value> -->
 
+<!-- Start Summary [summary] -->
+## Summary
+
+ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)
+<!-- End Summary [summary] -->
+
+<!-- Start Table of Contents [toc] -->
+## Table of Contents
+
+* [SDK Installation](#sdk-installation)
+* [SDK Example Usage](#sdk-example-usage)
+<!-- End Table of Contents [toc] -->
+
 <!-- Start SDK Installation [installation] -->
 ## SDK Installation
 
@@ -59,7 +72,7 @@ terraform {
   required_providers {
     xshield = {
       source  = "colortokens/xshield"
-      version = "0.5.0"
+      version = "0.11.6"
     }
   }
 }
