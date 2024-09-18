@@ -331,6 +331,7 @@ paths:
         - AGENT
         - ADMIN
         - USER
+  /api/v2/assets/{assetId}:
     put:
       tags:
       - assets
@@ -379,50 +380,6 @@ paths:
         - AGENT
         - ADMIN
         - USER
-    delete:
-      tags:
-      - assets
-      summary: Deletes a Asset by its identifier.
-      description: Deletes a Asset using its identifier and any corresponding references
-        are cleaned up too.
-      operationId: DeleteAsset
-      parameters:
-      - name: assetId
-        in: path
-        description: Asset ID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AssetDetails'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      x-permission:
-        permission: DELETE_ASSET
-        permissionScope:
-        - AGENT
-        - ADMIN
   /api/assets/{assetId}/annotations:
     put:
       tags:
