@@ -224,14 +224,13 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							},
 							Description: `Requires replacement if changed.`,
 						},
-						"dst_ip": schema.ListAttribute{
+						"dst_ip": schema.StringAttribute{
 							Computed: true,
 							Optional: true,
-							PlanModifiers: []planmodifier.List{
-								listplanmodifier.RequiresReplaceIfConfigured(),
-								speakeasy_listplanmodifier.SuppressDiff(speakeasy_listplanmodifier.ExplicitSuppress),
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplaceIfConfigured(),
+								speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 							},
-							ElementType: types.StringType,
 							Description: `Requires replacement if changed.`,
 						},
 						"dst_process": schema.StringAttribute{

@@ -3833,7 +3833,7 @@ paths:
         permissionScope:
         - ADMIN
         - USER
-  /api/templates:
+  /api/v2/templates:
     post:
       tags:
       - templates
@@ -4558,9 +4558,7 @@ components:
         domain:
           type: string
         dstIp:
-          type: array
-          items:
-            type: string
+          type: string
         dstProcess:
           type: string
         method:

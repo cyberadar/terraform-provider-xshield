@@ -41,10 +41,7 @@ func (r *TemplateDataSourceModel) RefreshFromSharedTemplate(resp *shared.Templat
 			}
 			templatePaths1.Direction = types.StringPointerValue(templatePathsItem.Direction)
 			templatePaths1.Domain = types.StringPointerValue(templatePathsItem.Domain)
-			templatePaths1.DstIP = []types.String{}
-			for _, v := range templatePathsItem.DstIP {
-				templatePaths1.DstIP = append(templatePaths1.DstIP, types.StringValue(v))
-			}
+			templatePaths1.DstIP = types.StringPointerValue(templatePathsItem.DstIP)
 			templatePaths1.DstProcess = types.StringPointerValue(templatePathsItem.DstProcess)
 			templatePaths1.ID = types.StringPointerValue(templatePathsItem.ID)
 			templatePaths1.Method = types.StringPointerValue(templatePathsItem.Method)

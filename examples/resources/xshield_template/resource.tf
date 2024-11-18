@@ -15,11 +15,9 @@ resource "xshield_template" "my_template" {
         tag_based_policy_id   = "...my_tag_based_policy_id..."
         tag_based_policy_name = "...my_tag_based_policy_name..."
       }
-      direction = "...my_direction..."
-      domain    = "...my_domain..."
-      dst_ip = [
-        "..."
-      ]
+      direction       = "...my_direction..."
+      domain          = "...my_domain..."
+      dst_ip          = "...my_dst_ip..."
       dst_process     = "...my_dst_process..."
       method          = "...my_method..."
       port            = "...my_port..."

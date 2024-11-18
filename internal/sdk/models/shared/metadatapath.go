@@ -9,7 +9,7 @@ type MetadataPath struct {
 	DestinationTagBasedPolicy *MetadataTagBasedPolicyReference `json:"destinationTagBasedPolicy,omitempty"`
 	Direction                 *string                          `json:"direction,omitempty"`
 	Domain                    *string                          `json:"domain,omitempty"`
-	DstIP                     []string                         `json:"dstIp,omitempty"`
+	DstIP                     *string                          `json:"dstIp,omitempty"`
 	DstProcess                *string                          `json:"dstProcess,omitempty"`
 	Method                    *string                          `json:"method,omitempty"`
 	Port                      *string                          `json:"port,omitempty"`
@@ -65,7 +65,7 @@ func (o *MetadataPath) GetDomain() *string {
 	return o.Domain
 }
 
-func (o *MetadataPath) GetDstIP() []string {
+func (o *MetadataPath) GetDstIP() *string {
 	if o == nil {
 		return nil
 	}

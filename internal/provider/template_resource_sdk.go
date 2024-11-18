@@ -123,9 +123,11 @@ func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
 		} else {
 			domain = nil
 		}
-		var dstIP []string = []string{}
-		for _, dstIPItem := range templatePathsItem.DstIP {
-			dstIP = append(dstIP, dstIPItem.ValueString())
+		dstIP := new(string)
+		if !templatePathsItem.DstIP.IsUnknown() && !templatePathsItem.DstIP.IsNull() {
+			*dstIP = templatePathsItem.DstIP.ValueString()
+		} else {
+			dstIP = nil
 		}
 		dstProcess := new(string)
 		if !templatePathsItem.DstProcess.IsUnknown() && !templatePathsItem.DstProcess.IsNull() {
@@ -352,10 +354,7 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			}
 			templatePaths1.Direction = types.StringPointerValue(templatePathsItem.Direction)
 			templatePaths1.Domain = types.StringPointerValue(templatePathsItem.Domain)
-			templatePaths1.DstIP = []types.String{}
-			for _, v := range templatePathsItem.DstIP {
-				templatePaths1.DstIP = append(templatePaths1.DstIP, types.StringValue(v))
-			}
+			templatePaths1.DstIP = types.StringPointerValue(templatePathsItem.DstIP)
 			templatePaths1.DstProcess = types.StringPointerValue(templatePathsItem.DstProcess)
 			templatePaths1.ID = types.StringPointerValue(templatePathsItem.ID)
 			templatePaths1.Method = types.StringPointerValue(templatePathsItem.Method)
