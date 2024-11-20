@@ -3097,6 +3097,7 @@ paths:
       parameters:
       - name: tagbasedpolicyId
         in: path
+        x-speakeasy-match: id
         description: TagBasedPolicy ID
         required: true
         schema:
@@ -3195,6 +3196,7 @@ paths:
       parameters:
       - name: tagbasedpolicyId
         in: path
+        x-speakeasy-match: id
         description: Tag ID
         required: true
         schema:
@@ -4934,6 +4936,8 @@ components:
         agentId:
           type: string
         assetId:
+          x-speakeasy-name-override: id
+          x-speakeasy-param-readonly: true
           type: string
         assetName:
           example: myhostname.company.com

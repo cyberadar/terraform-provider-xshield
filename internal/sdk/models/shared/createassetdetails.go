@@ -4,7 +4,7 @@ package shared
 
 type CreateAssetDetails struct {
 	AgentID         *string           `json:"agentId,omitempty"`
-	AssetID         *string           `json:"assetId,omitempty"`
+	ID              *string           `json:"assetId,omitempty"`
 	AssetName       string            `json:"assetName"`
 	Type            string            `json:"type"`
 	CoreTags        map[string]string `json:"coreTags,omitempty"`
@@ -19,11 +19,11 @@ func (o *CreateAssetDetails) GetAgentID() *string {
 	return o.AgentID
 }
 
-func (o *CreateAssetDetails) GetAssetID() *string {
+func (o *CreateAssetDetails) GetID() *string {
 	if o == nil {
 		return nil
 	}
-	return o.AssetID
+	return o.ID
 }
 
 func (o *CreateAssetDetails) GetAssetName() string {

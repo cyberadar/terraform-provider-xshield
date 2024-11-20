@@ -361,11 +361,11 @@ func (r *AssetResourceModel) ToSharedCreateAssetDetails() *shared.CreateAssetDet
 	} else {
 		agentID = nil
 	}
-	assetID := new(string)
+	id := new(string)
 	if !r.ID.IsUnknown() && !r.ID.IsNull() {
-		*assetID = r.ID.ValueString()
+		*id = r.ID.ValueString()
 	} else {
-		assetID = nil
+		id = nil
 	}
 	var assetName string
 	assetName = r.AssetName.ValueString()
@@ -394,7 +394,7 @@ func (r *AssetResourceModel) ToSharedCreateAssetDetails() *shared.CreateAssetDet
 	}
 	out := shared.CreateAssetDetails{
 		AgentID:         agentID,
-		AssetID:         assetID,
+		ID:              id,
 		AssetName:       assetName,
 		Type:            typeVar,
 		CoreTags:        coreTags,
