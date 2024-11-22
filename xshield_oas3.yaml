@@ -4614,8 +4614,6 @@ components:
       properties:
         criteria:
           type: string
-        criteriaAsParams:
-          type: string
         tagBasedPolicyId:
           type: string
         tagBasedPolicyName:
@@ -5197,8 +5195,6 @@ components:
         description:
           type: string
         revisedCriteria:
-          type: string
-        revisedCriteriaAsParams:
           type: string
         srcTagBasedPolicyID:
           type: string
@@ -5998,8 +5994,6 @@ components:
           type: integer
         criteria:
           type: string
-        criteriaAsParams:
-          type: string
         namednetworks:
           type: array
           items:
@@ -6030,8 +6024,6 @@ components:
           minimum: 1
           type: integer
         criteria:
-          type: string
-        criteriaAsParams:
           type: string
         namednetworks:
           type: array
@@ -6094,8 +6086,6 @@ components:
           type: boolean
         criteria:
           type: string
-        criteriaAsParams:
-          type: string
         description:
           type: string
         lowestInboundPolicyStatus:
@@ -6134,9 +6124,6 @@ components:
             type: string
         ruleCriteria:
           type: string
-        ruleCriteriaAsParams:
-          x-speakeasy-ignore: true
-          type: string
         ruleDescription:
           type: string
         ruleEnabled:
@@ -6157,8 +6144,6 @@ components:
           additionalProperties:
             type: string
         ruleCriteria:
-          type: string
-        ruleCriteriaAsParams:
           type: string
         ruleDescription:
           type: string

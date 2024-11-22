@@ -10,8 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
@@ -31,14 +29,13 @@ type TagRuleResource struct {
 
 // TagRuleResourceModel describes the resource data model.
 type TagRuleResourceModel struct {
-	ID                   types.String            `tfsdk:"id"`
-	MatchingAssets       types.Int64             `tfsdk:"matching_assets"`
-	OnMatch              map[string]types.String `tfsdk:"on_match"`
-	RuleCriteria         types.String            `tfsdk:"rule_criteria"`
-	RuleCriteriaAsParams types.String            `tfsdk:"rule_criteria_as_params"`
-	RuleDescription      types.String            `tfsdk:"rule_description"`
-	RuleEnabled          types.Bool              `tfsdk:"rule_enabled"`
-	RuleName             types.String            `tfsdk:"rule_name"`
+	ID              types.String            `tfsdk:"id"`
+	MatchingAssets  types.Int64             `tfsdk:"matching_assets"`
+	OnMatch         map[string]types.String `tfsdk:"on_match"`
+	RuleCriteria    types.String            `tfsdk:"rule_criteria"`
+	RuleDescription types.String            `tfsdk:"rule_description"`
+	RuleEnabled     types.Bool              `tfsdk:"rule_enabled"`
+	RuleName        types.String            `tfsdk:"rule_name"`
 }
 
 func (r *TagRuleResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -62,13 +59,6 @@ func (r *TagRuleResource) Schema(ctx context.Context, req resource.SchemaRequest
 			},
 			"rule_criteria": schema.StringAttribute{
 				Required: true,
-			},
-			"rule_criteria_as_params": schema.StringAttribute{
-				Optional: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Description: `Requires replacement if changed.`,
 			},
 			"rule_description": schema.StringAttribute{
 				Computed: true,
@@ -146,34 +136,6 @@ func (r *TagRuleResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 	data.RefreshFromSharedTagRule(res.TagRule)
-	refreshPlan(ctx, plan, &data, resp.Diagnostics)
-	var ruleID string
-	ruleID = data.ID.ValueString()
-
-	request1 := operations.GetTagRuleRequest{
-		RuleID: ruleID,
-	}
-	res1, err := r.client.Tagrules.GetTagRule(ctx, request1)
-	if err != nil {
-		resp.Diagnostics.AddError("failure to invoke API", err.Error())
-		if res1 != nil && res1.RawResponse != nil {
-			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
-		}
-		return
-	}
-	if res1 == nil {
-		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
-		return
-	}
-	if res1.StatusCode != 200 {
-		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
-		return
-	}
-	if !(res1.TagRule != nil) {
-		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res1.RawResponse))
-		return
-	}
-	data.RefreshFromSharedTagRule(res1.TagRule)
 	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state

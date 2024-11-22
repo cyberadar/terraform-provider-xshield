@@ -18,12 +18,6 @@ func (r *TagRuleResourceModel) ToSharedTagRuleInput() *shared.TagRuleInput {
 	var ruleCriteria string
 	ruleCriteria = r.RuleCriteria.ValueString()
 
-	ruleCriteriaAsParams := new(string)
-	if !r.RuleCriteriaAsParams.IsUnknown() && !r.RuleCriteriaAsParams.IsNull() {
-		*ruleCriteriaAsParams = r.RuleCriteriaAsParams.ValueString()
-	} else {
-		ruleCriteriaAsParams = nil
-	}
 	ruleDescription := new(string)
 	if !r.RuleDescription.IsUnknown() && !r.RuleDescription.IsNull() {
 		*ruleDescription = r.RuleDescription.ValueString()
@@ -43,12 +37,11 @@ func (r *TagRuleResourceModel) ToSharedTagRuleInput() *shared.TagRuleInput {
 		ruleName = nil
 	}
 	out := shared.TagRuleInput{
-		OnMatch:              onMatch,
-		RuleCriteria:         ruleCriteria,
-		RuleCriteriaAsParams: ruleCriteriaAsParams,
-		RuleDescription:      ruleDescription,
-		RuleEnabled:          ruleEnabled,
-		RuleName:             ruleName,
+		OnMatch:         onMatch,
+		RuleCriteria:    ruleCriteria,
+		RuleDescription: ruleDescription,
+		RuleEnabled:     ruleEnabled,
+		RuleName:        ruleName,
 	}
 	return &out
 }

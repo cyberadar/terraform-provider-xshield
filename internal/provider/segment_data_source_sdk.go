@@ -15,7 +15,6 @@ func (r *SegmentDataSourceModel) RefreshFromSharedTagBasedPolicyResponse(resp *s
 		r.BaselineBreachImpactScore = types.Int64PointerValue(resp.BaselineBreachImpactScore)
 		r.BaselineMatchingAssets = types.Int64PointerValue(resp.BaselineMatchingAssets)
 		r.Criteria = types.StringPointerValue(resp.Criteria)
-		r.CriteriaAsParams = types.StringPointerValue(resp.CriteriaAsParams)
 		r.Description = types.StringPointerValue(resp.Description)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.LowestInboundPolicyStatus = types.StringPointerValue(resp.LowestInboundPolicyStatus)

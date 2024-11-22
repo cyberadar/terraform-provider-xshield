@@ -93,9 +93,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 								"criteria": schema.StringAttribute{
 									Computed: true,
 								},
-								"criteria_as_params": schema.StringAttribute{
-									Computed: true,
-								},
 								"tag_based_policy_id": schema.StringAttribute{
 									Computed: true,
 								},
@@ -149,9 +146,6 @@ func (r *TemplateDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							Computed: true,
 							Attributes: map[string]schema.Attribute{
 								"criteria": schema.StringAttribute{
-									Computed: true,
-								},
-								"criteria_as_params": schema.StringAttribute{
 									Computed: true,
 								},
 								"tag_based_policy_id": schema.StringAttribute{

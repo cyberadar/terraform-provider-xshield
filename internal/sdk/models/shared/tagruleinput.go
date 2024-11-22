@@ -3,12 +3,11 @@
 package shared
 
 type TagRuleInput struct {
-	OnMatch              map[string]string `json:"onMatch,omitempty"`
-	RuleCriteria         string            `json:"ruleCriteria"`
-	RuleCriteriaAsParams *string           `json:"ruleCriteriaAsParams,omitempty"`
-	RuleDescription      *string           `json:"ruleDescription,omitempty"`
-	RuleEnabled          *bool             `json:"ruleEnabled,omitempty"`
-	RuleName             *string           `json:"ruleName,omitempty"`
+	OnMatch         map[string]string `json:"onMatch,omitempty"`
+	RuleCriteria    string            `json:"ruleCriteria"`
+	RuleDescription *string           `json:"ruleDescription,omitempty"`
+	RuleEnabled     *bool             `json:"ruleEnabled,omitempty"`
+	RuleName        *string           `json:"ruleName,omitempty"`
 }
 
 func (o *TagRuleInput) GetOnMatch() map[string]string {
@@ -23,13 +22,6 @@ func (o *TagRuleInput) GetRuleCriteria() string {
 		return ""
 	}
 	return o.RuleCriteria
-}
-
-func (o *TagRuleInput) GetRuleCriteriaAsParams() *string {
-	if o == nil {
-		return nil
-	}
-	return o.RuleCriteriaAsParams
 }
 
 func (o *TagRuleInput) GetRuleDescription() *string {

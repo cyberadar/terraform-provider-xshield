@@ -6,7 +6,6 @@ import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type MetadataTagBasedPolicyReference struct {
 	Criteria           types.String `tfsdk:"criteria"`
-	CriteriaAsParams   types.String `tfsdk:"criteria_as_params"`
 	TagBasedPolicyID   types.String `tfsdk:"tag_based_policy_id"`
 	TagBasedPolicyName types.String `tfsdk:"tag_based_policy_name"`
 }

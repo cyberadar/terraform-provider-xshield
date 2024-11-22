@@ -4,7 +4,6 @@ package shared
 
 type MetadataTagBasedPolicyReference struct {
 	Criteria           *string `json:"criteria,omitempty"`
-	CriteriaAsParams   *string `json:"criteriaAsParams,omitempty"`
 	TagBasedPolicyID   *string `json:"tagBasedPolicyId,omitempty"`
 	TagBasedPolicyName *string `json:"tagBasedPolicyName,omitempty"`
 }
@@ -14,13 +13,6 @@ func (o *MetadataTagBasedPolicyReference) GetCriteria() *string {
 		return nil
 	}
 	return o.Criteria
-}
-
-func (o *MetadataTagBasedPolicyReference) GetCriteriaAsParams() *string {
-	if o == nil {
-		return nil
-	}
-	return o.CriteriaAsParams
 }
 
 func (o *MetadataTagBasedPolicyReference) GetTagBasedPolicyID() *string {

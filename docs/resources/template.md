@@ -26,7 +26,6 @@ resource "xshield_template" "my_template" {
       }
       destination_tag_based_policy = {
         criteria              = "...my_criteria..."
-        criteria_as_params    = "...my_criteria_as_params..."
         tag_based_policy_id   = "...my_tag_based_policy_id..."
         tag_based_policy_name = "...my_tag_based_policy_name..."
       }
@@ -45,7 +44,6 @@ resource "xshield_template" "my_template" {
       }
       source_tag_based_policy = {
         criteria              = "...my_criteria..."
-        criteria_as_params    = "...my_criteria_as_params..."
         tag_based_policy_id   = "...my_tag_based_policy_id..."
         tag_based_policy_name = "...my_tag_based_policy_name..."
       }
@@ -129,7 +127,6 @@ Optional:
 Optional:
 
 - `criteria` (String) Requires replacement if changed.
-- `criteria_as_params` (String) Requires replacement if changed.
 - `tag_based_policy_id` (String) Requires replacement if changed.
 - `tag_based_policy_name` (String) Requires replacement if changed.
 
@@ -149,7 +146,6 @@ Optional:
 Optional:
 
 - `criteria` (String) Requires replacement if changed.
-- `criteria_as_params` (String) Requires replacement if changed.
 - `tag_based_policy_id` (String) Requires replacement if changed.
 - `tag_based_policy_name` (String) Requires replacement if changed.
 

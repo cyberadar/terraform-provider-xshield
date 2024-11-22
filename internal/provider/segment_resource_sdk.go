@@ -46,12 +46,6 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 	} else {
 		criteria = nil
 	}
-	criteriaAsParams := new(string)
-	if !r.CriteriaAsParams.IsUnknown() && !r.CriteriaAsParams.IsNull() {
-		*criteriaAsParams = r.CriteriaAsParams.ValueString()
-	} else {
-		criteriaAsParams = nil
-	}
 	var namednetworks []shared.MetadataNamedNetworkReference = []shared.MetadataNamedNetworkReference{}
 	for _, namednetworksItem := range r.Namednetworks {
 		namedNetworkID := new(string)
@@ -97,7 +91,6 @@ func (r *SegmentResourceModel) ToSharedTagBasedPolicy() *shared.TagBasedPolicy {
 		TargetBreachImpactScore: targetBreachImpactScore,
 		Timeline:                timeline,
 		Criteria:                criteria,
-		CriteriaAsParams:        criteriaAsParams,
 		Namednetworks:           namednetworks,
 		Templates:               templates,
 	}
@@ -110,7 +103,6 @@ func (r *SegmentResourceModel) RefreshFromSharedTagBasedPolicyResponse(resp *sha
 		r.BaselineBreachImpactScore = types.Int64PointerValue(resp.BaselineBreachImpactScore)
 		r.BaselineMatchingAssets = types.Int64PointerValue(resp.BaselineMatchingAssets)
 		r.Criteria = types.StringPointerValue(resp.Criteria)
-		r.CriteriaAsParams = types.StringPointerValue(resp.CriteriaAsParams)
 		r.Description = types.StringPointerValue(resp.Description)
 		r.ID = types.StringPointerValue(resp.ID)
 		r.LowestInboundPolicyStatus = types.StringPointerValue(resp.LowestInboundPolicyStatus)

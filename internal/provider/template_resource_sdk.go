@@ -86,12 +86,6 @@ func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
 			} else {
 				criteria = nil
 			}
-			criteriaAsParams := new(string)
-			if !templatePathsItem.DestinationTagBasedPolicy.CriteriaAsParams.IsUnknown() && !templatePathsItem.DestinationTagBasedPolicy.CriteriaAsParams.IsNull() {
-				*criteriaAsParams = templatePathsItem.DestinationTagBasedPolicy.CriteriaAsParams.ValueString()
-			} else {
-				criteriaAsParams = nil
-			}
 			tagBasedPolicyID := new(string)
 			if !templatePathsItem.DestinationTagBasedPolicy.TagBasedPolicyID.IsUnknown() && !templatePathsItem.DestinationTagBasedPolicy.TagBasedPolicyID.IsNull() {
 				*tagBasedPolicyID = templatePathsItem.DestinationTagBasedPolicy.TagBasedPolicyID.ValueString()
@@ -106,7 +100,6 @@ func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
 			}
 			destinationTagBasedPolicy = &shared.MetadataTagBasedPolicyReference{
 				Criteria:           criteria,
-				CriteriaAsParams:   criteriaAsParams,
 				TagBasedPolicyID:   tagBasedPolicyID,
 				TagBasedPolicyName: tagBasedPolicyName,
 			}
@@ -192,12 +185,6 @@ func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
 			} else {
 				criteria1 = nil
 			}
-			criteriaAsParams1 := new(string)
-			if !templatePathsItem.SourceTagBasedPolicy.CriteriaAsParams.IsUnknown() && !templatePathsItem.SourceTagBasedPolicy.CriteriaAsParams.IsNull() {
-				*criteriaAsParams1 = templatePathsItem.SourceTagBasedPolicy.CriteriaAsParams.ValueString()
-			} else {
-				criteriaAsParams1 = nil
-			}
 			tagBasedPolicyId1 := new(string)
 			if !templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyID.IsUnknown() && !templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyID.IsNull() {
 				*tagBasedPolicyId1 = templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyID.ValueString()
@@ -212,7 +199,6 @@ func (r *TemplateResourceModel) ToSharedTemplate() *shared.Template {
 			}
 			sourceTagBasedPolicy = &shared.MetadataTagBasedPolicyReference{
 				Criteria:           criteria1,
-				CriteriaAsParams:   criteriaAsParams1,
 				TagBasedPolicyID:   tagBasedPolicyId1,
 				TagBasedPolicyName: tagBasedPolicyName1,
 			}
@@ -348,7 +334,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			} else {
 				templatePaths1.DestinationTagBasedPolicy = &tfTypes.MetadataTagBasedPolicyReference{}
 				templatePaths1.DestinationTagBasedPolicy.Criteria = types.StringPointerValue(templatePathsItem.DestinationTagBasedPolicy.Criteria)
-				templatePaths1.DestinationTagBasedPolicy.CriteriaAsParams = types.StringPointerValue(templatePathsItem.DestinationTagBasedPolicy.CriteriaAsParams)
 				templatePaths1.DestinationTagBasedPolicy.TagBasedPolicyID = types.StringPointerValue(templatePathsItem.DestinationTagBasedPolicy.TagBasedPolicyID)
 				templatePaths1.DestinationTagBasedPolicy.TagBasedPolicyName = types.StringPointerValue(templatePathsItem.DestinationTagBasedPolicy.TagBasedPolicyName)
 			}
@@ -374,7 +359,6 @@ func (r *TemplateResourceModel) RefreshFromSharedTemplate(resp *shared.Template)
 			} else {
 				templatePaths1.SourceTagBasedPolicy = &tfTypes.MetadataTagBasedPolicyReference{}
 				templatePaths1.SourceTagBasedPolicy.Criteria = types.StringPointerValue(templatePathsItem.SourceTagBasedPolicy.Criteria)
-				templatePaths1.SourceTagBasedPolicy.CriteriaAsParams = types.StringPointerValue(templatePathsItem.SourceTagBasedPolicy.CriteriaAsParams)
 				templatePaths1.SourceTagBasedPolicy.TagBasedPolicyID = types.StringPointerValue(templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyID)
 				templatePaths1.SourceTagBasedPolicy.TagBasedPolicyName = types.StringPointerValue(templatePathsItem.SourceTagBasedPolicy.TagBasedPolicyName)
 			}

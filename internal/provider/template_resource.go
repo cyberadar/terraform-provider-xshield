@@ -176,15 +176,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 									},
 									Description: `Requires replacement if changed.`,
 								},
-								"criteria_as_params": schema.StringAttribute{
-									Computed: true,
-									Optional: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.RequiresReplaceIfConfigured(),
-										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-									},
-									Description: `Requires replacement if changed.`,
-								},
 								"tag_based_policy_id": schema.StringAttribute{
 									Computed: true,
 									Optional: true,
@@ -331,15 +322,6 @@ func (r *TemplateResource) Schema(ctx context.Context, req resource.SchemaReques
 							},
 							Attributes: map[string]schema.Attribute{
 								"criteria": schema.StringAttribute{
-									Computed: true,
-									Optional: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.RequiresReplaceIfConfigured(),
-										speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-									},
-									Description: `Requires replacement if changed.`,
-								},
-								"criteria_as_params": schema.StringAttribute{
 									Computed: true,
 									Optional: true,
 									PlanModifiers: []planmodifier.String{

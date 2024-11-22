@@ -26,7 +26,6 @@ data "xshield_segment" "my_segment" {
 - `baseline_breach_impact_score` (Number)
 - `baseline_matching_assets` (Number)
 - `criteria` (String)
-- `criteria_as_params` (String)
 - `description` (String)
 - `id` (String) The ID of this resource.
 - `lowest_inbound_policy_status` (String)

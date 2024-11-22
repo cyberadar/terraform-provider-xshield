@@ -71,7 +71,6 @@ Read-Only:
 Read-Only:
 
 - `criteria` (String)
-- `criteria_as_params` (String)
 - `tag_based_policy_id` (String)
 - `tag_based_policy_name` (String)
 
@@ -91,7 +90,6 @@ Read-Only:
 Read-Only:
 
 - `criteria` (String)
-- `criteria_as_params` (String)
 - `tag_based_policy_id` (String)
 - `tag_based_policy_name` (String)
 

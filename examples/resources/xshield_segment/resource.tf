@@ -1,7 +1,6 @@
 resource "xshield_segment" "my_segment" {
-  criteria           = "...my_criteria..."
-  criteria_as_params = "...my_criteria_as_params..."
-  description        = "...my_description..."
+  criteria    = "...my_criteria..."
+  description = "...my_description..."
   namednetworks = [
     {
       named_network_id   = "...my_named_network_id..."

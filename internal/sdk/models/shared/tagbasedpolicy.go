@@ -9,7 +9,6 @@ type TagBasedPolicy struct {
 	TargetBreachImpactScore *int64                          `json:"targetBreachImpactScore,omitempty"`
 	Timeline                *int64                          `json:"timeline,omitempty"`
 	Criteria                *string                         `json:"criteria,omitempty"`
-	CriteriaAsParams        *string                         `json:"criteriaAsParams,omitempty"`
 	Namednetworks           []MetadataNamedNetworkReference `json:"namednetworks,omitempty"`
 	Templates               []TemplateReference             `json:"templates,omitempty"`
 }
@@ -54,13 +53,6 @@ func (o *TagBasedPolicy) GetCriteria() *string {
 		return nil
 	}
 	return o.Criteria
-}
-
-func (o *TagBasedPolicy) GetCriteriaAsParams() *string {
-	if o == nil {
-		return nil
-	}
-	return o.CriteriaAsParams
 }
 
 func (o *TagBasedPolicy) GetNamednetworks() []MetadataNamedNetworkReference {

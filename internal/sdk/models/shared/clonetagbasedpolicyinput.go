@@ -3,12 +3,11 @@
 package shared
 
 type CloneTagBasedPolicyInput struct {
-	CloneOptions            *CloneOptions `json:"cloneOptions,omitempty"`
-	Description             *string       `json:"description,omitempty"`
-	RevisedCriteria         string        `json:"revisedCriteria"`
-	RevisedCriteriaAsParams *string       `json:"revisedCriteriaAsParams,omitempty"`
-	SrcTagBasedPolicyID     *string       `json:"srcTagBasedPolicyID,omitempty"`
-	TagBasedPolicyName      *string       `json:"tagBasedPolicyName,omitempty"`
+	CloneOptions        *CloneOptions `json:"cloneOptions,omitempty"`
+	Description         *string       `json:"description,omitempty"`
+	RevisedCriteria     string        `json:"revisedCriteria"`
+	SrcTagBasedPolicyID *string       `json:"srcTagBasedPolicyID,omitempty"`
+	TagBasedPolicyName  *string       `json:"tagBasedPolicyName,omitempty"`
 }
 
 func (o *CloneTagBasedPolicyInput) GetCloneOptions() *CloneOptions {
@@ -30,13 +29,6 @@ func (o *CloneTagBasedPolicyInput) GetRevisedCriteria() string {
 		return ""
 	}
 	return o.RevisedCriteria
-}
-
-func (o *CloneTagBasedPolicyInput) GetRevisedCriteriaAsParams() *string {
-	if o == nil {
-		return nil
-	}
-	return o.RevisedCriteriaAsParams
 }
 
 func (o *CloneTagBasedPolicyInput) GetSrcTagBasedPolicyID() *string {

@@ -14,9 +14,8 @@ Segment Resource
 
 ```terraform
 resource "xshield_segment" "my_segment" {
-  criteria           = "...my_criteria..."
-  criteria_as_params = "...my_criteria_as_params..."
-  description        = "...my_description..."
+  criteria    = "...my_criteria..."
+  description = "...my_description..."
   namednetworks = [
     {
       named_network_id   = "...my_named_network_id..."
@@ -41,7 +40,6 @@ resource "xshield_segment" "my_segment" {
 ### Optional
 
 - `criteria` (String)
-- `criteria_as_params` (String)
 - `description` (String)
 - `namednetworks` (Attributes List) (see [below for nested schema](#nestedatt--namednetworks))
 - `tag_based_policy_name` (String)

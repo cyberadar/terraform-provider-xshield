@@ -17,11 +17,10 @@ resource "xshield_tag_rule" "my_tagrule" {
   on_match = {
     key = "value",
   }
-  rule_criteria           = "...my_rule_criteria..."
-  rule_criteria_as_params = "...my_rule_criteria_as_params..."
-  rule_description        = "...my_rule_description..."
-  rule_enabled            = true
-  rule_name               = "...my_rule_name..."
+  rule_criteria    = "...my_rule_criteria..."
+  rule_description = "...my_rule_description..."
+  rule_enabled     = true
+  rule_name        = "...my_rule_name..."
 }
 ```
 
@@ -35,7 +34,6 @@ resource "xshield_tag_rule" "my_tagrule" {
 ### Optional
 
 - `on_match` (Map of String)
-- `rule_criteria_as_params` (String) Requires replacement if changed.
 - `rule_description` (String)
 - `rule_enabled` (Boolean)
 - `rule_name` (String)
