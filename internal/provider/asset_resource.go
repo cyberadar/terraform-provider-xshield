@@ -131,7 +131,7 @@ func (r *AssetResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 			},
 			"asset_name": schema.StringAttribute{
-				Required: true,
+				Computed: true,
 			},
 			"asset_risk": schema.StringAttribute{
 				Computed: true,
@@ -266,7 +266,7 @@ func (r *AssetResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 			},
 			"core_tags": schema.MapAttribute{
-				Optional:    true,
+				Computed:    true,
 				ElementType: types.StringType,
 			},
 			"cpu_core_count": schema.Int64Attribute{
@@ -559,7 +559,7 @@ func (r *AssetResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 			},
 			"type": schema.StringAttribute{
-				Required: true,
+				Computed: true,
 			},
 			"unreviewed_paths": schema.Int64Attribute{
 				Computed: true,

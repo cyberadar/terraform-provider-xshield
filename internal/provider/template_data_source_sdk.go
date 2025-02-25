@@ -104,7 +104,7 @@ func (r *TemplateDataSourceModel) RefreshFromSharedTemplate(resp *shared.Templat
 			} else {
 				templatePorts1.ListenPortReviewed = types.StringNull()
 			}
-			templatePorts1.ListenProcessNames = []types.String{}
+			templatePorts1.ListenProcessNames = make([]types.String, 0, len(templatePortsItem.ListenProcessNames))
 			for _, v := range templatePortsItem.ListenProcessNames {
 				templatePorts1.ListenProcessNames = append(templatePorts1.ListenProcessNames, types.StringValue(v))
 			}
