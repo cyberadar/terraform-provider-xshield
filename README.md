@@ -57,10 +57,12 @@ ColorTokens Core API: API for managing lifecycle of core micro-segmentation reso
 
 <!-- Start Table of Contents [toc] -->
 ## Table of Contents
+<!-- $toc-max-depth=2 -->
+* [xshield-sdk](#xshield-sdk)
+  * [Installation](#installation)
+  * [Testing the provider locally](#testing-the-provider-locally)
+  * [Available Resources and Data Sources](#available-resources-and-data-sources)
 
-* [Installation](#installation)
-* [Available Resources and Data Sources](#available-resources-and-data-sources)
-* [Testing the provider locally](#testing-the-provider-locally)
 <!-- End Table of Contents [toc] -->
 
 <!-- Start Installation [installation] -->
@@ -73,7 +75,7 @@ terraform {
   required_providers {
     xshield = {
       source  = "colortokens/xshield"
-      version = "0.5.0"
+      version = "0.3.2"
     }
   }
 }

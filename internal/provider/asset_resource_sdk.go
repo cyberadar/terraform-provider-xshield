@@ -23,32 +23,32 @@ func (r *AssetResourceModel) RefreshFromSharedAssetDetails(resp *shared.AssetDet
 			r.AttackSurfacePendingChanges = nil
 		} else {
 			r.AttackSurfacePendingChanges = &tfTypes.PendingChanges{}
-			r.AttackSurfacePendingChanges.AllowTemplates = []types.String{}
+			r.AttackSurfacePendingChanges.AllowTemplates = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.AllowTemplates))
 			for _, v := range resp.AttackSurfacePendingChanges.AllowTemplates {
 				r.AttackSurfacePendingChanges.AllowTemplates = append(r.AttackSurfacePendingChanges.AllowTemplates, types.StringValue(v))
 			}
-			r.AttackSurfacePendingChanges.BlockTemplates = []types.String{}
+			r.AttackSurfacePendingChanges.BlockTemplates = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.BlockTemplates))
 			for _, v := range resp.AttackSurfacePendingChanges.BlockTemplates {
 				r.AttackSurfacePendingChanges.BlockTemplates = append(r.AttackSurfacePendingChanges.BlockTemplates, types.StringValue(v))
 			}
 			r.AttackSurfacePendingChanges.InternetPaths = types.Int64PointerValue(resp.AttackSurfacePendingChanges.InternetPaths)
 			r.AttackSurfacePendingChanges.InternetPorts = types.Int64PointerValue(resp.AttackSurfacePendingChanges.InternetPorts)
-			r.AttackSurfacePendingChanges.IntranetChange = []types.String{}
+			r.AttackSurfacePendingChanges.IntranetChange = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.IntranetChange))
 			for _, v := range resp.AttackSurfacePendingChanges.IntranetChange {
 				r.AttackSurfacePendingChanges.IntranetChange = append(r.AttackSurfacePendingChanges.IntranetChange, types.StringValue(v))
 			}
 			r.AttackSurfacePendingChanges.IntranetPaths = types.Int64PointerValue(resp.AttackSurfacePendingChanges.IntranetPaths)
 			r.AttackSurfacePendingChanges.IntranetPorts = types.Int64PointerValue(resp.AttackSurfacePendingChanges.IntranetPorts)
-			r.AttackSurfacePendingChanges.NamednetworkChange = []types.String{}
+			r.AttackSurfacePendingChanges.NamednetworkChange = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.NamednetworkChange))
 			for _, v := range resp.AttackSurfacePendingChanges.NamednetworkChange {
 				r.AttackSurfacePendingChanges.NamednetworkChange = append(r.AttackSurfacePendingChanges.NamednetworkChange, types.StringValue(v))
 			}
 			r.AttackSurfacePendingChanges.ProgressiveSyncPending = types.BoolPointerValue(resp.AttackSurfacePendingChanges.ProgressiveSyncPending)
-			r.AttackSurfacePendingChanges.UnassignedAllowTemplates = []types.String{}
+			r.AttackSurfacePendingChanges.UnassignedAllowTemplates = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.UnassignedAllowTemplates))
 			for _, v := range resp.AttackSurfacePendingChanges.UnassignedAllowTemplates {
 				r.AttackSurfacePendingChanges.UnassignedAllowTemplates = append(r.AttackSurfacePendingChanges.UnassignedAllowTemplates, types.StringValue(v))
 			}
-			r.AttackSurfacePendingChanges.UnassignedBlockTemplates = []types.String{}
+			r.AttackSurfacePendingChanges.UnassignedBlockTemplates = make([]types.String, 0, len(resp.AttackSurfacePendingChanges.UnassignedBlockTemplates))
 			for _, v := range resp.AttackSurfacePendingChanges.UnassignedBlockTemplates {
 				r.AttackSurfacePendingChanges.UnassignedBlockTemplates = append(r.AttackSurfacePendingChanges.UnassignedBlockTemplates, types.StringValue(v))
 			}
@@ -59,32 +59,32 @@ func (r *AssetResourceModel) RefreshFromSharedAssetDetails(resp *shared.AssetDet
 			r.BlastRadiusPendingChanges = nil
 		} else {
 			r.BlastRadiusPendingChanges = &tfTypes.PendingChanges{}
-			r.BlastRadiusPendingChanges.AllowTemplates = []types.String{}
+			r.BlastRadiusPendingChanges.AllowTemplates = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.AllowTemplates))
 			for _, v := range resp.BlastRadiusPendingChanges.AllowTemplates {
 				r.BlastRadiusPendingChanges.AllowTemplates = append(r.BlastRadiusPendingChanges.AllowTemplates, types.StringValue(v))
 			}
-			r.BlastRadiusPendingChanges.BlockTemplates = []types.String{}
+			r.BlastRadiusPendingChanges.BlockTemplates = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.BlockTemplates))
 			for _, v := range resp.BlastRadiusPendingChanges.BlockTemplates {
 				r.BlastRadiusPendingChanges.BlockTemplates = append(r.BlastRadiusPendingChanges.BlockTemplates, types.StringValue(v))
 			}
 			r.BlastRadiusPendingChanges.InternetPaths = types.Int64PointerValue(resp.BlastRadiusPendingChanges.InternetPaths)
 			r.BlastRadiusPendingChanges.InternetPorts = types.Int64PointerValue(resp.BlastRadiusPendingChanges.InternetPorts)
-			r.BlastRadiusPendingChanges.IntranetChange = []types.String{}
+			r.BlastRadiusPendingChanges.IntranetChange = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.IntranetChange))
 			for _, v := range resp.BlastRadiusPendingChanges.IntranetChange {
 				r.BlastRadiusPendingChanges.IntranetChange = append(r.BlastRadiusPendingChanges.IntranetChange, types.StringValue(v))
 			}
 			r.BlastRadiusPendingChanges.IntranetPaths = types.Int64PointerValue(resp.BlastRadiusPendingChanges.IntranetPaths)
 			r.BlastRadiusPendingChanges.IntranetPorts = types.Int64PointerValue(resp.BlastRadiusPendingChanges.IntranetPorts)
-			r.BlastRadiusPendingChanges.NamednetworkChange = []types.String{}
+			r.BlastRadiusPendingChanges.NamednetworkChange = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.NamednetworkChange))
 			for _, v := range resp.BlastRadiusPendingChanges.NamednetworkChange {
 				r.BlastRadiusPendingChanges.NamednetworkChange = append(r.BlastRadiusPendingChanges.NamednetworkChange, types.StringValue(v))
 			}
 			r.BlastRadiusPendingChanges.ProgressiveSyncPending = types.BoolPointerValue(resp.BlastRadiusPendingChanges.ProgressiveSyncPending)
-			r.BlastRadiusPendingChanges.UnassignedAllowTemplates = []types.String{}
+			r.BlastRadiusPendingChanges.UnassignedAllowTemplates = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.UnassignedAllowTemplates))
 			for _, v := range resp.BlastRadiusPendingChanges.UnassignedAllowTemplates {
 				r.BlastRadiusPendingChanges.UnassignedAllowTemplates = append(r.BlastRadiusPendingChanges.UnassignedAllowTemplates, types.StringValue(v))
 			}
-			r.BlastRadiusPendingChanges.UnassignedBlockTemplates = []types.String{}
+			r.BlastRadiusPendingChanges.UnassignedBlockTemplates = make([]types.String, 0, len(resp.BlastRadiusPendingChanges.UnassignedBlockTemplates))
 			for _, v := range resp.BlastRadiusPendingChanges.UnassignedBlockTemplates {
 				r.BlastRadiusPendingChanges.UnassignedBlockTemplates = append(r.BlastRadiusPendingChanges.UnassignedBlockTemplates, types.StringValue(v))
 			}
@@ -112,7 +112,7 @@ func (r *AssetResourceModel) RefreshFromSharedAssetDetails(resp *shared.AssetDet
 		r.ClusterIdentifier = types.StringPointerValue(resp.ClusterIdentifier)
 		r.ContainerNamespace = types.StringPointerValue(resp.ContainerNamespace)
 		if len(resp.CoreTags) > 0 {
-			r.CoreTags = make(map[string]types.String)
+			r.CoreTags = make(map[string]types.String, len(resp.CoreTags))
 			for key1, value1 := range resp.CoreTags {
 				r.CoreTags[key1] = types.StringValue(value1)
 			}
@@ -175,11 +175,11 @@ func (r *AssetResourceModel) RefreshFromSharedAssetDetails(resp *shared.AssetDet
 		}
 		for interfacesCount, interfacesItem := range resp.Interfaces {
 			var interfaces1 tfTypes.NetworkInterface
-			interfaces1.Flags = []types.String{}
+			interfaces1.Flags = make([]types.String, 0, len(interfacesItem.Flags))
 			for _, v := range interfacesItem.Flags {
 				interfaces1.Flags = append(interfaces1.Flags, types.StringValue(v))
 			}
-			interfaces1.Ipaddresses = []types.String{}
+			interfaces1.Ipaddresses = make([]types.String, 0, len(interfacesItem.Ipaddresses))
 			for _, v := range interfacesItem.Ipaddresses {
 				interfaces1.Ipaddresses = append(interfaces1.Ipaddresses, types.StringValue(v))
 			}

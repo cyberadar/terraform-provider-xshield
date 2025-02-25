@@ -52,6 +52,9 @@ func Float32(f float32) *float32 { return &f }
 // Float64 provides a helper function to return a pointer to a float64
 func Float64(f float64) *float64 { return &f }
 
+// Pointer provides a helper function to return a pointer to a type
+func Pointer[T any](v T) *T { return &v }
+
 type sdkConfiguration struct {
 	Client            HTTPClient
 	Security          func(context.Context) (interface{}, error)
@@ -138,26 +141,19 @@ func WithClient(client HTTPClient) SDKOption {
 	}
 }
 
-// // WithSecurity configures the SDK to use the provided security details
-// func WithSecurity(security shared.Security) SDKOption {
-// 	return func(sdk *Xshield) {
-// 		sdk.sdkConfiguration.Security = utils.AsSecuritySource(security)
-// 	}
-// }
-
-// // WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
-// func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
-// 	return func(sdk *Xshield) {
-// 		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
-// 			return security(ctx)
-// 		}
-// 	}
-// }
-
-// WithSecurity configures the SDK to use the provided configuration details
-func WithConfigProvider(config shared.ConfigurationProvider) SDKOption {
+// WithSecurity configures the SDK to use the provided security details
+func WithSecurity(security shared.Security) SDKOption {
 	return func(sdk *Xshield) {
-		sdk.sdkConfiguration.Security = utils.AsSecuritySource(config)
+		sdk.sdkConfiguration.Security = utils.AsSecuritySource(security)
+	}
+}
+
+// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
+	return func(sdk *Xshield) {
+		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+			return security(ctx)
+		}
 	}
 }
 
@@ -180,9 +176,9 @@ func New(opts ...SDKOption) *Xshield {
 		sdkConfiguration: sdkConfiguration{
 			Language:          "go",
 			OpenAPIDocVersion: "202202",
-			SDKVersion:        "0.0.1",
-			GenVersion:        "2.399.0",
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.399.0 202202 github.com/colortokens/terraform-provider-xshield/internal/sdk",
+			SDKVersion:        "0.3.2",
+			GenVersion:        "2.524.1",
+			UserAgent:         "speakeasy-sdk/terraform 0.3.2 2.524.1 202202 github.com/colortokens/terraform-provider-xshield/internal/sdk",
 			Hooks:             hooks.New(),
 		},
 	}

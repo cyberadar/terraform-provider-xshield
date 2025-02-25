@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"net/http"
 )
 
@@ -26,11 +25,8 @@ type XshieldProvider struct {
 
 // XshieldProviderModel describes the provider data model.
 type XshieldProviderModel struct {
+	Jwt       types.String `tfsdk:"jwt"`
 	ServerURL types.String `tfsdk:"server_url"`
-	TenancyId       types.String `tfsdk:"tenancy_id"`
-	PrincipalId types.String `tfsdk:"user_id"`
-	FingerPrint types.String `tfsdk:"fingerprint"`
-	PrivateKeyLocation types.String `tfsdk:"private_key_path"`
 }
 
 func (p *XshieldProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -40,28 +36,17 @@ func (p *XshieldProvider) Metadata(ctx context.Context, req provider.MetadataReq
 
 func (p *XshieldProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)`,
 		Attributes: map[string]schema.Attribute{
+			"jwt": schema.StringAttribute{
+				Optional:  true,
+				Sensitive: true,
+			},
 			"server_url": schema.StringAttribute{
-				MarkdownDescription: "Server URL (defaults to https://ng.colortokens.com)",
-				Optional:            true,
-				Required:            false,
-			},
-			"tenancy_id" : schema.StringAttribute{
-				Required: true,
-				Sensitive: false,
-			},
-			"user_id" : schema.StringAttribute{
-				Required: true,
-				Sensitive: false,
-			},"fingerprint" : schema.StringAttribute{
-				Required: true,
-				Sensitive: false,
-			},"private_key_path" : schema.StringAttribute{
-				Required: true,
-				Sensitive: false,
+				Description: `Server URL (defaults to https://ng.colortokens.com)`,
+				Optional:    true,
 			},
 		},
+		MarkdownDescription: `ColorTokens Core API: API for managing lifecycle of core micro-segmentation resources (tags, assets & groups)`,
 	}
 }
 
@@ -80,41 +65,33 @@ func (p *XshieldProvider) Configure(ctx context.Context, req provider.ConfigureR
 		ServerURL = "https://ng.colortokens.com"
 	}
 
-	config := buildConfigProvider(data, resp)
+	jwt := new(string)
+	if !data.Jwt.IsUnknown() && !data.Jwt.IsNull() {
+		*jwt = data.Jwt.ValueString()
+	} else {
+		jwt = nil
+	}
+	security := shared.Security{
+		Jwt: jwt,
+	}
+
+	providerHTTPTransportOpts := ProviderHTTPTransportOpts{
+		SetHeaders: make(map[string]string),
+		Transport:  http.DefaultTransport,
+	}
+
+	httpClient := http.DefaultClient
+	httpClient.Transport = NewProviderHTTPTransport(providerHTTPTransportOpts)
 
 	opts := []sdk.SDKOption{
 		sdk.WithServerURL(ServerURL),
-		sdk.WithConfigProvider(config),
-		sdk.WithClient(http.DefaultClient),
+		sdk.WithSecurity(security),
+		sdk.WithClient(httpClient),
 	}
 	client := sdk.New(opts...)
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
-}
-
-func buildConfigProvider(data XshieldProviderModel, resp *provider.ConfigureResponse) shared.ConfigurationProvider {
-	if data.TenancyId.ValueString() == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("tenancy_id"), "required attribute is missing or empty","")
-	}
-
-    if data.PrincipalId.ValueString() == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("user_id"), "required attribute is missing or empty","")
-	}
-
-	if data.FingerPrint.ValueString() == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("fingerprint"), "required attribute is missing or empty","")
-	}
-
-	if data.PrivateKeyLocation.ValueString() == "" {
-		resp.Diagnostics.AddAttributeError(path.Root("provider").AtName("private_key_location"), "required attribute is missing or empty","")
-	}
-
-	if resp.Diagnostics.HasError() {
-		return nil
-	}
-
-	return shared.NewRawConfigProvider(data.TenancyId.ValueString(), data.PrincipalId.ValueString(), data.FingerPrint.ValueString(), data.PrivateKeyLocation.ValueString())
 }
 
 func (p *XshieldProvider) Resources(ctx context.Context) []func() resource.Resource {

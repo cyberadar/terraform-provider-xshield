@@ -12,7 +12,7 @@ func (r *TagRuleDataSourceModel) RefreshFromSharedTagRule(resp *shared.TagRule) 
 		r.ID = types.StringPointerValue(resp.ID)
 		r.MatchingAssets = types.Int64PointerValue(resp.MatchingAssets)
 		if len(resp.OnMatch) > 0 {
-			r.OnMatch = make(map[string]types.String)
+			r.OnMatch = make(map[string]types.String, len(resp.OnMatch))
 			for key, value := range resp.OnMatch {
 				r.OnMatch[key] = types.StringValue(value)
 			}
