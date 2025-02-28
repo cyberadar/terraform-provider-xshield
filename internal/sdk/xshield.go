@@ -21,6 +21,8 @@ const (
 	ServerBom string = "bom"
 	// European Region (FRA)
 	ServerFra string = "fra"
+	// Australia Region (SYD)
+	ServerSyd string = "syd"
 )
 
 // ServerList contains the list of servers available to the SDK
@@ -28,6 +30,7 @@ var ServerList = map[string]string{
 	ServerIad: "https://ng.colortokens.com",
 	ServerBom: "https://bom.colortokens.com",
 	ServerFra: "https://fra.colortokens.com",
+	ServerSyd: "https://syd.colortokens.com",
 }
 
 // HTTPClient provides an interface for suplying the SDK with a custom HTTP client
@@ -192,11 +195,6 @@ func New(opts ...SDKOption) *Xshield {
 	}
 	for _, opt := range opts {
 		opt(sdk)
-	}
-
-	// Use WithClient to override the default client if you would like to customize the timeout
-	if sdk.sdkConfiguration.Client == nil {
-		sdk.sdkConfiguration.Client = &http.Client{Timeout: 60 * time.Second}
 	}
 
 	currentServerURL, _ := sdk.sdkConfiguration.GetServerDetails()

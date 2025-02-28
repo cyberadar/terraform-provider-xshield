@@ -15,6 +15,9 @@ servers:
 - url: https://fra.colortokens.com
   description: European Region (FRA)
   x-speakeasy-server-id: "fra"
+- url: https://syd.colortokens.com
+  description: Australia Region (SYD)
+  x-speakeasy-server-id: "syd"
 x-speakeasy-retries:
   strategy: backoff
   backoff:

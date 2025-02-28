@@ -4,10 +4,17 @@ package provider
 
 import (
 	"context"
+	"crypto/tls"
+	"encoding/base64"
+	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk"
 	"github.com/colortokens/terraform-provider-xshield/internal/sdk/models/shared"
+	"github.com/colortokens/terraform-provider-xshield/internal/sdk/retry"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -27,11 +34,18 @@ type XshieldProvider struct {
 
 // XshieldProviderModel describes the provider data model.
 type XshieldProviderModel struct {
-	ServerURL          types.String `tfsdk:"server_url"`
-	TenancyId          types.String `tfsdk:"tenancy_id"`
-	PrincipalId        types.String `tfsdk:"user_id"`
-	FingerPrint        types.String `tfsdk:"fingerprint"`
-	PrivateKeyLocation types.String `tfsdk:"private_key_path"`
+	ServerURL          types.String  `tfsdk:"server_url"`
+	TenancyId          types.String  `tfsdk:"tenancy_id"`
+	PrincipalId        types.String  `tfsdk:"user_id"`
+	FingerPrint        types.String  `tfsdk:"fingerprint"`
+	PrivateKeyLocation types.String  `tfsdk:"private_key_path"`
+	ProxyURL           types.String  `tfsdk:"proxy_url"`
+	ProxyCreds         types.String  `tfsdk:"proxy_creds"`
+	RequestTimeout     types.Int64   `tfsdk:"request_timeout"`
+	InitialInterval    types.Int64   `tfsdk:"initial_interval"`
+	MaxInterval        types.Int64   `tfsdk:"max_interval"`
+	MaxElapsedTime     types.Int64   `tfsdk:"max_elapsed_time"`
+	Exponent           types.Float64 `tfsdk:"exponent"`
 }
 
 func (p *XshieldProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -62,6 +76,37 @@ func (p *XshieldProvider) Schema(ctx context.Context, req provider.SchemaRequest
 				Required:  true,
 				Sensitive: false,
 			},
+			// HTTP request config
+			"request_timeout": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "HTTP request timeout in seconds (defaults to 60)",
+			},
+			"initial_interval": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Initial interval for backoff strategy in miliseconds (defaults to 500)",
+			},
+			"max_interval": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum interval for backoff strategy in seconds (defaults to 60)",
+			},
+			"max_elapsed_time": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum elapsed time for backoff strategy in seconds (defaults to 3600000)",
+			},
+			"exponent": schema.Float64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Exponent for backoff strategy (defaults to 1.5)",
+			},
+			// Proxy config
+			"proxy_url": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "HTTP proxy URL (format: http://proxy-ip:port)",
+			},
+			"proxy_creds": schema.StringAttribute{
+				Optional:            true,
+				Sensitive:           true,
+				MarkdownDescription: "Proxy credentials (format: username:password)",
+			},
 		},
 	}
 }
@@ -83,15 +128,100 @@ func (p *XshieldProvider) Configure(ctx context.Context, req provider.ConfigureR
 
 	config := buildConfigProvider(data, resp)
 
+	// Create custom HTTP client with provider configuration
+	httpClient, err := newHTTPClientWithOptions(data)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error creating HTTP client",
+			fmt.Sprintf("Failed to create HTTP client: %s", err),
+		)
+		return
+	}
+
 	opts := []sdk.SDKOption{
 		sdk.WithServerURL(ServerURL),
 		sdk.WithConfigProvider(config),
-		sdk.WithClient(http.DefaultClient),
+		sdk.WithClient(httpClient),
+	}
+
+	// Add timeout if provided
+	if !data.RequestTimeout.IsNull() {
+		opts = append(opts, sdk.WithTimeout(time.Duration(data.RequestTimeout.ValueInt64())*time.Second))
+	}
+	// Add retry configuration if provided
+	if !data.InitialInterval.IsNull() || !data.MaxInterval.IsNull() ||
+		!data.MaxElapsedTime.IsNull() || !data.Exponent.IsNull() {
+
+		// Create BackoffStrategy with configurable parameters
+		backoffStrategy := &retry.BackoffStrategy{
+			InitialInterval: int(data.InitialInterval.ValueInt64()),
+			MaxInterval:     int(data.MaxInterval.ValueInt64()),
+			MaxElapsedTime:  int(data.MaxElapsedTime.ValueInt64()),
+			Exponent:        data.Exponent.ValueFloat64(),
+		}
+
+		retryConfig := retry.Config{
+			Strategy:              "backoff",
+			Backoff:               backoffStrategy,
+			RetryConnectionErrors: true,
+		}
+		opts = append(opts, sdk.WithRetryConfig(retryConfig))
 	}
 	client := sdk.New(opts...)
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
+}
+
+// newHTTPClientWithOptions creates a custom HTTP client with proxy and timeout configuration
+func newHTTPClientWithOptions(data XshieldProviderModel) (*http.Client, error) {
+
+	// Create transport
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
+	}
+
+	// Configure proxy if specified
+	if !data.ProxyURL.IsNull() && !data.ProxyURL.IsUnknown() && data.ProxyURL.ValueString() != "" {
+		proxyURL, err := url.Parse(data.ProxyURL.ValueString())
+		if err != nil {
+			return nil, fmt.Errorf("invalid proxy URL: %s", err)
+		}
+
+		// Add proxy credentials if provided
+		if !data.ProxyCreds.IsNull() && !data.ProxyCreds.IsUnknown() && data.ProxyCreds.ValueString() != "" {
+			credentials := data.ProxyCreds.ValueString()
+			parts := strings.SplitN(credentials, ":", 2)
+
+			if len(parts) == 2 {
+				// Set basic auth info in the URL
+				proxyURL.User = url.UserPassword(parts[0], parts[1])
+
+				// Also set up Proxy-Authorization header for proxies that require it
+				auth := base64.StdEncoding.EncodeToString([]byte(credentials))
+				if transport.ProxyConnectHeader == nil {
+					transport.ProxyConnectHeader = make(http.Header)
+				}
+				transport.ProxyConnectHeader.Set("Proxy-Authorization", "Basic "+auth)
+			} else {
+				// Handle username-only case
+				proxyURL.User = url.User(credentials)
+			}
+		}
+
+		transport.Proxy = http.ProxyURL(proxyURL)
+	}
+
+	// Create client with timeout
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   60 * time.Second,
+	}
+
+	return client, nil
 }
 
 func buildConfigProvider(data XshieldProviderModel, resp *provider.ConfigureResponse) shared.ConfigurationProvider {
